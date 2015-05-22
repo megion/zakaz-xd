@@ -1,0 +1,21 @@
+<nav class="navbar navbar-default" role="navigation">
+  <ul class="nav navbar-nav">
+    <li><a href="/">Главная</a></li>
+    <% if (user) { %>
+    <li><a href="/chat">Чат</a></li>
+    <% } %>
+  </ul>
+  <ul class="nav navbar-nav navbar-right">
+    <% if (user) { %>
+    <li>
+    
+    <form method="POST" action="/logout">
+        <a onclick="$(this).closest('form').submit(); return false;">Выйти</a>
+    </form>
+    
+    </li>
+    <% } else { %>
+    <li><a href="/login">Войти</a></li>
+    <% } %>
+  </ul>
+</nav>

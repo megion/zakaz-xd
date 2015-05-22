@@ -1,0 +1,25 @@
+{
+  "port": 3000,
+  "mongodb": {
+    "server": {
+      "host": "localhost",
+      "port": 27017,
+      "options": {
+        
+      }
+    },
+    "db": "chat",
+    "options": {
+      "native_parser": true
+    }
+  },
+  "session": {
+    "secret": "KillerIsJim",
+    "key": "sid",
+    "cookie": {
+      "path": "/",
+      "httpOnly": true,
+      "maxAge": null
+    }
+  }
+}
