@@ -48,18 +48,18 @@ function initWebApp(app) {
 	app.use(cookieParser());
 
 //	var MongoStore = require('connect-mongo')(session);
-//	app.use(session({
-//		secret : config.get('session:secret'), // ABCDE242342342314123421.SHA256
-//		saveUninitialized: true,
-//	    resave: true,
-//		key : config.get('session:key'),
-//		cookie : config.get('session:cookie'),
+	app.use(session({
+		secret : config.get('session:secret'), // ABCDE242342342314123421.SHA256
+		saveUninitialized: true,
+	    resave: true,
+		key : config.get('session:key'),
+		cookie : config.get('session:cookie'),
 //		store : new MongoStore({
 //			db : config.get('mongodb:db'),
 //			host : config.get('mongodb:server:host'),
 //			port : config.get('mongodb:server:port')
 //		})
-//	}));
+	}));
 
 	app.use(express.static(path.join(__dirname, 'public')));
 	app.use(require('middleware/sendHttpError'));
