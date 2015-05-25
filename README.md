@@ -1,6 +1,6 @@
 
 
-Node.js WEB application for test [tabaga](https://github.com/megion/tabaga) GUI controls   
+Node JS WEB application    
 
 ## Installation
 
@@ -14,7 +14,7 @@ Clone project, then install the dependencies:
     
 ## Prepare mongodb database
 
-Configure database connection settings in file `config/config.json`. Run fill database script:
+Configure database connection settings in file `src/config/config.json`. Run fill database script:
    
     $ NODE_PATH=. node createDb
 
