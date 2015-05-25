@@ -11,8 +11,8 @@ var config = require('config');
 		//new Server(config.get('mongodb:server:host'), config.get('mongodb:server:port'), config.get('mongodb:server:options')),
 		//config.get('mongodb:optios'));
 
-var server = new Server(config.get('mongodb:server:host'), config.get('mongodb:server:port'), config.get('mongodb:server:options'));
-var db = new Db(config.get('mongodb:db'), server);
+var server = new Server(config.mongodb.server.host, config.mongodb.server.port, config.mongodb.server.options);
+var db = new Db(config.mongodb.db, server);
 
 function openConnection(callback) {
 	db.open(function(err, db) {

@@ -18,8 +18,8 @@ mongodb.openConnection(function(err, db) {
 	}
 	
 	var webApp = express();
-	http.createServer(webApp).listen(config.get("port"), function() {
-		log.info("Express server listening on port: " + config.get("port"));
+	http.createServer(webApp).listen(config.port, function() {
+		log.info("Express server listening on port: " + config.port);
 	});
 	initWebApp(webApp);
 });
@@ -49,15 +49,15 @@ function initWebApp(app) {
 
 //	var MongoStore = require('connect-mongo')(session);
 	app.use(session({
-		secret : config.get('session:secret'), // ABCDE242342342314123421.SHA256
+		secret : config.session.secret, // ABCDE242342342314123421.SHA256
 		saveUninitialized: true,
 	    resave: true,
-		key : config.get('session:key'),
-		cookie : config.get('session:cookie'),
+		key : config.session.key,
+		cookie : config.session.cookie,
 //		store : new MongoStore({
-//			db : config.get('mongodb:db'),
-//			host : config.get('mongodb:server:host'),
-//			port : config.get('mongodb:server:port')
+//			db : config.mongodb.db,
+//			host : config.mongodb.server.host'),
+//			port : config.mongodb.server.port')
 //		})
 	}));
 
