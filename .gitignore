@@ -32,5 +32,6 @@ local_package.csx
 .settings
 
 src/public/bower_components
+config.json
 
 
