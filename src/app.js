@@ -32,7 +32,7 @@ function initWebApp(app) {
 	
 	// view engine setup
 	app.engine('ejs', require('ejs-locals')); // layout partial block
-	app.set('views', path.join(__dirname, 'views'));
+	app.set('views', './views');
 	app.set('view engine', 'ejs');
 
 	if (app.get('env') == 'development') {

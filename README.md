@@ -16,9 +16,14 @@ Clone project, then install the dependencies:
     $ cd zakaz-xd
     $ npm install 
     
+Install public bower dependencies:
+    
+    $ cd src/public
+    $ bower install
+    
 ## Prepare config parameters (server address, mongodb database connection and other parameters)
 
-Configure database connection settings in file `config.json`. Copy template file and change parameters as you need.
+Configure database connection settings in file `config.json`. Copy template config file and change parameters as you need.
 
     $ cp config-template.json config.json
 
@@ -39,7 +44,7 @@ or for development logs
     
 Run in Windows OS
 
-    set NODE_PATH="."
+    set NODE_PATH=.
     node app
     
 
