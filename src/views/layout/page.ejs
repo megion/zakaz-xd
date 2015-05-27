@@ -16,12 +16,13 @@
 	rel="stylesheet">
 
 
-<!-- Optional Bootstrap Theme -->
+<!-- Optional Bootstrap Theme 
 <link href="data:text/css;charset=utf-8,"
 	data-href="/bower_components/bootstrap/dist/css/bootstrap-theme.min.css"
 	rel="stylesheet" id="bs-theme-stylesheet">
 
 <link href="/assets/css/docs.css" rel="stylesheet">
+-->
 <script src="/bower_components/jquery/dist/jquery.min.js"></script>
 
 
@@ -37,6 +38,37 @@
 </head>
 
 <body>
+	<header id="navbar-top" class="banner navbar navbar-default"
+		role="banner">
+		<div class="container">
+				<div class="navbar-inner">
+
+					<button type="button" class="navbar-toggle" data-toggle="collapse"
+						data-target=".navbar-collapse">
+						<span class="sr-only">Toggle Navigation</span> <span
+							class="icon-bar"></span> <span class="icon-bar"></span> <span
+							class="icon-bar"></span>
+					</button>
+
+
+
+					
+					<nav class="collapse navbar-collapse" role="navigation">
+						<ul class="nav navbar-nav navbar-right">
+							<li class=""><a
+								href="http://riotdesign.eu/en/">Home</a></li>
+							<li class=""><a
+								href="http://riotdesign.eu/en/about/">About</a></li>
+							<li class=""><a href="/en/portfolio/">Portfolio</a></li>
+							<li class=""><a
+								href="http://riotdesign.eu/en/contacts/">Contacts</a></li>
+						</ul>
+					</nav>
+
+				</div>
+			</div>
+	</header>
+
 	<a id="skippy" class="sr-only sr-only-focusable" href="#content"><div
 			class="container">
 			<span class="skiplink-text">Skip to main content</span>
@@ -48,14 +80,14 @@
 		<div class="container">
 			<div class="navbar-header">
 				<button class="navbar-toggle collapsed" type="button"
-					data-toggle="collapse" data-target=".bs-navbar-collapse">
+					data-toggle="collapse" data-target=".navbar-collapse">
 					<span class="sr-only">Toggle navigation</span> <span
 						class="icon-bar"></span> <span class="icon-bar"></span> <span
 						class="icon-bar"></span>
 				</button>
 				<a href="../" class="navbar-brand">Главная</a>
 			</div>
-			<nav class="collapse navbar-collapse bs-navbar-collapse">
+			<nav class="collapse navbar-collapse" role="navigation">
 				<ul class="nav navbar-nav">
 					<% if (user) { %>
 					<li><a href="/chat">Чат</a></li> <% } %>
@@ -73,7 +105,7 @@
 				</ul>
 			</nav>
 
-		
+
 		</div>
 	</header>
 
@@ -88,7 +120,7 @@
 	<!-- Bootstrap core JavaScript
 ================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
-	
+
 
 
 	<script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
