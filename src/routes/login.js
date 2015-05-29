@@ -22,6 +22,7 @@ router.post("/", function(req, res, next) {
 		}
 
 		req.session.user = user._id;
+		console.log("Session + user id", user._id);
 		res.send({});
 
 	});
