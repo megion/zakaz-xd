@@ -1,26 +1,6 @@
 angular.module('auth', [
-
+    'auth.access'
 ])
-
-    .run(['$rootScope', '$state', 'AuthService', function ($rootScope, $state, AuthService) {
-        $rootScope.$on("$stateChangeStart", function (event, toState, toParams, fromState, fromParams) {
-            if (toState.data && toState.data.userRoles && toState.data.userRoles.length>0) {
-            	
-            	if(!AuthService.isAuthenticated()) {
-            		$rootScope.fromState = fromState.name;
-            		// user is not logged in
-            		AuthService.notAuthenticated(event);
-            		return;
-            	}
-            	
-                if(!AuthService.isAuthorize(toState.data.access)) {
-                	$rootScope.fromState = fromState.name;
-                	// user is not allowed
-                	AuthService.notAuthorized(event);
-            	}
-            }
-        });
-    }])
 
     .factory('AuthInterceptor', ['$q', '$cookies', 'AuthService', function ($q, $cookies, AuthService) {
         return {
@@ -34,17 +14,18 @@ angular.module('auth', [
                 	AuthService.notAuthorized();
                 }
                 return $q.reject(response);
-            },
-            request: function (config) {
-                if (config.url.indexOf("/secure/rest/") != -1) {
-                    var token = $cookies.token;
-                    if (angular.isDefined(token)) {
-                        config.headers = config.headers || {};
-                        config.headers.token = token;
-                    }
-                }
-                return config;
             }
+            //,
+            //request: function (config) {
+            //    if (config.url.indexOf("/secure/rest/") != -1) {
+            //        var token = $cookies.token;
+            //        if (angular.isDefined(token)) {
+            //            config.headers = config.headers || {};
+            //            config.headers.token = token;
+            //        }
+            //    }
+            //    return config;
+            //}
         };
     }])
 
@@ -54,22 +35,49 @@ angular.module('auth', [
 
     .provider('AuthService', function () {
 
-        var loginUrl;
-        var logoutUrl;
-
         this.$get = ['$http', '$injector', '$q',
             function ($http, $injector, $q) {
 
                 var currentUser = null;
+                /**
+                 * данный promise необходим для того чтобы предотвартить создание
+                 * несколько асинхронных запросов получения пользователя, которые могут быть созданы,
+                 * если были попытки получить текущего пользователя до момента как первый из запросов отработает
+                 */
+                var currentUserPromise = null;
 
                 /**
-                 * Проверяет имеет ли текущий пользователь указаный доступ
-                 * @param access - целочисленное значение
+                 * Get current user from server
+                 */
+                function getCurrentUser() {
+                    if (currentUserPromise) {
+                        return currentUserPromise;
+                    }
+                    var defer = $q.defer();
+                    $http.get('/user/current', { headers: {'If-Modified-Since': '0'}}).then(
+                        function (response) {
+                            currentUser = response;
+                            defer.resolve(currentUser);
+                            currentUserPromise = null;
+                        },
+                        function (err) {
+                            console.error('Error get user', err);
+                            defer.reject(err);
+                            currentUserPromise = null;
+                        }
+                    );
+                    currentUserPromise = defer.promise;
+                    return currentUserPromise;
+                }
+
+                /**
+                 *
+                 * @param user
+                 * @param access - integer value
                  */
                 function isAuthorize(user, access) {
-                    var userPermissionsMap = {}; // contains only unique permission
                     for (var i=0; i<user.roles.length; i++) {
-                        var userAccess = roles[i].access;
+                        var userAccess = user.roles[i].access;
                         if (access & userAccess) {
                             return true;
                         }
@@ -77,8 +85,6 @@ angular.module('auth', [
 
                     return false;
                 }
-
-
 
                 return {
 
@@ -92,22 +98,40 @@ angular.module('auth', [
                      */
                     checkAccess: function (access) {
                         if (currentUser) {
-                            return $q.when(currentUser);
+                            if(isAuthorize(currentUser, access)) {
+                                return $q.resolve('Current user is allowed access ' + access);
+                            } else {
+                                return $q.reject('Current user is not allowed access ' + access);
+                            }
                         } else {
                             var defer = $q.defer();
-                            $http.get('/user/current', { headers: {'If-Modified-Since': '0'}}).then(
-                                function (response) {
-                                    currentUser = response;
-                                    if(isAuthorize(currentUser, access)) {
-                                        defer.resolve(currentUser);
+                            getCurrentUser().then(
+                                function (user) {
+                                    if(isAuthorize(user, access)) {
+                                        defer.resolve('Current user is allowed access ' + access);
+                                    } else {
+                                        defer.reject('Current user is not allowed access ' + access);
                                     }
                                 },
                                 function (err) {
-                                    console.error('Error get user', err);
                                     defer.reject(err);
                                 }
                             );
+                            return defer.promise;
                         }
+                    },
+
+                    /**
+                     * Has current user specified access
+                     * @param access
+                     * @returns {*}
+                     */
+                    hasAccess: function(access) {
+                        if (!currentUser) {
+                            throw new Error('User is null');
+                        }
+
+                        return isAuthorize(currentUser, access);
                     },
 
                     /**
@@ -124,45 +148,37 @@ angular.module('auth', [
                         $injector.get('$state').go('not-authorized');
                     },
 
-
-
-                    /**
-                     * Attempts to authenticate a user by the given username and password.
-                     *
-                     * @param username user's name
-                     * @param password user's password
-                     */
+                    getUser: function() {
+                        if (currentUser) {
+                            return $q.when(currentUser);
+                        } else {
+                            return getCurrentUser();
+                        }
+                    },
                     login: function (username, password) {
-                        var payload = $.param({j_username: username, j_password: password});
                         var config = {
                             headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
                             ignoreAuthInterceptor: true
                         };
-                        var self = this;
-                        var request = $http.post(opts.loginUrl, payload, config);
-
-                        return request.then(function (response) {
-                            self.currentUser = response.data;
-                            if (self.isAuthenticated()) {
-                                queue.retryAll();
+                        return $http.post('/login', {username: username, password: password}, config).then(
+                            function (response) {
+                                console.info("Login success: ", response);
+                            },
+                            function (err) {
+                                console.error("Error login: ", err);
                             }
-                            return self.currentUser;
-                        });
+                        );
                     },
-
-                    /**
-                     * Logs out the current user and redirects to 'redirectTo'.
-                     *
-                     * @param redirectTo (optional) the URL to redirect to
-                     */
-                    logout: function (redirectTo) {
-                        var self = this;
-                        return $http.post(opts.logoutUrl).then(function () {
-                            self.currentUser = null;
-                            if (redirectTo) {
-                                redirect(redirectTo);
+                    logout: function () {
+                        return $http.post('/logout', {}).then(
+                            function (response) {
+                                currentUser = null;
+                                currentUserPromise = null;
+                            },
+                            function (err) {
+                                console.error("Error login: ", err);
                             }
-                        });
+                        );
                     }
                 };
             }
