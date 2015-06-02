@@ -1,4 +1,5 @@
 angular.module('auth', [
+    'ngCookies',
     'auth.access'
 ])
 
@@ -35,8 +36,8 @@ angular.module('auth', [
 
     .provider('AuthService', function () {
 
-        this.$get = ['$http', '$injector', '$q',
-            function ($http, $injector, $q) {
+        this.$get = ['$injector', '$q',
+            function ($injector, $q) {
 
                 var currentUser = null;
                 /**
@@ -54,7 +55,7 @@ angular.module('auth', [
                         return currentUserPromise;
                     }
                     var defer = $q.defer();
-                    $http.get('/user/current', { headers: {'If-Modified-Since': '0'}}).then(
+                    $injector.get('$http').get('/user/current', { headers: {'If-Modified-Since': '0'}}).then(
                         function (response) {
                             currentUser = response;
                             defer.resolve(currentUser);
@@ -160,7 +161,7 @@ angular.module('auth', [
                             headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
                             ignoreAuthInterceptor: true
                         };
-                        return $http.post('/login', {username: username, password: password}, config).then(
+                        return $injector.get('$http').post('/login', {username: username, password: password}, config).then(
                             function (response) {
                                 console.info("Login success: ", response);
                             },
@@ -170,7 +171,7 @@ angular.module('auth', [
                         );
                     },
                     logout: function () {
-                        return $http.post('/logout', {}).then(
+                        return $injector.get('$http').post('/logout', {}).then(
                             function (response) {
                                 currentUser = null;
                                 currentUserPromise = null;
@@ -182,7 +183,6 @@ angular.module('auth', [
                     }
                 };
             }
-
 
         ];
     });
