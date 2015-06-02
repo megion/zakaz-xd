@@ -1,20 +1,18 @@
 angular.module('zakaz-xd.main', [
     'ui.router',
-    'auth'
+    'auth',
+    'zakaz-xd.order-list'
 ])
     .config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
         function ($stateProvider, $urlRouterProvider, $locationProvider) {
             $urlRouterProvider.otherwise('/orders');
 
-
-            // AuthProvider.setAuthLocation(config.authLocation);
-
-            $stateProvider.state('view-orders', {
+            $stateProvider.state('order-list', {
                 url: '/orders',
                 views: {
                     content: {
-                        controller: 'MyCtrl',
-                        templateUrl: '/forms/orders/orders.tpl.html'
+                        controller: 'OrderListCtrl',
+                        templateUrl: '/app/main-pages/order-list/order-list.tpl.html'
                     }
                 },
                 resolve: {
@@ -38,5 +36,6 @@ angular.module('zakaz-xd.main', [
             });
         }
     ])
-    .controller('ZakazXdCtrl', ['$rootScope', '$scope', '$location', 'AuthService', function ($rootScope, $scope, $location, AuthService) {
+    .controller('ZakazXdCtrl', ['$rootScope', '$scope', '$location', 'AuthService',
+        function ($rootScope, $scope, $location, AuthService) {
     }]);
