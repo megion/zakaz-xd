@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html ng-app="zakaz-xd.main" ng-controller="ZakazXdCtrl">
+<html data-ng-app="zakaz-xd.main"> <!-- ng-controller="ZakazXdCtrl" -->
 <head>
 
 <title ng-bind="pageTitle"></title>
@@ -30,24 +30,38 @@
 </head>
 <body>
 
-    <h3>Header</h3>
+    <!-- header -->
+    <header id="navbar-top" class="banner navbar navbar-default" role="banner">
+        <div class="container">
+            <div ng-include="'app/includes/header.tpl.html'"></div>
+        </div>
+    </header>
 
-	<!-- body -->
-    <div data-ng-view></div>
+    <!-- body -->
+    <div class="container">
+        <div data-ui-view></div>
+    </div>
 
-    <h3>Footer</h3>
+    <!-- footer -->
+    <footer role="contentinfo">
+        <div class="container">
+            <div ng-include="'app/includes/footer.tpl.html'"></div>
+        </div>
+    </footer>
 
 	<!-- Placed at the end of the document so the pages load faster -->
 	<script src="/bower_components/bootstrap/dist/js/bootstrap.js"></script>
 	<script src="/bower_components/angular/angular.js"></script>
 	<script src="/bower_components/angular-resource/angular-resource.js"></script>
     <script src="/bower_components/angular-cookies/angular-cookies.js"></script>
+    <script src="/bower_components/angular-ui-utils/ui-utils.js"></script>
 	<script src="/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
 
     <script src="/app/auth/access.js"></script>
     <script src="/app/auth/auth.js"></script>
     <script src="/app/main.js"></script>
     <script src="/app/main-pages/order-list/order-list.js"></script>
+    <script src="/app/main-pages/auth/login/login.js"></script>
 
 </body>
 </html>

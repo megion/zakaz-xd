@@ -3,7 +3,7 @@ angular
     ])
     .controller('OrderListCtrl', ['$scope', '$stateParams', '$state',
         function ($scope, $stateParams, $state) {
-            $scope.helloMsg = 'Привет!';
+            $scope.helloMsg = 'привет Мир';
         }
     ])
 ;
