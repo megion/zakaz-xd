@@ -2,7 +2,7 @@ angular.module('zakaz-xd.main', [
     'ui.router',
     'auth',
     'zakaz-xd.order-list',
-    'zakaz-xd.auth.login'
+    'zakaz-xd.auth.login-form'
 ])
     .config(['$stateProvider', '$urlRouterProvider',
         function ($stateProvider, $urlRouterProvider) {
@@ -33,8 +33,8 @@ angular.module('zakaz-xd.main', [
                 })
                 .state("login", {
                     url: "/login",
-                    controller: 'LoginCtrl',
-                    template: 'app/main-pages/auth/login/login.tpl.html'
+                    controller: 'LoginFormCtrl',
+                    templateUrl: 'app/main-pages/auth/login-form/login-form.tpl.html'
                 })
                 .state("bar", {
                     url: "/bar",
