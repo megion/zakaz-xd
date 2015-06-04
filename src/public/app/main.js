@@ -1,6 +1,6 @@
 angular.module('zakaz-xd.main', [
     'ui.router',
-    'auth',
+    'zakaz-xd.auth',
     'zakaz-xd.order-list',
     'zakaz-xd.auth.login-form'
 ])
@@ -8,13 +8,13 @@ angular.module('zakaz-xd.main', [
         function ($stateProvider, $urlRouterProvider) {
 
             $stateProvider
-                .state("order-list", {
-                    url: "/orders",
+                .state('order-list', {
+                    url: '/orders',
                     controller: 'OrderListCtrl',
                     templateUrl: 'app/main-pages/order-list/order-list.tpl.html',
                     resolve: {
-                        user: function ($stateParams) {
-                            return "";
+                        user: function ($stateParams, AuthService) {
+                            return AuthService.getUser();
                         }
                     },
                     data: {
@@ -31,19 +31,52 @@ angular.module('zakaz-xd.main', [
                         ]
                     }
                 })
-                .state("login", {
-                    url: "/login",
+                .state('login', {
+                    url: '/login',
                     controller: 'LoginFormCtrl',
                     templateUrl: 'app/main-pages/auth/login-form/login-form.tpl.html'
                 })
-                .state("bar", {
-                    url: "/bar",
-                    template: '<h1>bar</h1>'
+                .state('logout-success', {
+                    url: "/logout-success",
+                    templateUrl: 'app/main-pages/auth/logout-success/logout-success.tpl.html'
+                })
+                .state('access-denied', {
+                    url: "/access-denied",
+                    templateUrl: 'app/main-pages/auth/access-denied/access-denied.tpl.html'
+                })
+                .state('not-authenticated', {
+                    url: "/not-authenticated",
+                    templateUrl: 'app/main-pages/auth/not-authenticated/not-authenticated.tpl.html'
                 });
+
+
 
             $urlRouterProvider.otherwise("/orders");
         }
     ])
     .controller('ZakazXdCtrl', ['$rootScope', '$scope', '$location', 'AuthService',
         function ($rootScope, $scope, $location, AuthService) {
-    }]);
+
+        }
+    ]).controller('ZakazXdHeaderCtrl', ['$rootScope', '$scope', '$state', 'AuthService',
+        function ($rootScope, $scope, $state, AuthService) {
+            $scope.logout = function() {
+                AuthService.logout().then(
+                    function(response) {
+                        $state.go("logout-success");
+                    },
+                    function(err) {
+                        console.error("Error logout", err);
+                    }
+                );
+            };
+
+            $scope.isLogin = function() {
+                return AuthService.isAuthenticated();
+            };
+
+            $scope.currentUser = function() {
+                return AuthService._getUser();
+            };
+        }
+    ]);

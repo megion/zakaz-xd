@@ -1,19 +1,24 @@
-angular.module('auth', [
+angular.module('zakaz-xd.auth', [
     'ngCookies',
-    'auth.access'
+    'zakaz-xd.auth.access'
 ])
 
     .factory('AuthInterceptor', ['$q', '$cookies', 'AuthService', function ($q, $cookies, AuthService) {
         return {
             responseError: function (response) {
-            	if (response.status === 401) {
-            		// user is not logged in
-            		AuthService.notAuthenticated();
-            	}
-                if (response.status === 403) {
-                	// user is not allowed
-                	AuthService.notAuthorized();
+                if (response.config && response.config.ignoreAuthInterceptor) {
+                    return $q.reject(response);
                 }
+
+                if (response.status === 401) {
+                    // user is not logged in
+                    AuthService.notAuthenticated();
+                }
+                if (response.status === 403) {
+                    // user is not allowed
+                    AuthService.accessDenied();
+                }
+
                 return $q.reject(response);
             }
             //,
@@ -55,9 +60,10 @@ angular.module('auth', [
                         return currentUserPromise;
                     }
                     var defer = $q.defer();
-                    $injector.get('$http').get('/user/current', { headers: {'If-Modified-Since': '0'}}).then(
+                    $injector.get('$http').get('/users/current', { headers: {'If-Modified-Since': '0'}}).then(
                         function (response) {
-                            currentUser = response;
+                            console.log("cur user", response);
+                            currentUser = response.data;
                             defer.resolve(currentUser);
                             currentUserPromise = null;
                         },
@@ -145,8 +151,8 @@ angular.module('auth', [
                     /**
                      * user is not allowed
                      */
-                    notAuthorized: function() {
-                        $injector.get('$state').go('not-authorized');
+                    accessDenied: function() {
+                        $injector.get('$state').go('access-denied');
                     },
 
                     getUser: function() {
@@ -156,30 +162,46 @@ angular.module('auth', [
                             return getCurrentUser();
                         }
                     },
+                    // TODO: может вернуть null, пока оставлю так
+                    _getUser: function() {
+                        return currentUser;
+                    },
                     login: function (username, password) {
                         var config = {
-                            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
                             ignoreAuthInterceptor: true
                         };
-                        return $injector.get('$http').post('/login', {username: username, password: password}, config).then(
-                            function (response) {
-                                console.info("Login success: ", response);
+                        var defer = $q.defer();
+                        $injector.get('$http').post('/login', {username: username, password: password}, config).then(
+                            function(response) {
+                                getCurrentUser().then(
+                                    function (user) {
+                                        defer.resolve(user);
+                                    },
+                                    function (err) {
+                                        defer.reject(err);
+                                    }
+                                );
                             },
-                            function (err) {
-                                console.error("Error login: ", err);
+                            function(err) {
+                                defer.reject(err);
                             }
                         );
+
+                        return defer.promise;
                     },
                     logout: function () {
-                        return $injector.get('$http').post('/logout', {}).then(
+                        var defer = $q.defer();
+                        $injector.get('$http').post('/logout').then(
                             function (response) {
                                 currentUser = null;
                                 currentUserPromise = null;
+                                defer.resolve(response);
                             },
                             function (err) {
-                                console.error("Error login: ", err);
+                                defer.reject(err);
                             }
                         );
+                        return defer.promise;
                     }
                 };
             }
