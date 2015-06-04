@@ -8,6 +8,7 @@
     "angular-ui-router": "~0.2",
     "angular-ui-utils": "~0.2",
     "bootstrap": "~3.3.4",
+    "angular-bootstrap": "~0.13.0",
     "font-awesome": "~4.3.0"
    }
 }
