@@ -53,9 +53,9 @@ angular.module('zakaz-xd.auth', [
                 var currentUserPromise = null;
 
                 /**
-                 * Get current user from server
+                 * Request current user from server
                  */
-                function getCurrentUser() {
+                function requestCurrentUser() {
                     if (currentUserPromise) {
                         return currentUserPromise;
                     }
@@ -75,6 +75,14 @@ angular.module('zakaz-xd.auth', [
                     );
                     currentUserPromise = defer.promise;
                     return currentUserPromise;
+                }
+
+                function getCurrentUser() {
+                    if (currentUser) {
+                        return $q.when(currentUser);
+                    } else {
+                        return requestCurrentUser();
+                    }
                 }
 
                 /**
@@ -155,17 +163,8 @@ angular.module('zakaz-xd.auth', [
                         $injector.get('$state').go('access-denied');
                     },
 
-                    getUser: function() {
-                        if (currentUser) {
-                            return $q.when(currentUser);
-                        } else {
-                            return getCurrentUser();
-                        }
-                    },
-                    // TODO: может вернуть null, пока оставлю так
-                    _getUser: function() {
-                        return currentUser;
-                    },
+                    getUser: getCurrentUser,
+
                     login: function (username, password) {
                         var config = {
                             ignoreAuthInterceptor: true

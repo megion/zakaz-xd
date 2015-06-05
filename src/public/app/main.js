@@ -2,7 +2,8 @@ angular.module('zakaz-xd.main', [
     'ui.router',
     'zakaz-xd.auth',
     'zakaz-xd.order-list',
-    'zakaz-xd.auth.login-form'
+    'zakaz-xd.auth.login-form',
+    'zakaz-xd.user-profile'
 ])
     .config(['$stateProvider', '$urlRouterProvider',
         function ($stateProvider, $urlRouterProvider) {
@@ -36,6 +37,26 @@ angular.module('zakaz-xd.main', [
                     controller: 'LoginFormCtrl',
                     templateUrl: 'app/main-pages/auth/login-form/login-form.tpl.html'
                 })
+                .state('user-profile', {
+                    url: '/profile',
+                    controller: 'UserProfileCtrl',
+                    templateUrl: 'app/main-pages/user-profile/user-profile.tpl.html',
+                    resolve: {
+                        user: function ($stateParams, AuthService) {
+                            return AuthService.getUser();
+                        }
+                    }
+                })
+                .state('user-profile-change-password', {
+                    url: '/profile/change-password',
+                    controller: 'UserProfileCtrl',
+                    templateUrl: 'app/main-pages/user-profile/user-profile-change-password.tpl.html',
+                    resolve: {
+                        user: function ($stateParams, AuthService) {
+                            return AuthService.getUser();
+                        }
+                    }
+                })
                 .state('logout-success', {
                     url: "/logout-success",
                     templateUrl: 'app/main-pages/auth/logout-success/logout-success.tpl.html'
@@ -48,8 +69,6 @@ angular.module('zakaz-xd.main', [
                     url: "/not-authenticated",
                     templateUrl: 'app/main-pages/auth/not-authenticated/not-authenticated.tpl.html'
                 });
-
-
 
             $urlRouterProvider.otherwise("/orders");
         }
@@ -71,12 +90,17 @@ angular.module('zakaz-xd.main', [
                 );
             };
 
+            AuthService.getUser().then(
+                function(user) {
+                    $scope.currentUser = user;
+                },
+                function(err) {
+                    $scope.currentUser = null;
+                }
+            );
+
             $scope.isLogin = function() {
                 return AuthService.isAuthenticated();
-            };
-
-            $scope.currentUser = function() {
-                return AuthService._getUser();
             };
         }
     ]);

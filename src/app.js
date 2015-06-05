@@ -31,9 +31,9 @@ function initWebApp(app) {
 	var session = require('express-session');
 	
 	// view engine setup
-	app.engine('ejs', require('ejs-locals')); // layout partial block
-	app.set('views', './views');
-	app.set('view engine', 'ejs');
+    //app.engine('ejs', require('ejs-locals')); // layout partial block
+    //app.set('views', './views');
+    //app.set('view engine', 'ejs');
 
 	if (app.get('env') == 'development') {
 		app.use(logger('dev'));
@@ -53,7 +53,7 @@ function initWebApp(app) {
 		saveUninitialized: true,
 	    resave: true,
 		key : config.session.key,
-		cookie : config.session.cookie,
+		cookie : config.session.cookie
 //		store : new MongoStore({
 //			db : config.mongodb.db,
 //			host : config.mongodb.server.host'),
@@ -67,23 +67,12 @@ function initWebApp(app) {
 
 	//var routes = require('./routes/index');
 	var users = require('./routes/users');
-	var chat = require('./routes/chat');
-	var frontpage = require('./routes/frontpage');
+	//var chat = require('./routes/chat');
 	var login = require('./routes/login');
 	var logout = require('./routes/logout');
-	var ngtest = require('./routes/ngtest');
-	
-	//app.use('/', routes);
-	app.use('/', frontpage);
-	app.use('/chat', chat);
 	app.use('/login', login);
 	app.use('/logout', logout);
 	app.use('/users', users);
-
-	//app.use(function(req, res, next) {
-		//req.session.numberOfVisits = req.session.numberOfVisits + 1 || 1;
-		//res.send("Visits: " + req.session.numberOfVisits);
-	//});
 
 	app.use(function(err, req, res, next) {
 		if (typeof err == 'number') { // next(404);
