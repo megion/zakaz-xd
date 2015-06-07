@@ -11,7 +11,7 @@
     <nav class="collapse navbar-collapse" role="navigation">
         <ul class="nav navbar-nav navbar-right">
             <li ng-show="isLogin()"><a href="#/orders">Заказы</a></li>
-            <li ng-show="isLogin()"><a href="#/profile">{{isLogin()?currentUser.username:''}}</a></li>
+            <li ng-show="isLogin()"><a href="#/profile">{{currentUser().username}}</a></li>
             <li ng-show="isLogin()"><a data-ng-click="logout()" href="javascript:void(0)">Выйти</a></li>
             <li ng-show="!isLogin()"><a href="#/login">Войти</a></li>
         </ul>

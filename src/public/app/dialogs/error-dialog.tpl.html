@@ -1,0 +1,13 @@
+<div class="modal-header">
+    <button type="button" class="close" ng-click="close()" aria-label="Закрыть">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <h4 class="modal-title">Ошибка</h4>
+</div>
+<div class="modal-body">
+    <p class="bg-danger">{{error.data.message}}</p>
+    <pre data-ng-if='error.data.stack && printStack'>{{error.data.stack}}></pre>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" ng-click="close()">Закрыть</button>
+</div>

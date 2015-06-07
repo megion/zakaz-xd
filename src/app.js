@@ -16,8 +16,8 @@ mongodb.openConnection(function(err, db) {
 		log.error(err);
 		return;
 	}
-	
-	var webApp = express();
+
+    var webApp = express();
 	http.createServer(webApp).listen(config.port, function() {
 		log.info("Express server listening on port: " + config.port);
 	});
@@ -29,11 +29,6 @@ function initWebApp(app) {
 	var bodyParser = require('body-parser');
 	var errorhandler = require('errorhandler');
 	var session = require('express-session');
-	
-	// view engine setup
-    //app.engine('ejs', require('ejs-locals')); // layout partial block
-    //app.set('views', './views');
-    //app.set('view engine', 'ejs');
 
 	if (app.get('env') == 'development') {
 		app.use(logger('dev'));
@@ -47,27 +42,26 @@ function initWebApp(app) {
 	app.use(bodyParser.urlencoded());
 	app.use(cookieParser());
 
-//	var MongoStore = require('connect-mongo')(session);
+    var MongoStore = require('connect-mongo')(session);
 	app.use(session({
 		secret : config.session.secret, // ABCDE242342342314123421.SHA256
 		saveUninitialized: true,
 	    resave: true,
 		key : config.session.key,
-		cookie : config.session.cookie
-//		store : new MongoStore({
-//			db : config.mongodb.db,
-//			host : config.mongodb.server.host'),
-//			port : config.mongodb.server.port')
-//		})
+		cookie : config.session.cookie,
+		store : new MongoStore({
+			db : config.mongodb.db,
+			host : config.mongodb.server.host,
+			port : config.mongodb.server.port
+		})
 	}));
 
-	app.use(express.static(path.join(__dirname, 'public')));
+    app.use(express.static(path.join(__dirname, 'public')));
 	app.use(require('middleware/sendHttpError'));
 	app.use(require('middleware/loadUser'));
 
-	//var routes = require('./routes/index');
+    // disable layout
 	var users = require('./routes/users');
-	//var chat = require('./routes/chat');
 	var login = require('./routes/login');
 	var logout = require('./routes/logout');
 	app.use('/login', login);

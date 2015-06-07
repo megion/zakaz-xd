@@ -1,9 +1,10 @@
 angular
     .module('zakaz-xd.auth.login-form', [
         'zakaz-xd.auth',
+        'zakaz-xd.dialogs'
     ])
-    .controller('LoginFormCtrl', ['$scope', '$stateParams', '$state', '$sce', 'AuthService',
-        function ($scope, $stateParams, $state, $sce, AuthService) {
+    .controller('LoginFormCtrl', ['$scope', '$stateParams', '$state', 'AuthService', 'ErrorDialog',
+        function ($scope, $stateParams, $state, AuthService, ErrorDialog) {
 
             $scope.credentials = {
                 username: null,
@@ -17,11 +18,7 @@ angular
                         $state.go('order-list');
                     },
                     function(err) {
-                        if (err.status===403 || err.status===404) {
-                            $scope.errorMsg = $sce.trustAsHtml(err.data);
-                        } else {
-                            console.error("Login error", err);
-                        }
+                        ErrorDialog.open(err, true);
 
                     }
                 );

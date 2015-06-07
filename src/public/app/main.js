@@ -90,14 +90,9 @@ angular.module('zakaz-xd.main', [
                 );
             };
 
-            AuthService.getUser().then(
-                function(user) {
-                    $scope.currentUser = user;
-                },
-                function(err) {
-                    $scope.currentUser = null;
-                }
-            );
+            $scope.currentUser = function() {
+                return AuthService.$getUser();
+            };
 
             $scope.isLogin = function() {
                 return AuthService.isAuthenticated();

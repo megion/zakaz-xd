@@ -4,10 +4,6 @@ var HttpError = error.HttpError;
 var AuthError = error.AuthError;
 var userService = require('service/userService');
 
-router.get("/", function(req, res) {
-	res.render('login');
-});
-
 router.post("/", function(req, res, next) {
 	var username = req.body.username;
 	var password = req.body.password;

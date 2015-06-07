@@ -21,17 +21,6 @@ angular.module('zakaz-xd.auth', [
 
                 return $q.reject(response);
             }
-            //,
-            //request: function (config) {
-            //    if (config.url.indexOf("/secure/rest/") != -1) {
-            //        var token = $cookies.token;
-            //        if (angular.isDefined(token)) {
-            //            config.headers = config.headers || {};
-            //            config.headers.token = token;
-            //        }
-            //    }
-            //    return config;
-            //}
         };
     }])
 
@@ -62,7 +51,6 @@ angular.module('zakaz-xd.auth', [
                     var defer = $q.defer();
                     $injector.get('$http').get('/users/current', { headers: {'If-Modified-Since': '0'}}).then(
                         function (response) {
-                            console.log("cur user", response);
                             currentUser = response.data;
                             defer.resolve(currentUser);
                             currentUserPromise = null;
@@ -164,6 +152,9 @@ angular.module('zakaz-xd.auth', [
                     },
 
                     getUser: getCurrentUser,
+                    $getUser: function() {
+                        return currentUser;
+                    },
 
                     login: function (username, password) {
                         var config = {
