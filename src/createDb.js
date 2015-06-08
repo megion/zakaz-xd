@@ -1,4 +1,5 @@
 var mongodb = require('lib/mongodb');
+var changelog = require('lib/changelog');
 var async = require('async');
 asyncUtils = require('utils/asyncUtils');
 var userService = require('service/userService');

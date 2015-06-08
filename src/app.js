@@ -34,7 +34,7 @@ function initWebApp(app) {
 		app.use(logger('dev'));
 		app.use(errorhandler());
 	} else {
-		app.use(logger('default'));
+		//app.use(logger('default'));
 	}
 
 	app.use(favicon());
