@@ -11,7 +11,11 @@ angular
                 password: null,
                 rememberMe: null
             };
-            $scope.login = function() {
+            $scope.login = function(invalid) {
+                if (invalid) {
+                    return false;
+                }
+
                 AuthService.login($scope.credentials.username, $scope.credentials.password).then(
                     function() {
                         $scope.errorMsg = null;

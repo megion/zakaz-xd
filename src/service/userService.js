@@ -39,6 +39,14 @@ function createUser(username, password, callback) {
  * если не найден тогда ошибка
  */
 function authorize(username, password, callback) {
+    if (!username) {
+        return callback(new AuthError("Имя пользователя неопределено"));
+    }
+
+    if (!password) {
+        return callback(new AuthError("Пароль неопределен"));
+    }
+
 	var usersCollection = getCollection();
     usersCollection.findOne({username : username},
         function(err, user){
@@ -75,8 +83,21 @@ function findById(id, callback) {
     });
 }
 
+function createConstraints(callback) {
+    var usersCollection = getCollection();
+    usersCollection.createIndex( { "username": 1 }, { unique: true },
+        function(err) {
+            if (err) {
+                return callback(err);
+            }
+            return callback(null);
+        }
+    );
+}
+
 exports.setPassword = setPassword;
 exports.authorize = authorize;
 exports.createUser = createUser;
+exports.createConstraints = createConstraints;
 exports.getCollection = getCollection;
 exports.findById = findById;

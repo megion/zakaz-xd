@@ -1,8 +1,9 @@
 var mongodb = require('lib/mongodb');
 var async = require('async');
+asyncUtils = require('utils/asyncUtils');
 var userService = require('service/userService');
 
-async.series([ open, dropDatabase, createUsers, close ],
+async.series([ open, createUserConstraints, close ],
 		function(err) {
 			console.log(arguments);
 			process.exit(err ? 255 : 0);
@@ -17,6 +18,10 @@ function dropDatabase(callback) {
 	db.dropDatabase(callback);
 }
 
+function createUserConstraints(callback) {
+    userService.createConstraints(callback);
+}
+
 function createUsers(callback) {
 	var users = [ {
 		username : 'Вася',
@@ -29,12 +34,28 @@ function createUsers(callback) {
 		password : 'thetruehero'
 	} ];
 
-	async.each(users, function(userData, callback) {
-		userService.createUser(userData.username, userData.password, callback)
-	}, callback);
+
+    asyncUtils.eachSeries(users,
+        // iterator function
+        function(userData, eachResultCallback) {
+            userService.createUser(userData.username, userData.password, eachResultCallback);
+        },
+        // iterator result callback arguments from eachResultCallback
+        function(createdUser) {
+            console.log("createdUser: ", createdUser);
+        },
+        // finish iterator result
+        function(err) {
+            if (err) {
+                return callback(err);
+            }
+
+            return callback(null);
+        }
+    );
 }
 
 function close(callback) {
-	console.log("Close connection")
+	console.log("Close connection");
 	mongodb.closeConnection(callback);
 }
