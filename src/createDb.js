@@ -1,16 +1,26 @@
 var mongodb = require('lib/mongodb');
 var changelog = require('lib/changelog');
-var async = require('async');
 asyncUtils = require('utils/asyncUtils');
 var userService = require('service/userService');
 
-async.series([ open, createUserConstraints, close ],
-		function(err) {
-			console.log(arguments);
-			process.exit(err ? 255 : 0);
-		});
+asyncUtils.eachSeries([ open, dropDatabase, runChangelogs, close ],
+    // iterator function
+    function(itemFn, eachResultCallback) {
+        itemFn(eachResultCallback);
+    },
+    function() {
+    },
+    // finish iterator result
+    function(err) {
+        if (err) {
+            console.error("Error: ", err);
+        }
+		process.exit(err ? 255 : 0);
+    }
+);
 
 function open(callback) {
+    console.log("Open connection");
 	mongodb.openConnection(callback);
 }
 
@@ -19,44 +29,39 @@ function dropDatabase(callback) {
 	db.dropDatabase(callback);
 }
 
-function createUserConstraints(callback) {
-    userService.createConstraints(callback);
-}
-
-function createUsers(callback) {
-	var users = [ {
-		username : 'Вася',
-		password : 'supervasya'
-	}, {
-		username : 'Петя',
-		password : '123'
-	}, {
-		username : 'admin',
-		password : 'thetruehero'
-	} ];
-
-
-    asyncUtils.eachSeries(users,
-        // iterator function
-        function(userData, eachResultCallback) {
-            userService.createUser(userData.username, userData.password, eachResultCallback);
-        },
-        // iterator result callback arguments from eachResultCallback
-        function(createdUser) {
-            console.log("createdUser: ", createdUser);
-        },
-        // finish iterator result
-        function(err) {
-            if (err) {
-                return callback(err);
-            }
-
-            return callback(null);
-        }
-    );
-}
-
 function close(callback) {
 	console.log("Close connection");
 	mongodb.closeConnection(callback);
 }
+
+function runChangelogs(callback) {
+    console.log("Run execute changelogs");
+    var changesets = [];
+
+    // create changelog index
+    changesets.push({
+        changeId: 1,
+        changeFn: function(changeCallback) {
+            var changelogCollection = changelog.getCollection();
+            changelogCollection.createIndex( { "changeId": 1 }, { unique: true }, changeCallback);
+        }
+    });
+    // create user index
+    changesets.push({
+        changeId: 2,
+        changeFn: function(changeCallback) {
+            var userCollection = userService.getCollection();
+            userCollection.createIndex( { "username": 1 }, { unique: true }, changeCallback);
+        }
+    });
+    // insert admin
+    changesets.push({
+        changeId: 3,
+        changeFn: function(changeCallback) {
+            userService.createUser("admin", "admin", changeCallback);
+        }
+    });
+    changelog.executeAllSeries(changesets, callback);
+}
+
+

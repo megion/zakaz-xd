@@ -83,21 +83,8 @@ function findById(id, callback) {
     });
 }
 
-function createConstraints(callback) {
-    var usersCollection = getCollection();
-    usersCollection.createIndex( { "username": 1 }, { unique: true },
-        function(err) {
-            if (err) {
-                return callback(err);
-            }
-            return callback(null);
-        }
-    );
-}
-
 exports.setPassword = setPassword;
 exports.authorize = authorize;
 exports.createUser = createUser;
-exports.createConstraints = createConstraints;
 exports.getCollection = getCollection;
 exports.findById = findById;
