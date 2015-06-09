@@ -1,4 +1,5 @@
 var User = require('models/user').User;
+var Role = require('models/role').Role;
 var mongodb = require('lib/mongodb');
 var crypto = require('crypto');
 var AuthError = require('error').AuthError;

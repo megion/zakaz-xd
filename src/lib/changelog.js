@@ -9,7 +9,7 @@ function getCollection() {
     return mongodb.getDb().collection("changelogs");
 }
 
-function executeOne(changeId, changeFn, callback) {
+function executeOneChangeset(changeId, changeFn, callback) {
     var changelogCollection = getCollection();
     changelogCollection.findOne({
         changeId : changeId
@@ -50,33 +50,30 @@ function executeOne(changeId, changeFn, callback) {
  * @param changesets array of Changeset {changeId: 'someId', changeFn: function() {//... some actions}}
  * @param callback
  */
-function executeAllSeries(changesets, callback) {
+function executeAllChangesets(changesets, callback) {
     var counter = 0;
     asyncUtils.eachSeries(changesets,
         // iterator function
         function(changeset, eachResultCallback) {
-            executeOne(changeset.changeId, changeset.changeFn, eachResultCallback);
+            executeOneChangeset(changeset.changeId, changeset.changeFn, eachResultCallback);
         },
         // iterator result callback arguments from eachResultCallback
         function(changelog, isInsertNew) {
             if (isInsertNew) {
                 counter++;
-                console.log("counter", counter);
             }
         },
         // finish iterator result
         function(err) {
-            log.info("Insert " + counter + " rows");
             if (err) {
                 return callback(err);
             }
 
             log.info("Insert " + counter + " rows");
-
             return callback(null);
         }
     );
 }
 
 exports.getCollection = getCollection;
-exports.executeAllSeries = executeAllSeries;
+exports.executeAllChangesets = executeAllChangesets;

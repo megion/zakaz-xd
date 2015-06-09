@@ -2,7 +2,6 @@ var userService = require('service/userService');
 var mongodb = require('lib/mongodb');
 
 module.exports = function(req, res, next) {
-
 	req.user = null;
 
 	if (!req.session.user)

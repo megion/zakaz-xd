@@ -3,6 +3,7 @@ var error = require('error');
 var HttpError = error.HttpError;
 var AuthError = error.AuthError;
 var userService = require('service/userService');
+var log = require('lib/log')(module);
 
 router.post("/", function(req, res, next) {
 	var username = req.body.username;
@@ -18,7 +19,7 @@ router.post("/", function(req, res, next) {
 		}
 
 		req.session.user = user._id;
-		console.log("Session + user id", user._id);
+        log.info("User success login ID " + req.session.user);
 		res.send({});
 
 	});
