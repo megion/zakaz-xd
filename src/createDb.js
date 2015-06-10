@@ -4,6 +4,7 @@ asyncUtils = require('utils/asyncUtils');
 var userService = require('service/userService');
 var roleService = require('service/roleService');
 var Access = require('models/access').Access;
+var ACCESSES = require('utils/accesses').ACCESSES;
 
 asyncUtils.eachSeries([ open, dropDatabase, runChangelogs, close ],
     // iterator function
@@ -106,15 +107,15 @@ function runChangelogs(callback) {
         changeId: 6,
         changeFn: function(changeCallback) {
             var accesses = [
-                new Access('MANAGE_USERS', 1<<0, 'Управление пользователями'),
-                new Access('CREATE_ORDER', 1<<1, 'Создание заказа'),
-                new Access('VIEW_OWN_ORDERS', 1<<2, 'Просмотр своих заказов'),
-                new Access('EDIT_OWN_ORDER', 1<<3, 'Редактирование своего заказа'),
-                new Access('REMOVE_OWN_ORDER', 1<<4, 'Удаление своего заказа'),
-                new Access('VIEW_ALL_ORDER', 1<<5, 'Просмотр всех заказов'),
-                new Access('EDIT_ANY_ORDER', 1<<6, 'Редактирование любого заказа'),
-                new Access('REMOVE_ANY_ORDER', 1<<7, 'Удаление любого заказа'),
-                new Access('CHANGE_OWN_PASSWORD', 1<<8, 'Изменение своего пароля')
+                new Access('MANAGE_USERS', ACCESSES.MANAGE_USERS, 'Управление пользователями'),
+                new Access('CREATE_ORDER', ACCESSES.CREATE_ORDER, 'Создание заказа'),
+                new Access('VIEW_OWN_ORDERS', ACCESSES.VIEW_OWN_ORDERS, 'Просмотр своих заказов'),
+                new Access('EDIT_OWN_ORDER', ACCESSES.EDIT_OWN_ORDER, 'Редактирование своего заказа'),
+                new Access('REMOVE_OWN_ORDER', ACCESSES.REMOVE_OWN_ORDER, 'Удаление своего заказа'),
+                new Access('VIEW_ALL_ORDER', ACCESSES.VIEW_ALL_ORDER, 'Просмотр всех заказов'),
+                new Access('EDIT_ANY_ORDER', ACCESSES.EDIT_ANY_ORDER, 'Редактирование любого заказа'),
+                new Access('REMOVE_ANY_ORDER', ACCESSES.REMOVE_ANY_ORDER, 'Удаление любого заказа'),
+                new Access('CHANGE_OWN_PASSWORD', ACCESSES.CHANGE_OWN_PASSWORD, 'Изменение своего пароля')
             ];
             roleService.createAccesses(accesses, function(err, insertedAccesses) {
                 if (err) {
