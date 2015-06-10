@@ -31,14 +31,15 @@ function executeOneChangeset(changeId, changeFn, callback) {
             }
 
             // write success execution change log
-            changelogCollection.insert({changeId: changeId, creationDate: new Date()},
+            var newLog = {changeId: changeId, creationDate: new Date()};
+            changelogCollection.insert(newLog,
                 function(err, newChangelog) {
                     if (err) {
                         return callback(err);
                     }
 
                     log.info("Success insert changelog: " + changeId);
-                    callback(null, newChangelog, true);
+                    callback(null, newLog, true);
                 }
             );
         });

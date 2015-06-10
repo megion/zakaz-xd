@@ -1,7 +1,3 @@
-function eachSeries(arr, iteratorFn, eachResultFn, callback) {
-	iterateOneSeries(arr, 0, iteratorFn, eachResultFn, callback);
-}
-
 function iterateOneSeries(arr, count, iteratorFn, eachResultFn, callback) {
 	if (count>=(arr.length)) {
 		// finish
@@ -18,10 +14,14 @@ function iterateOneSeries(arr, count, iteratorFn, eachResultFn, callback) {
 			var args = Array.prototype.slice.call(arguments, 1);
 			eachResultFn.apply(null, args);
 		}
-		
-		count++;
+
+        count++;
 		iterateOneSeries(arr, count, iteratorFn, eachResultFn, callback);
 	});
+}
+
+function eachSeries(arr, iteratorFn, eachResultFn, callback) {
+    iterateOneSeries(arr, 0, iteratorFn, eachResultFn, callback);
 }
 
 exports.eachSeries = eachSeries;
