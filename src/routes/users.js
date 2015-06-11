@@ -3,6 +3,8 @@ var userService = require('service/userService');
 var HttpError = require('error').HttpError;
 var ObjectID = require('mongodb').ObjectID;
 var log = require('lib/log')(module);
+var checkAccess = require('middleware/checkAccess');
+var ACCESSES = require('utils/accesses').ACCESSES;
 
 /* GET users listing. */
 //router.get('/', function(req, res, next) {
@@ -47,14 +49,24 @@ router.get('/current', function(req, res, next) {
         return;
     }
 
-    userService.findById(userId, function(err, user) { // ObjectID
+    userService.findWithRolesById(userId, function(err, user) { // ObjectID
         if (err)
             return next(err);
         if (!user) {
             return next(new HttpError(404, "Текущий пользователь не найден"));
         }
+
+        // удалим лишнюю информацию
+        delete user.hashedPassword;
+        delete user.salt;
+        delete user.password;
+
         res.json(user);
     });
+});
+
+router.post('/changePassword', checkAccess.getAuditor(ACCESSES.CHANGE_OWN_PASSWORD), function(req, res, next) {
+
 });
 
 module.exports = router;

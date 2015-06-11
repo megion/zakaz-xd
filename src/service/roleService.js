@@ -73,6 +73,119 @@ function assignUserRoles(user, roles, callback) {
     });
 }
 
+function mapAccessesToRole(roles, roleAccesses, accesses) {
+    var accessIdSetByRoleId = {};
+    for (var i=0; i<roleAccesses.length; i++) {
+        var roleAccess = roleAccesses[i];
+        var item = accessIdSetByRoleId[roleAccess.role_id.toString()];
+        if (!item) {
+            item = {};
+            accessIdSetByRoleId[roleAccess.role_id.toString()] = item;
+        }
+        item[roleAccess.access_id.toString()] = true;
+    }
+
+    var accessById = {};
+    for (i=0; i<accesses.length; i++) {
+        var access = accesses[i];
+        accessById[access._id.toString()] = access;
+    }
+
+    // map access for each role
+    for (i=0; i<roles.length; i++) {
+        var role = roles[i];
+        role.accesses = []; // init access array
+        var accessIdSet = accessIdSetByRoleId[role._id.toString()];
+        for(var accessId in accessIdSet) {
+            role.accesses.push(accessById[accessId]);
+        }
+    }
+}
+
+function findAllRolesWithAccesses(callback) {
+    var rolesCollection = getCollection();
+    // all roles
+    rolesCollection.find({}).toArray(function(err, roles) {
+        if (err) {
+            return callback(err);
+        }
+
+        if (!roles || roles.length===0) {
+            return callback(null, roles);
+        }
+
+        // all roleAccesses
+        var roleAccessesCollection = getRoleAccessesCollection();
+        roleAccessesCollection.find({}).toArray(function(err, roleAccesses) {
+            if (err) {
+                return callback(err);
+            }
+
+            // значит не назначено ни одного доступа
+            if (!roleAccesses || roleAccesses.length===0) {
+                return callback(null, roles);
+            }
+
+            var accessesCollection = getAccessesCollection();
+            accessesCollection.find({}).toArray(function(err, accesses) {
+                if (err) {
+                    return callback(err);
+                }
+
+                // значит не назначено ни одного доступа
+                if (!accesses || accesses.length===0) {
+                    return callback(new Error("Access collection is empty"));
+                }
+
+                // map accesses to role
+                mapAccessesToRole(roles, roleAccesses, accesses);
+                callback(null, roles);
+            });
+
+        });
+    });
+}
+
+function findUserRoles(user, callback) {
+    var userRolesCollection = getUserRolesCollection();
+
+    userRolesCollection.find({
+        user_id : user._id
+    }).toArray(function(err, userRoles) {
+        if (err) {
+            return callback(err);
+        }
+
+        // user has no roles
+        if (!userRoles || userRoles.length===0) {
+            return callback(null, []);
+        }
+
+        findAllRolesWithAccesses(function(err, allRoles) {
+            if (err) {
+                return callback(err);
+            }
+
+            var allRolesById = {};
+            for (var i=0; i<allRoles.length; i++) {
+                var role = allRoles[i];
+                allRolesById[role._id.toString()] = role;
+            }
+
+            var rolesForUser = [];
+            for (i=0; i<userRoles.length; i++) {
+                var userRole = userRoles[i];
+                rolesForUser.push(allRolesById[userRole.role_id.toString()]);
+            }
+
+            // need sort roles ...
+
+            callback(null, rolesForUser);
+        });
+
+    });
+}
+
 function assignRoleAccesses(role, accesses, callback) {
     var roleAccessesCollection = getRoleAccessesCollection();
     // remove all role access
@@ -119,4 +232,5 @@ exports.createAccesses = createAccesses;
 exports.assignUserRoles = assignUserRoles;
 exports.assignRoleAccesses = assignRoleAccesses;
 exports.findRoleByCode = findRoleByCode;
+exports.findUserRoles = findUserRoles;
 

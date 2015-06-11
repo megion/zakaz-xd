@@ -3,6 +3,7 @@ var Role = require('models/role').Role;
 var mongodb = require('lib/mongodb');
 var crypto = require('crypto');
 var AuthError = require('error').AuthError;
+var roleService = require('service/roleService');
 
 function encryptPassword(user, password) {
 	return crypto.createHmac('sha1', user.salt).update(password).digest('hex');
@@ -62,16 +63,11 @@ function authorize(username, password, callback) {
                 }
             } else {
                 callback(new AuthError("Пользователь '" + username + "' не найден"));
-                //createUser(username, password, callback);
             }
         }
     );
 }
 
-/**
- * Если пользователь найден по имени тогда проверка пароля,
- * если не найден тогда ошибка
- */
 function findById(id, callback) {
     var usersCollection = getCollection();
     usersCollection.findOne({
@@ -84,8 +80,47 @@ function findById(id, callback) {
     });
 }
 
+function findWithRolesById(id, callback) {
+    var usersCollection = getCollection();
+    usersCollection.findOne({
+        _id : id
+    }, function(err, user) {
+        if (err) {
+            return callback(err);
+        }
+
+        if (!user) {
+            return callback(null, user);
+        }
+
+        roleService.findUserRoles(user, function(err, roles) {
+            if (err) {
+                return callback(err);
+            }
+            user.roles = roles;
+            return callback(null, user);
+        });
+    });
+}
+
+function isAuthorize(user, access) {
+    for (var i=0; i<user.roles.length; i++) {
+        var role = user.roles[i];
+        for (var j=0; j<role.accesses.length; j++) {
+            var userAccess = role.accesses[j].value;
+            if (access & userAccess) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 exports.setPassword = setPassword;
 exports.authorize = authorize;
 exports.createUser = createUser;
 exports.getCollection = getCollection;
 exports.findById = findById;
+exports.findWithRolesById = findWithRolesById;
+exports.isAuthorize = isAuthorize;
