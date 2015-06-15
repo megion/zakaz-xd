@@ -3,20 +3,24 @@
  */
 angular
     .module('zakaz-xd.user-profile', [
+        'zakaz-xd.dialogs',
+        'zakaz-xd.resources.auth-resource'
     ])
-    .controller('UserProfileCtrl', ['$scope', '$stateParams', '$state', '$http', 'user',
-        function ($scope, $stateParams, $state, $http, user) {
+    .controller('UserProfileCtrl', ['$scope', '$stateParams', '$state', '$http', 'user', 'AuthResource', 'ErrorDialog',
+        function ($scope, $stateParams, $state, $http, user, AuthResource, ErrorDialog) {
             $scope.user = angular.copy(user);
             $scope.save = function() {
                 console.log("save user", $scope.user);
             };
             $scope.changePassword  = function() {
                 console.log("change user password", $scope.user);
-                $http.post('/users/changePassword', {}).then(
+                AuthResource.changePassword($scope.user.newPassword).then(
                     function (response) {
+                        // успешное сообщение
+                        console.log("success change password");
                     },
                     function (err) {
-                        console.error('Error change password', err);
+                        ErrorDialog.open(err, true);
                     }
                 );
             };
