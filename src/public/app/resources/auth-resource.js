@@ -5,7 +5,22 @@ angular.module('zakaz-xd.resources.auth-resource', [
         var startUrl='/auth';
         return {
             changePassword: function (newPassword) {
-                return $http.post(startUrl + '/changePassword', {newPassword: newPassword});
+                return $http.post(startUrl + '/change-password', {newPassword: newPassword});
+            },
+            getCurrentUser: function () {
+                return $http.get(startUrl + '/current-user', { headers: {'If-Modified-Since': '0'}});
+            },
+            login: function(username, password) {
+                var config = {
+                    ignoreAuthInterceptor: true
+                };
+                return $http.post(startUrl + '/login', {username: username, password: password}, config);
+            },
+            logout: function() {
+                $http.post(startUrl + '/logout');
+            },
+            isAuthenticated: function() {
+                $http.get(startUrl + '/is-authenticated');
             }
         };
     }]);

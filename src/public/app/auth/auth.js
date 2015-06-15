@@ -1,6 +1,7 @@
 angular.module('zakaz-xd.auth', [
     'ngCookies',
-    'zakaz-xd.auth.access'
+    'zakaz-xd.auth.access',
+    'zakaz-xd.resources.auth-resource'
 ])
 
     .factory('AuthInterceptor', ['$q', '$cookies', 'AuthService', function ($q, $cookies, AuthService) {
@@ -49,7 +50,7 @@ angular.module('zakaz-xd.auth', [
                         return currentUserPromise;
                     }
                     var defer = $q.defer();
-                    $injector.get('$http').get('/users/current', { headers: {'If-Modified-Since': '0'}}).then(
+                    $injector.get('AuthResource').getCurrentUser().then(
                         function (response) {
                             currentUser = response.data;
                             defer.resolve(currentUser);
@@ -157,13 +158,10 @@ angular.module('zakaz-xd.auth', [
                     },
 
                     login: function (username, password) {
-                        var config = {
-                            ignoreAuthInterceptor: true
-                        };
                         var defer = $q.defer();
-                        $injector.get('$http').post('/login', {username: username, password: password}, config).then(
+                        $injector.get('AuthResource').login(username, password).then(
                             function(response) {
-                                getCurrentUser().then(
+                                requestCurrentUser().then(
                                     function (user) {
                                         defer.resolve(user);
                                     },
@@ -181,7 +179,7 @@ angular.module('zakaz-xd.auth', [
                     },
                     logout: function () {
                         var defer = $q.defer();
-                        $injector.get('$http').post('/logout').then(
+                        $injector.get('AuthResource').logout().then(
                             function (response) {
                                 currentUser = null;
                                 currentUserPromise = null;
