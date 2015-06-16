@@ -4,8 +4,9 @@ angular.module('zakaz-xd.resources.auth-resource', [
     .factory('AuthResource', ['$q', '$http', function ($q, $http) {
         var startUrl='/auth';
         return {
-            changePassword: function (newPassword) {
-                return $http.post(startUrl + '/change-password', {newPassword: newPassword});
+            changePassword: function (newPassword, repeatNewPassword) {
+                return $http.post(startUrl + '/change-password',
+                    {newPassword: newPassword, repeatNewPassword: repeatNewPassword});
             },
             getCurrentUser: function () {
                 return $http.get(startUrl + '/current-user', { headers: {'If-Modified-Since': '0'}});
@@ -17,10 +18,10 @@ angular.module('zakaz-xd.resources.auth-resource', [
                 return $http.post(startUrl + '/login', {username: username, password: password}, config);
             },
             logout: function() {
-                $http.post(startUrl + '/logout');
+                return $http.post(startUrl + '/logout');
             },
             isAuthenticated: function() {
-                $http.get(startUrl + '/is-authenticated');
+                return $http.get(startUrl + '/is-authenticated');
             }
         };
     }]);

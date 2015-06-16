@@ -35,6 +35,7 @@ angular.module('zakaz-xd.auth', [
             function ($injector, $q) {
 
                 var currentUser = null;
+                var isLogin = null;
                 /**
                  * данный promise необходим для того чтобы предотвартить создание
                  * несколько асинхронных запросов получения пользователя, которые могут быть созданы,
@@ -66,6 +67,23 @@ angular.module('zakaz-xd.auth', [
                     return currentUserPromise;
                 }
 
+                /**
+                 * Request is authenticated
+                 */
+                function requestIsAuthenticated() {
+                    var defer = $q.defer();
+                    $injector.get('AuthResource').isAuthenticated().then(
+                        function (response) {
+                            isLogin= response.data;
+                            defer.resolve(isLogin);
+                        },
+                        function (err) {
+                            defer.reject(err);
+                        }
+                    );
+                    return defer.promise;
+                }
+
                 function getCurrentUser() {
                     if (currentUser) {
                         return $q.when(currentUser);
@@ -91,11 +109,6 @@ angular.module('zakaz-xd.auth', [
                 }
 
                 return {
-
-                    isAuthenticated: function () {
-                        return !!currentUser;
-                    },
-
                     /**
                      * return promise object
                      * @param access
@@ -153,14 +166,25 @@ angular.module('zakaz-xd.auth', [
                     },
 
                     getUser: getCurrentUser,
-                    $getUser: function() {
+                    currentUser: function() {
                         return currentUser;
+                    },
+                    isAuthenticated: function () {
+                        if (isLogin!==null) {
+                            return $q.when(isLogin);
+                        } else {
+                            return requestIsAuthenticated();
+                        }
+                    },
+                    isLogin: function() {
+                        return isLogin;
                     },
 
                     login: function (username, password) {
                         var defer = $q.defer();
                         $injector.get('AuthResource').login(username, password).then(
                             function(response) {
+                                isLogin = true;
                                 requestCurrentUser().then(
                                     function (user) {
                                         defer.resolve(user);
@@ -181,6 +205,7 @@ angular.module('zakaz-xd.auth', [
                         var defer = $q.defer();
                         $injector.get('AuthResource').logout().then(
                             function (response) {
+                                isLogin = null;
                                 currentUser = null;
                                 currentUserPromise = null;
                                 defer.resolve(response);

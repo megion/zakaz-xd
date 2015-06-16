@@ -40,7 +40,7 @@ router.get('/current-user', function(req, res, next) {
 });
 
 router.get('/is-authenticated', function(req, res, next) {
-    if (!req.session || !req.session.user) {
+    if (req.session && req.session.user) {
         return res.json(true);
     } else {
         return res.json(false);
@@ -48,7 +48,32 @@ router.get('/is-authenticated', function(req, res, next) {
 });
 
 router.post('/change-password', checkAccess.getAuditor(ACCESSES.CHANGE_OWN_PASSWORD), function(req, res, next) {
+    var newPassword = req.body.newPassword;
+    var repeatNewPassword = req.body.repeatNewPassword;
 
+    if (!newPassword || newPassword.length===0) {
+        return next(new HttpError(400, "Пароль не может быть пустым"));
+    }
+
+    if (newPassword !== repeatNewPassword) {
+        return next(new HttpError(400, "Пароли не сопадают"));
+    }
+
+    var userId;
+    try {
+        userId = new ObjectID(req.session.user);
+    } catch (e) {
+        log.error(e.message);
+        next(new HttpError(404, "Текущий пользователь не найден"));
+        return;
+    }
+
+    userService.changeUserPassword(userId, newPassword, function(err) {
+        if (err)
+            return next(err);
+
+        res.send({});
+    });
 });
 
 router.post("/login", function(req, res, next) {

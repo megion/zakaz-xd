@@ -90,12 +90,24 @@ angular.module('zakaz-xd.main', [
                 );
             };
 
+            // делаем запрос к серверу если еще не проверяли
+            AuthService.isAuthenticated().then(
+                function(isLogin) {
+                    if (isLogin) {
+                        AuthService.getUser();
+                    }
+                },
+                function(err) {
+                    console.error("Error get is login", err);
+                }
+            );
+
             $scope.currentUser = function() {
-                return AuthService.$getUser();
+                return AuthService.currentUser();
             };
 
             $scope.isLogin = function() {
-                return AuthService.isAuthenticated();
+                return AuthService.isLogin();
             };
         }
     ]);

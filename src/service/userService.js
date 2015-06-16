@@ -117,6 +117,26 @@ function isAuthorize(user, access) {
     return false;
 }
 
+function changeUserPassword(id, newPassword, callback) {
+    var usersCollection = getCollection();
+
+    var user = {};
+    setPassword(user, newPassword);
+
+    usersCollection.updateOne(
+        {_id : id},
+        {$set: user},
+        {upsert:false, w: 1, multi: false},
+        function(err, upResult) {
+            if (err) {
+                return callback(err);
+            }
+
+            return callback(null, upResult);
+        }
+    );
+}
+
 exports.setPassword = setPassword;
 exports.authorize = authorize;
 exports.createUser = createUser;
@@ -124,3 +144,4 @@ exports.getCollection = getCollection;
 exports.findById = findById;
 exports.findWithRolesById = findWithRolesById;
 exports.isAuthorize = isAuthorize;
+exports.changeUserPassword = changeUserPassword;

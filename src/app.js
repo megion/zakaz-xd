@@ -60,14 +60,8 @@ function initWebApp(app) {
 	app.use(require('middleware/sendHttpError'));
 	//app.use(require('middleware/loadUser'));
 
-    // disable layout
-	var users = require('./routes/users');
-	var login = require('./routes/login');
-	var logout = require('./routes/logout');
+    // routes
     var auth = require('./routes/auth');
-	//app.use('/login', login);
-	//app.use('/logout', logout);
-	//app.use('/users', users);
     app.use('/auth', auth);
 
 	app.use(function(err, req, res, next) {
