@@ -5,8 +5,8 @@ angular.module('zakaz-xd.main', [
     'zakaz-xd.auth.login-form',
     'zakaz-xd.user-profile'
 ])
-    .config(['$stateProvider', '$urlRouterProvider',
-        function ($stateProvider, $urlRouterProvider) {
+    .config(['$stateProvider', '$urlRouterProvider', 'ACCESS',
+        function ($stateProvider, $urlRouterProvider, ACCESS) {
 
             $stateProvider
                 .state('order-list', {
@@ -15,7 +15,7 @@ angular.module('zakaz-xd.main', [
                     templateUrl: 'app/main-pages/order-list/order-list.tpl.html',
                     resolve: {
                         user: function ($stateParams, AuthService) {
-                            return AuthService.getUser();
+                            return AuthService.getCurrentUser();
                         }
                     },
                     data: {
@@ -43,7 +43,7 @@ angular.module('zakaz-xd.main', [
                     templateUrl: 'app/main-pages/user-profile/user-profile.tpl.html',
                     resolve: {
                         user: function ($stateParams, AuthService) {
-                            return AuthService.getUser();
+                            return AuthService.getCurrentUser();
                         }
                     }
                 })
@@ -53,7 +53,10 @@ angular.module('zakaz-xd.main', [
                     templateUrl: 'app/main-pages/user-profile/user-profile-change-password.tpl.html',
                     resolve: {
                         user: function ($stateParams, AuthService) {
-                            return AuthService.getUser();
+                            return AuthService.getCurrentUser();
+                        },
+                        hasAccess: function ($stateParams, AuthService) {
+                            return AuthService.checkAccess(ACCESS.CHANGE_OWN_PASSWORD);
                         }
                     }
                 })
@@ -77,15 +80,15 @@ angular.module('zakaz-xd.main', [
         function ($rootScope, $scope, $location, AuthService) {
 
         }
-    ]).controller('ZakazXdHeaderCtrl', ['$rootScope', '$scope', '$state', 'AuthService',
-        function ($rootScope, $scope, $state, AuthService) {
+    ]).controller('ZakazXdHeaderCtrl', ['$rootScope', '$scope', '$state', 'AuthService', 'ErrorDialog',
+        function ($rootScope, $scope, $state, AuthService, ErrorDialog) {
             $scope.logout = function() {
                 AuthService.logout().then(
                     function(response) {
                         $state.go("logout-success");
                     },
                     function(err) {
-                        console.error("Error logout", err);
+                        ErrorDialog.open(err.data, true);
                     }
                 );
             };
@@ -94,11 +97,11 @@ angular.module('zakaz-xd.main', [
             AuthService.isAuthenticated().then(
                 function(isLogin) {
                     if (isLogin) {
-                        AuthService.getUser();
+                        AuthService.getCurrentUser();
                     }
                 },
                 function(err) {
-                    console.error("Error get is login", err);
+                    ErrorDialog.open(err.data, true);
                 }
             );
 

@@ -5,8 +5,8 @@
     <h4 class="modal-title">Ошибка</h4>
 </div>
 <div class="modal-body">
-    <p class="bg-danger">{{error.data.message}}</p>
-    <pre data-ng-if='error.data.stack && printStack'>{{error.data.stack}}></pre>
+    <p class="bg-danger">{{error.message}}</p>
+    <pre data-ng-if='error.stack && printStack'>{{error.stack}}></pre>
 </div>
 <div class="modal-footer">
     <button class="btn btn-primary" ng-click="close()">Закрыть</button>

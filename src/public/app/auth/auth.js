@@ -1,8 +1,28 @@
 angular.module('zakaz-xd.auth', [
     'ngCookies',
     'zakaz-xd.auth.access',
-    'zakaz-xd.resources.auth-resource'
+    'zakaz-xd.resources.auth-resource',
+    'zakaz-xd.dialogs'
 ])
+    .run(['$rootScope', '$state', 'AuthService', 'ErrorDialog', function ($rootScope, $state, AuthService, ErrorDialog) {
+        $rootScope.$on("$stateChangeError", function (event, toState, toParams, fromState, fromParams, error) {
+            event.preventDefault();
+
+            if (error instanceof AccessError) {
+                AuthService.accessDenied();
+            } else {
+                if (error.data) {
+                    // ошибка сервера
+                    ErrorDialog.open(error.data, true);
+                } else {
+                    // TODO: ошибка в клинтском javascript
+                    //ErrorDialog.open(error, true);
+                    console.error(error);
+                }
+
+            }
+        });
+    }])
 
     .factory('AuthInterceptor', ['$q', '$cookies', 'AuthService', function ($q, $cookies, AuthService) {
         return {
@@ -58,7 +78,6 @@ angular.module('zakaz-xd.auth', [
                             currentUserPromise = null;
                         },
                         function (err) {
-                            console.error('Error get user', err);
                             defer.reject(err);
                             currentUserPromise = null;
                         }
@@ -84,27 +103,19 @@ angular.module('zakaz-xd.auth', [
                     return defer.promise;
                 }
 
-                function getCurrentUser() {
-                    if (currentUser) {
-                        return $q.when(currentUser);
-                    } else {
-                        return requestCurrentUser();
-                    }
-                }
-
                 /**
-                 *
-                 * @param user
-                 * @param access - integer value
+                 * Проверяет имеет ли пользователь указанную роль
                  */
                 function isAuthorize(user, access) {
                     for (var i=0; i<user.roles.length; i++) {
-                        var userAccess = user.roles[i].access;
-                        if (access & userAccess) {
-                            return true;
+                        var role = user.roles[i];
+                        for (var j=0; j<role.accesses.length; j++) {
+                            var userAccess = role.accesses[j].value;
+                            if (access & userAccess) {
+                                return true;
+                            }
                         }
                     }
-
                     return false;
                 }
 
@@ -116,18 +127,18 @@ angular.module('zakaz-xd.auth', [
                     checkAccess: function (access) {
                         if (currentUser) {
                             if(isAuthorize(currentUser, access)) {
-                                return $q.resolve('Current user is allowed access ' + access);
+                                return $q.when('Current user is allowed access ' + access);
                             } else {
-                                return $q.reject('Current user is not allowed access ' + access);
+                                return $q.reject(new AccessError('Current user is not allowed access ' + access));
                             }
                         } else {
                             var defer = $q.defer();
-                            getCurrentUser().then(
+                            requestCurrentUser().then(
                                 function (user) {
                                     if(isAuthorize(user, access)) {
                                         defer.resolve('Current user is allowed access ' + access);
                                     } else {
-                                        defer.reject('Current user is not allowed access ' + access);
+                                        defer.reject(new AccessError('Current user is not allowed access ' + access));
                                     }
                                 },
                                 function (err) {
@@ -165,10 +176,18 @@ angular.module('zakaz-xd.auth', [
                         $injector.get('$state').go('access-denied');
                     },
 
-                    getUser: getCurrentUser,
+                    getCurrentUser: function() {
+                        if (currentUser) {
+                            return $q.when(currentUser);
+                        } else {
+                            return requestCurrentUser();
+                        }
+                    },
+
                     currentUser: function() {
                         return currentUser;
                     },
+
                     isAuthenticated: function () {
                         if (isLogin!==null) {
                             return $q.when(isLogin);
@@ -176,6 +195,7 @@ angular.module('zakaz-xd.auth', [
                             return requestIsAuthenticated();
                         }
                     },
+
                     isLogin: function() {
                         return isLogin;
                     },
@@ -201,6 +221,7 @@ angular.module('zakaz-xd.auth', [
 
                         return defer.promise;
                     },
+
                     logout: function () {
                         var defer = $q.defer();
                         $injector.get('AuthResource').logout().then(

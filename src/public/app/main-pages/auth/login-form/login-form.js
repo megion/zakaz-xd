@@ -22,8 +22,7 @@ angular
                         $state.go('order-list');
                     },
                     function(err) {
-                        ErrorDialog.open(err, true);
-
+                        ErrorDialog.open(err.data, true);
                     }
                 );
             };

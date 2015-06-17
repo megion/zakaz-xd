@@ -24,7 +24,7 @@ angular
                 }
 
                 if ($scope.data.newPassword !== $scope.data.repeatNewPassword) {
-                    return ErrorDialog.open({data: {message: 'Пароли не совпадают'}}, true);
+                    return ErrorDialog.open({message: 'Пароли не совпадают'}, true);
                 }
 
                 AuthResource.changePassword($scope.data.newPassword, $scope.data.repeatNewPassword).then(
