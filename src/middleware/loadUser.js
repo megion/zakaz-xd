@@ -1,17 +1,33 @@
+var HttpError = require('error').HttpError;
 var userService = require('service/userService');
-var mongodb = require('lib/mongodb');
+var log = require('lib/log')(module);
+var ObjectID = require('mongodb').ObjectID;
 
 module.exports = function(req, res, next) {
 	req.user = null;
 
-	if (!req.session.user)
-		return next();
+    if (!req.session.user) {
+        return next(new HttpError(401, "Пользователь не авторизован"));
+    }
 
-	mongodb.findById(req.session.user, userService.getCollection(), function(err, user) {
-		if (err)
-			return next(err);
+    var userId;
+    try {
+        userId = new ObjectID(req.session.user);
+    } catch (e) {
+        log.error(e.message);
+        next(e);
+        return;
+    }
 
-		req.user = user;
-		next();
-	});
+    // получить пользователя с ролями
+    userService.findWithRolesById(userId, function(err, user) { // ObjectID
+        if (err)
+            return next(err);
+        if (!user) {
+            return next(new HttpError(404, "Текущий пользователь не найден"));
+        }
+
+        req.user = user;
+        next();
+    });
 };

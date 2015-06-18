@@ -184,6 +184,10 @@ angular.module('zakaz-xd.auth', [
                         }
                     },
 
+                    reloadCurrentUser: function() {
+                        return requestCurrentUser();
+                    },
+
                     currentUser: function() {
                         return currentUser;
                     },

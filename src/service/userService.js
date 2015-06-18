@@ -137,6 +137,27 @@ function changeUserPassword(id, newPassword, callback) {
     );
 }
 
+function changeUser(id, user, callback) {
+    var usersCollection = getCollection();
+
+    var userCopy = {
+        email: user.email
+    };
+
+    usersCollection.updateOne(
+        {_id : id},
+        {$set: userCopy},
+        {upsert:false, w: 1, multi: false},
+        function(err, upResult) {
+            if (err) {
+                return callback(err);
+            }
+
+            return callback(null, upResult);
+        }
+    );
+}
+
 exports.setPassword = setPassword;
 exports.authorize = authorize;
 exports.createUser = createUser;
@@ -145,3 +166,4 @@ exports.findById = findById;
 exports.findWithRolesById = findWithRolesById;
 exports.isAuthorize = isAuthorize;
 exports.changeUserPassword = changeUserPassword;
+exports.changeUser = changeUser;

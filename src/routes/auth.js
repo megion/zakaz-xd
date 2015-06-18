@@ -6,37 +6,17 @@ var AuthError = error.AuthError;
 var ObjectID = require('mongodb').ObjectID;
 var log = require('lib/log')(module);
 var checkAccess = require('middleware/checkAccess');
+var loadUser = require('middleware/loadUser');
 var ACCESSES = require('utils/accesses').ACCESSES;
 
-router.get('/current-user', function(req, res, next) {
-    if (!req.session || !req.session.user) {
-        next(new HttpError(401, "Пользователь не авторизован"));
-        return;
-    }
+router.get('/current-user', loadUser, function(req, res, next) {
+    // удалим лишнюю информацию
+    var user = req.user;
+    delete user.hashedPassword;
+    delete user.salt;
+    delete user.password;
 
-    var userId;
-    try {
-        userId = new ObjectID(req.session.user);
-    } catch (e) {
-        log.error(e.message);
-        next(new HttpError(404, "Текущий пользователь не найден"));
-        return;
-    }
-
-    userService.findWithRolesById(userId, function(err, user) { // ObjectID
-        if (err)
-            return next(err);
-        if (!user) {
-            return next(new HttpError(404, "Текущий пользователь не найден"));
-        }
-
-        // удалим лишнюю информацию
-        delete user.hashedPassword;
-        delete user.salt;
-        delete user.password;
-
-        res.json(user);
-    });
+    res.json(user);
 });
 
 router.get('/is-authenticated', function(req, res, next) {
@@ -47,7 +27,7 @@ router.get('/is-authenticated', function(req, res, next) {
     }
 });
 
-router.post('/change-password', checkAccess.getAuditor(ACCESSES.CHANGE_OWN_PASSWORD), function(req, res, next) {
+router.post('/change-password', loadUser, checkAccess.getAuditor(ACCESSES.CHANGE_OWN_PASSWORD), function(req, res, next) {
     var newPassword = req.body.newPassword;
     var repeatNewPassword = req.body.repeatNewPassword;
 
@@ -59,16 +39,17 @@ router.post('/change-password', checkAccess.getAuditor(ACCESSES.CHANGE_OWN_PASSW
         return next(new HttpError(400, "Пароли не сопадают"));
     }
 
-    var userId;
-    try {
-        userId = new ObjectID(req.session.user);
-    } catch (e) {
-        log.error(e.message);
-        next(new HttpError(404, "Текущий пользователь не найден"));
-        return;
-    }
+    userService.changeUserPassword(req.user._id, newPassword, function(err) {
+        if (err)
+            return next(err);
 
-    userService.changeUserPassword(userId, newPassword, function(err) {
+        res.send({});
+    });
+});
+
+router.post('/save-user', loadUser, function(req, res, next) {
+    var user = req.body;
+    userService.changeUser(req.user._id, user, function(err) {
         if (err)
             return next(err);
 

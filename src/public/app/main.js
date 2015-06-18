@@ -60,6 +60,20 @@ angular.module('zakaz-xd.main', [
                         }
                     }
                 })
+                .state('user-profile-change-role-list', {
+                    url: '/profile/change-role-list',
+                    controller: 'UserProfileCtrl',
+                    templateUrl: 'app/main-pages/user-profile/user-profile-change-role-list.tpl.html',
+                    resolve: {
+                        user: function ($stateParams, AuthService) {
+                            return AuthService.getCurrentUser();
+                        },
+                        hasAccess: function ($stateParams, AuthService) {
+                            // TODO поменять
+                            return AuthService.checkAccess(ACCESS.CHANGE_OWN_PASSWORD);
+                        }
+                    }
+                })
                 .state('logout-success', {
                     url: "/logout-success",
                     templateUrl: 'app/main-pages/auth/logout-success/logout-success.tpl.html'

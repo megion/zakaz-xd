@@ -4,19 +4,39 @@
 angular
     .module('zakaz-xd.user-profile', [
         'zakaz-xd.dialogs',
-        'zakaz-xd.resources.auth-resource'
+        'zakaz-xd.resources.auth-resource',
+        'zakaz-xd.auth'
     ])
     .controller('UserProfileCtrl', ['$scope', '$stateParams', '$state', '$http', 'user', 'AuthResource',
-        'ErrorDialog', 'InfoDialog',
+        'ErrorDialog', 'InfoDialog', 'AuthService',
         function ($scope, $stateParams, $state, $http, user, AuthResource,
-                  ErrorDialog, InfoDialog) {
-            $scope.user = user;
+                  ErrorDialog, InfoDialog, AuthService) {
+            $scope.user = angular.copy(user);
             $scope.data = {
                 newPassword: null,
                 repeatNewPassword: null
             };
-            $scope.save = function() {
-                console.log("save user", $scope.user);
+            $scope.save = function(invalid) {
+                if (invalid) {
+                    return false;
+                }
+
+                AuthResource.saveUser($scope.user).then(
+                    function (response) {
+                        AuthService.reloadCurrentUser().then(
+                            function(savedUser) {
+                                $scope.user = angular.copy(savedUser);
+                                InfoDialog.open('Сохранение изменений', 'Успешное сохранение изменений');
+                            },
+                            function (err) {
+                                ErrorDialog.open(err, true);
+                            }
+                        );
+                    },
+                    function (err) {
+                        ErrorDialog.open(err, true);
+                    }
+                );
             };
             $scope.changePassword  = function(invalid) {
                 if (invalid) {
@@ -35,6 +55,12 @@ angular
                         ErrorDialog.open(err, true);
                     }
                 );
+            };
+
+            $scope.changeRoleList  = function(invalid) {
+                if (invalid) {
+                    return false;
+                }
             };
 
         }
