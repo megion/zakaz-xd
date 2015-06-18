@@ -7,7 +7,9 @@ var ACCESSES = {
     VIEW_ALL_ORDER: 1<<5,
     EDIT_ANY_ORDER: 1<<6,
     REMOVE_ANY_ORDER: 1<<7,
-    CHANGE_OWN_PASSWORD: 1<<8
+    CHANGE_OWN_PASSWORD: 1<<8,
+    CHANGE_OWN_ROLE_LIST: 1<<9, // Назначение себе ролей
+    VIEW_ROLES: 1<<10 // Просмотр ролей (списка, детализация роли)
 };
 
 exports.ACCESSES = ACCESSES;

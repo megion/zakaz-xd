@@ -109,11 +109,13 @@ angular.module('zakaz-xd.auth', [
                 function isAuthorize(user, access) {
                     for (var i=0; i<user.roles.length; i++) {
                         var role = user.roles[i];
+                        // вычисляем общий доступ для роли
+                        var roleAccess = 0;
                         for (var j=0; j<role.accesses.length; j++) {
-                            var userAccess = role.accesses[j].value;
-                            if (access & userAccess) {
-                                return true;
-                            }
+                            roleAccess = roleAccess | role.accesses[j].value;
+                        }
+                        if (access & roleAccess) {
+                            return true;
                         }
                     }
                     return false;

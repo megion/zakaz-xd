@@ -26,16 +26,14 @@ function getRoleAccessesCollection() {
     return mongodb.getDb().collection("roleAccesses");
 }
 
-
-function createRole(code, title, callback) {
-	var role = new Role(code, title);
-	var roleCollection = getCollection();
-	roleCollection.insert(role, function(err, result){
-		if (err) {
-			return callback(err);
-		}
-		callback(null, role);
-	});
+function createRoles(roles, callback) {
+    var roleCollection = getCollection();
+    roleCollection.insert(roles, {w: 1}, function(err, results){
+        if (err) {
+            return callback(err);
+        }
+        callback(null, results.ops);
+    });
 }
 
 function createAccesses(accesses, callback) {
@@ -149,9 +147,7 @@ function findAllRolesWithAccesses(callback) {
 function findUserRoles(user, callback) {
     var userRolesCollection = getUserRolesCollection();
 
-    userRolesCollection.find({
-        user_id : user._id
-    }).toArray(function(err, userRoles) {
+    userRolesCollection.find({user_id : user._id}).toArray(function(err, userRoles) {
         if (err) {
             return callback(err);
         }
@@ -225,12 +221,45 @@ function findRoleByCode(code, callback) {
     });
 }
 
+function findRolesByCodes(codes, callback) {
+    var coll = getCollection();
+    coll.find({code : {$in : codes}}).toArray(function(err, roles) {
+        if (err) {
+            return callback(err);
+        }
+        return callback(null, roles);
+    });
+}
+
+function findAccessesByCodes(codes, callback) {
+    var coll = getAccessesCollection();
+    coll.find({code : {$in : codes}}).toArray(function(err, results) {
+        if (err) {
+            return callback(err);
+        }
+        return callback(null, results);
+    });
+}
+function findAccessesByValues(values, callback) {
+    var coll = getAccessesCollection();
+    coll.find({value : {$in : values}}).toArray(function(err, results) {
+        if (err) {
+            return callback(err);
+        }
+        return callback(null, results);
+    });
+}
+
 exports.getCollection = getCollection;
 exports.getAccessesCollection = getAccessesCollection;
-exports.createRole = createRole;
+exports.createRoles = createRoles;
 exports.createAccesses = createAccesses;
 exports.assignUserRoles = assignUserRoles;
 exports.assignRoleAccesses = assignRoleAccesses;
 exports.findRoleByCode = findRoleByCode;
+exports.findRolesByCodes = findRolesByCodes;
+exports.findAccessesByCodes = findAccessesByCodes;
+exports.findAccessesByValues = findAccessesByValues;
 exports.findUserRoles = findUserRoles;
+exports.findAllRolesWithAccesses = findAllRolesWithAccesses;
 

@@ -69,8 +69,7 @@ angular.module('zakaz-xd.main', [
                             return AuthService.getCurrentUser();
                         },
                         hasAccess: function ($stateParams, AuthService) {
-                            // TODO поменять
-                            return AuthService.checkAccess(ACCESS.CHANGE_OWN_PASSWORD);
+                            return AuthService.checkAccess(ACCESS.CHANGE_OWN_ROLE_LIST);
                         }
                     }
                 })

@@ -4,7 +4,9 @@ asyncUtils = require('utils/asyncUtils');
 var userService = require('service/userService');
 var roleService = require('service/roleService');
 var Access = require('models/access').Access;
+var Role = require('models/role').Role;
 var ACCESSES = require('utils/accesses').ACCESSES;
+var ROLES = require('utils/roles').ROLES;
 
 asyncUtils.eachSeries([ open, dropDatabase, runChangelogs, close ],
     // iterator function
@@ -71,20 +73,39 @@ function runChangelogs(callback) {
             roleCollection.createIndex( { "code": 1 }, { unique: true }, changeCallback);
         }
     });
-    // insert admin
+
+    // insert roles
     changesets.push({
         changeId: 4,
+        changeFn: function(changeCallback) {
+            var roles = [
+                new Role(ROLES.ADMIN, 'Администратор'),
+                new Role(ROLES.CUSTOMER, 'Заказчик')
+            ];
+
+            roleService.createRoles(roles, function(err, newRoles) {
+                if (err) {
+                    return changeCallback(err);
+                }
+                return changeCallback(null);
+            });
+        }
+    });
+
+    // insert admin and assign role ADMIN
+    changesets.push({
+        changeId: 5,
         changeFn: function(changeCallback) {
             userService.createUser("admin", "admin", function(err, newUser) {
                 if (err) {
                     return changeCallback(err);
                 }
 
-                roleService.createRole("ADMIN", "Администратор", function(err, newRole) {
+                roleService.findRolesByCodes([ROLES.ADMIN], function(err, roles) {
                     if (err) {
                         return changeCallback(err);
                     }
-                    roleService.assignUserRoles(newUser, [newRole], function(err) {
+                    roleService.assignUserRoles(newUser, roles, function(err) {
                         if (err) {
                             return changeCallback(err);
                         }
@@ -96,15 +117,15 @@ function runChangelogs(callback) {
     });
     // create access index
     changesets.push({
-        changeId: 5,
+        changeId: 6,
         changeFn: function(changeCallback) {
             var coll = roleService.getAccessesCollection();
-            coll.createIndex( { "code": 1 }, { unique: true }, changeCallback);
+            coll.createIndex( { "code": 1, "value": 1 }, { unique: true }, changeCallback);
         }
     });
     // insert accesses
     changesets.push({
-        changeId: 6,
+        changeId: 7,
         changeFn: function(changeCallback) {
             var accesses = [
                 new Access('MANAGE_USERS', ACCESSES.MANAGE_USERS, 'Управление пользователями'),
@@ -115,25 +136,42 @@ function runChangelogs(callback) {
                 new Access('VIEW_ALL_ORDER', ACCESSES.VIEW_ALL_ORDER, 'Просмотр всех заказов'),
                 new Access('EDIT_ANY_ORDER', ACCESSES.EDIT_ANY_ORDER, 'Редактирование любого заказа'),
                 new Access('REMOVE_ANY_ORDER', ACCESSES.REMOVE_ANY_ORDER, 'Удаление любого заказа'),
-                new Access('CHANGE_OWN_PASSWORD', ACCESSES.CHANGE_OWN_PASSWORD, 'Изменение своего пароля')
+                new Access('CHANGE_OWN_PASSWORD', ACCESSES.CHANGE_OWN_PASSWORD, 'Изменение своего пароля'),
+                new Access('CHANGE_OWN_ROLE_LIST', ACCESSES.CHANGE_OWN_ROLE_LIST, 'Изменение списка назначеных ролей'),
+                new Access('VIEW_ROLES', ACCESSES.VIEW_ROLES, 'Просмотр всех ролей')
             ];
             roleService.createAccesses(accesses, function(err, insertedAccesses) {
                 if (err) {
                     return changeCallback(err);
                 }
+                return changeCallback(null);
+            });
+        }
+    });
 
-                // назначить начальные доступы на роль ADMIN (два доступа)
-                roleService.findRoleByCode("ADMIN", function(err, adminRole) {
-                    if (err) {
-                        return changeCallback(err);
-                    }
-                    roleService.assignRoleAccesses(adminRole, [insertedAccesses[0], insertedAccesses[8]], function(err) {
+    // assign accesses to role admin
+    changesets.push({
+        changeId: 8,
+        changeFn: function(changeCallback) {
+            roleService.findRolesByCodes([ROLES.ADMIN], function(err, roles) {
+                if (err) {
+                    return changeCallback(err);
+                }
+                // назначить начальные доступы на роль ADMIN
+                roleService.findAccessesByValues([ACCESSES.MANAGE_USERS, ACCESSES.CHANGE_OWN_PASSWORD,
+                        ACCESSES.CHANGE_OWN_ROLE_LIST, ACCESSES.VIEW_ROLES],
+                    function(err, accesses) {
                         if (err) {
                             return changeCallback(err);
                         }
-                        return changeCallback(null);
-                    });
-                });
+                        roleService.assignRoleAccesses(roles[0], accesses, function(err) {
+                            if (err) {
+                                return changeCallback(err);
+                            }
+                            return changeCallback(null);
+                        });
+                    }
+                );
             });
         }
     });
