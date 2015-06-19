@@ -22,5 +22,9 @@
   },
 
   "private": true,
-  "main": "src/app.js"
+  "main": "src/app.js",
+
+  "scripts": {
+    "install": "npm install -g bower"
+  }
 }
