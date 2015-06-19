@@ -2,13 +2,9 @@
   "ipaddress": "@OPENSHIFT_NODEJS_IP@",
   "port": @OPENSHIFT_NODEJS_PORT@,
   "mongodb": {
-    "server": {
-      "host": "@OPENSHIFT_MONGODB_DB_HOST@",
-      "port": @OPENSHIFT_MONGODB_DB_PORT@,
-      "username": "@OPENSHIFT_MONGODB_DB_USERNAME@",
-      "password": "@OPENSHIFT_MONGODB_DB_PASSWORD@"
-    },
-    "db": "zakazxd"
+    "url": "@OPENSHIFT_MONGODB_DB_URL@",
+    "username": "@OPENSHIFT_MONGODB_DB_USERNAME@",
+    "password": "@OPENSHIFT_MONGODB_DB_PASSWORD@"
   },
   "session": {
     "secret": "KillerIsJim",

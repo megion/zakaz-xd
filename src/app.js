@@ -38,18 +38,18 @@ function initWebApp(app) {
 	app.use(bodyParser.urlencoded());
 	app.use(cookieParser());
 
-    var MongoStore = require('connect-mongo')(session);
+    //var MongoStore = require('connect-mongo')(session);
 	app.use(session({
 		secret : config.session.secret, // ABCDE242342342314123421.SHA256
 		saveUninitialized: true,
 	    resave: true,
 		key : config.session.key,
-		cookie : config.session.cookie,
-		store : new MongoStore({
-			db : config.mongodb.db,
-			host : config.mongodb.server.host,
-			port : config.mongodb.server.port
-		})
+		cookie : config.session.cookie
+		//store : new MongoStore({
+		//	db : config.mongodb.db,
+		//	host : config.mongodb.server.host,
+		//	port : config.mongodb.server.port
+		//})
 	}));
 
     app.use(express.static(path.join(__dirname, 'public')));
