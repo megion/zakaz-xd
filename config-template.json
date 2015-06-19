@@ -1,15 +1,15 @@
 {
-  "ipaddress": @OPENSHIFT_NODEJS_IP@,
+  "ipaddress": "@OPENSHIFT_NODEJS_IP@",
   "port": @OPENSHIFT_NODEJS_PORT@,
   "mongodb": {
     "server": {
-      "host": @OPENSHIFT_MONGODB_DB_HOST@,
+      "host": "@OPENSHIFT_MONGODB_DB_HOST@",
       "port": @OPENSHIFT_MONGODB_DB_PORT@,
       "options": {
         
       }
     },
-    "db": "zakaz_xd",
+    "db": "zakazxd",
     "options": {
       "native_parser": true
     }
