@@ -13,7 +13,9 @@
     "mongodb": "~2.0",
     "errorhandler": "~1.1.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "bower"   : "^1.4.1"
+  },
   "bundleDependencies": [],
 
   "engines": {
@@ -22,9 +24,5 @@
   },
 
   "private": true,
-  "main": "src/app.js",
-
-  "scripts": {
-    "install": "npm install -g bower"
-  }
+  "main": "src/app.js"
 }
