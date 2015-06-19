@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "Configure config.json"
 cd $OPENSHIFT_REPO_DIR
 cp config-template.json config.json
 sed -i 's/@OPENSHIFT_NODEJS_IP@/'"$OPENSHIFT_NODEJS_IP"'/g' config.json
@@ -7,3 +8,6 @@ sed -i 's/@OPENSHIFT_MONGODB_DB_HOST@/'"$OPENSHIFT_MONGODB_DB_HOST"'/g' config.j
 sed -i 's/@OPENSHIFT_MONGODB_DB_PORT@/'"$OPENSHIFT_MONGODB_DB_PORT"'/g' config.json
 sed -i 's/@OPENSHIFT_MONGODB_DB_USERNAME@/'"$OPENSHIFT_MONGODB_DB_USERNAME"'/g' config.json
 sed -i 's/@OPENSHIFT_MONGODB_DB_PASSWORD@/'"$OPENSHIFT_MONGODB_DB_PASSWORD"'/g' config.json
+
+echo "Run createDb script"
+node src/createDb
