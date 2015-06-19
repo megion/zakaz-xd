@@ -2,13 +2,11 @@ var express = require('express');
 var http = require('http');
 var path = require('path');
 var favicon = require('static-favicon');
-var logger = require('morgan');
 
-var config = require('config');
-var mongodb = require('lib/mongodb');
-var log = require('lib/log')(module);
-var HttpError = require('error').HttpError;
-var userService = require('service/userService');
+var config = require('./config');
+var mongodb = require('./lib/mongodb');
+var log = require('./lib/log')(module);
+var HttpError = require('./error').HttpError;
 
 
 mongodb.openConnection(function(err, db) {
@@ -18,8 +16,9 @@ mongodb.openConnection(function(err, db) {
 	}
 
     var webApp = express();
-	http.createServer(webApp).listen(config.port, function() {
-		log.info("Express server listening on port: " + config.port);
+	http.createServer(webApp).listen(config.port, config.ipaddress, function() {
+        console.log('%s: Node server started on %s:%d ...',
+            Date(Date.now() ), config.ipaddress, config.port);
 	});
 	initWebApp(webApp);
 });
@@ -31,10 +30,7 @@ function initWebApp(app) {
 	var session = require('express-session');
 
 	if (app.get('env') == 'development') {
-		app.use(logger('dev'));
 		app.use(errorhandler());
-	} else {
-		//app.use(logger('default'));
 	}
 
 	app.use(favicon());
@@ -57,7 +53,7 @@ function initWebApp(app) {
 	}));
 
     app.use(express.static(path.join(__dirname, 'public')));
-	app.use(require('middleware/sendHttpError'));
+	app.use(require('./middleware/sendHttpError'));
 
     // routes
     var auth = require('./routes/auth');

@@ -1,14 +1,15 @@
 {
-  "port": 3000,
+  "ipaddress": @OPENSHIFT_NODEJS_IP@,
+  "port": @OPENSHIFT_NODEJS_PORT@,
   "mongodb": {
     "server": {
-      "host": "localhost",
-      "port": 27017,
+      "host": @OPENSHIFT_MONGODB_DB_HOST@,
+      "port": @OPENSHIFT_MONGODB_DB_PORT@,
       "options": {
         
       }
     },
-    "db": "chat",
+    "db": "zakaz_xd",
     "options": {
       "native_parser": true
     }

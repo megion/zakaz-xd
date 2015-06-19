@@ -1,5 +1,5 @@
-var HttpError = require('error').HttpError;
-var userService = require('service/userService')
+var HttpError = require('../error').HttpError;
+var userService = require('../service/userService')
 
 function getAuditor(access) {
     return function(req, res, next) {

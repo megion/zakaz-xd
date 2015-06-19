@@ -1,9 +1,10 @@
-var User = require('models/user').User;
-var Role = require('models/role').Role;
-var mongodb = require('lib/mongodb');
 var crypto = require('crypto');
-var AuthError = require('error').AuthError;
-var roleService = require('service/roleService');
+
+var User = require('../models/user').User;
+var Role = require('../models/role').Role;
+var mongodb = require('../lib/mongodb');
+var AuthError = require('../error').AuthError;
+var roleService = require('../service/roleService');
 
 function encryptPassword(user, password) {
 	return crypto.createHmac('sha1', user.salt).update(password).digest('hex');

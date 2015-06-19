@@ -1,13 +1,13 @@
 var router = require('express').Router();
-var userService = require('service/userService');
-var error = require('error');
+
+var userService = require('../service/userService');
+var error = require('../error');
 var HttpError = error.HttpError;
 var AuthError = error.AuthError;
-var ObjectID = require('mongodb').ObjectID;
-var log = require('lib/log')(module);
-var checkAccess = require('middleware/checkAccess');
-var loadUser = require('middleware/loadUser');
-var ACCESSES = require('utils/accesses').ACCESSES;
+var log = require('../lib/log')(module);
+var checkAccess = require('../middleware/checkAccess');
+var loadUser = require('../middleware/loadUser');
+var ACCESSES = require('../utils/accesses').ACCESSES;
 
 router.get('/current-user', loadUser, function(req, res, next) {
     // удалим лишнюю информацию

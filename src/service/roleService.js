@@ -1,9 +1,9 @@
-var User = require('models/user').User;
-var Role = require('models/role').Role;
-var Access = require('models/access').Access;
-var UserRole = require('models/userRole').UserRole;
-var RoleAccess = require('models/roleAccess').RoleAccess;
-var mongodb = require('lib/mongodb');
+var User = require('../models/user').User;
+var Role = require('../models/role').Role;
+var Access = require('../models/access').Access;
+var UserRole = require('../models/userRole').UserRole;
+var RoleAccess = require('../models/roleAccess').RoleAccess;
+var mongodb = require('../lib/mongodb');
 
 function getCollection() {
 	return mongodb.getDb().collection("roles");

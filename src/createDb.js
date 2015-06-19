@@ -1,12 +1,12 @@
-var mongodb = require('lib/mongodb');
-var changelog = require('lib/changelog');
-asyncUtils = require('utils/asyncUtils');
-var userService = require('service/userService');
-var roleService = require('service/roleService');
-var Access = require('models/access').Access;
-var Role = require('models/role').Role;
-var ACCESSES = require('utils/accesses').ACCESSES;
-var ROLES = require('utils/roles').ROLES;
+var mongodb = require('./lib/mongodb');
+var changelog = require('./lib/changelog');
+asyncUtils = require('./utils/asyncUtils');
+var userService = require('./service/userService');
+var roleService = require('./service/roleService');
+var Access = require('./models/access').Access;
+var Role = require('./models/role').Role;
+var ACCESSES = require('./utils/accesses').ACCESSES;
+var ROLES = require('./utils/roles').ROLES;
 
 asyncUtils.eachSeries([ open, dropDatabase, runChangelogs, close ],
     // iterator function

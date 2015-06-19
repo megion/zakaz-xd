@@ -4,7 +4,7 @@ var mongodb = require('mongodb'),
     Db = mongodb.Db,
     ObjectId = mongodb.ObjectID;
 
-var config = require('config');
+var config = require('../config');
 
 // set up the connection to db
 //var mongoclient = new MongoClient(

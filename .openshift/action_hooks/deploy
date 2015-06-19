@@ -1,0 +1,5 @@
+#!/bin/bash
+cd $OPENSHIFT_REPO_DIR
+cp config-template.json config.json
+sed -i 's/@OPENSHIFT_NODEJS_IP@/'"$OPENSHIFT_NODEJS_IP"'/g' config.json
+sed -i 's/@OPENSHIFT_NODEJS_PORT@/'"$OPENSHIFT_NODEJS_PORT"'/g' config.json

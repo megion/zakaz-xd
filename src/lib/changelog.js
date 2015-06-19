@@ -1,9 +1,9 @@
 /**
  * Mongodb change log like 'Liquibase'
  */
-var mongodb = require('lib/mongodb');
-var log = require('lib/log')(module);
-var asyncUtils = require('utils/asyncUtils');
+var mongodb = require('../lib/mongodb');
+var log = require('../lib/log')(module);
+var asyncUtils = require('../utils/asyncUtils');
 
 function getCollection() {
     return mongodb.getDb().collection("changelogs");

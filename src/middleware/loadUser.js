@@ -1,7 +1,9 @@
-var HttpError = require('error').HttpError;
-var userService = require('service/userService');
-var log = require('lib/log')(module);
 var ObjectID = require('mongodb').ObjectID;
+
+var HttpError = require('../error').HttpError;
+var userService = require('../service/userService');
+var log = require('../lib/log')(module);
+
 
 module.exports = function(req, res, next) {
 	req.user = null;
