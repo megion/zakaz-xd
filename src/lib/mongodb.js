@@ -6,21 +6,28 @@ var mongodb = require('mongodb'),
 
 var config = require('../config');
 
-// set up the connection to db
-//var mongoclient = new MongoClient(
-		//new Server(config.get('mongodb:server:host'), config.get('mongodb:server:port'), config.get('mongodb:server:options')),
-		//config.get('mongodb:optios'));
+/**
+ * Create url by pattern
+ * mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
+ * @param mongodbConfig
+ */
+function createDbUrl(mongodbConfig) {
+    var url = 'mongodb://';
+    if (mongodbConfig.server.password && mongodbConfig.server.password.length > 0) {
+        url = url + mongodbConfig.server.username + ':' + mongodbConfig.server.password + '@';
+    }
+    url = url + mongodbConfig.server.host + ':' + mongodbConfig.server.port + '/' + config.mongodb.db
+    return url;
+}
 
-var server = new Server(config.mongodb.server.host, config.mongodb.server.port, config.mongodb.server.options);
-var db = new Db(config.mongodb.db, server);
+var url = createDbUrl(config.mongodb);
 
 function openConnection(callback) {
-	db.open(function(err, db) {
+    MongoClient.connect(url, function(err, _db) {
 		if(err) {
 			callback(err, null);
 		}
-		// save link on connection pool
-		//db = mongoclient.db(config.get('mongodb:db'));
+        db = _db;
 		callback(null, db);
 	});
 }
@@ -41,7 +48,6 @@ function findById(id, collection, callback) {
 	collection.findOne({"_id": new ObjectId(id)}, callback);
 }
 
-//exports.mongoclient = mongoclient;
 exports.openConnection = openConnection;
 exports.getDb = getDb;
 exports.closeConnection = closeConnection;

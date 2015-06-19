@@ -5,14 +5,10 @@
     "server": {
       "host": "@OPENSHIFT_MONGODB_DB_HOST@",
       "port": @OPENSHIFT_MONGODB_DB_PORT@,
-      "options": {
-        
-      }
+      "username": "@OPENSHIFT_MONGODB_DB_USERNAME@",
+      "password": "@OPENSHIFT_MONGODB_DB_PASSWORD@"
     },
-    "db": "zakazxd",
-    "options": {
-      "native_parser": true
-    }
+    "db": "zakazxd"
   },
   "session": {
     "secret": "KillerIsJim",
