@@ -26,12 +26,7 @@ mongodb.openConnection(function(err, db) {
 function initWebApp(app) {
 	var cookieParser = require('cookie-parser');
 	var bodyParser = require('body-parser');
-	var errorhandler = require('errorhandler');
 	var session = require('express-session');
-
-	if (app.get('env') == 'development') {
-		app.use(errorhandler());
-	}
 
 	app.use(favicon());
 	app.use(bodyParser.json());
@@ -58,18 +53,12 @@ function initWebApp(app) {
 			err = new HttpError(err);
 		}
 
+        log.error(err);
 		if (err instanceof HttpError) {
-			log.error(err); //
 			res.sendHttpError(err);
 		} else {
-			if (app.get('env') == 'development') {
-				var handler = errorhandler();
-				handler(err, req, res, next);
-			} else {
-				log.error(err);
-				err = new HttpError(500);
-				res.sendHttpError(err);
-			}
+            err = new HttpError(500);
+            res.sendHttpError(err);
 		}
 	});
 }
