@@ -1,6 +1,6 @@
 {
   "name": "zakaz-xd",
-  "version": "0.0.1",
+  "version": "0.0.2",
 
   "dependencies": {
     "express": "~4.2.0",
