@@ -11,36 +11,39 @@ var config = require('../config');
  * mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
  * @param mongodbConfig
  */
-//function createDbUrl(mongodbConfig) {
-//    var url = 'mongodb://';
-//    if (mongodbConfig.server.password && mongodbConfig.server.password.length > 0) {
-//        url = url + mongodbConfig.server.username + ':' + mongodbConfig.server.password + '@';
-//    }
-//    url = url + mongodbConfig.server.host + ':' + mongodbConfig.server.port + '/' + config.mongodb.db
-//    return url;
-//}
+function createDbUrl() {
+    var url = 'mongodb://';
+    if (config.mongodb.password && config.mongodb.password.length > 0) {
+        url = url + config.mongodb.username + ':' + config.mongodb.password + '@';
+    }
+    url = url + config.mongodb.host + ':' + config.mongodb.port + '/' + config.mongodb.db;
+    return url;
+}
 
-//var url = createDbUrl(config.mongodb);
+var url = createDbUrl(config.mongodb);
 
 var db = null;
 function openConnection(callback) {
-    MongoClient.connect(config.mongodb.url, function(err, _db) {
+    MongoClient.connect(url, function(err, _db) {
 		if(err) {
 			callback(err, null);
 		}
 
-        if (config.mongodb.password && config.mongodb.password.length > 0) {
-            _db.authenticate(config.mongodb.username, config.mongodb.password, {authdb: "admin"},  function(err, res){
-                if(err) {
-                    throw err
-                };
-                db = _db;
-                callback(null, db);
-            });
-        } else {
-            db = _db;
-            callback(null, db);
-        }
+        db = _db;
+        callback(null, db);
+
+        //if (config.mongodb.password && config.mongodb.password.length > 0) {
+        //    _db.authenticate(config.mongodb.username, config.mongodb.password, {authdb: "admin"},  function(err, res){
+        //        if(err) {
+        //            throw err
+        //        };
+        //        db = _db;
+        //        callback(null, db);
+        //    });
+        //} else {
+        //    db = _db;
+        //    callback(null, db);
+        //}
 	});
 }
 function getDb() {
