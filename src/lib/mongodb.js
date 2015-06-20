@@ -31,19 +31,6 @@ function openConnection(callback) {
 
         db = _db;
         callback(null, db);
-
-        //if (config.mongodb.password && config.mongodb.password.length > 0) {
-        //    _db.authenticate(config.mongodb.username, config.mongodb.password, {authdb: "admin"},  function(err, res){
-        //        if(err) {
-        //            throw err
-        //        };
-        //        db = _db;
-        //        callback(null, db);
-        //    });
-        //} else {
-        //    db = _db;
-        //    callback(null, db);
-        //}
 	});
 }
 function getDb() {

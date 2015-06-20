@@ -8,7 +8,7 @@ var Role = require('./models/role').Role;
 var ACCESSES = require('./utils/accesses').ACCESSES;
 var ROLES = require('./utils/roles').ROLES;
 
-asyncUtils.eachSeries([ open, dropDatabase, runChangelogs, close ],
+asyncUtils.eachSeries([ open, runChangelogs, close ],
     // iterator function
     function(itemFn, eachResultCallback) {
         itemFn(eachResultCallback);
@@ -31,10 +31,10 @@ function open(callback) {
 	mongodb.openConnection(callback);
 }
 
-function dropDatabase(callback) {
-	var db = mongodb.getDb();
-	db.dropDatabase(callback);
-}
+//function dropDatabase(callback) {
+//	var db = mongodb.getDb();
+//	db.dropDatabase(callback);
+//}
 
 function close(callback) {
 	console.log("Close connection");
