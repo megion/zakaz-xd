@@ -25,7 +25,9 @@ Run fill database script:
 ## Run
 
     $ node src/app
-    
+
+## Demo application [http://zakazxd-megion.rhcloud.com](http://zakazxd-megion.rhcloud.com)
+
 
     
     
