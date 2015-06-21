@@ -159,6 +159,17 @@ function changeUser(id, user, callback) {
     );
 }
 
+function findAllUsers(callback) {
+    var usersCollection = getCollection();
+    usersCollection.find().toArray(function(err, users) {
+        if (err) {
+            return callback(err);
+        }
+
+        return callback(null, users);
+    });
+}
+
 exports.setPassword = setPassword;
 exports.authorize = authorize;
 exports.createUser = createUser;
@@ -168,3 +179,4 @@ exports.findWithRolesById = findWithRolesById;
 exports.isAuthorize = isAuthorize;
 exports.changeUserPassword = changeUserPassword;
 exports.changeUser = changeUser;
+exports.findAllUsers = findAllUsers;

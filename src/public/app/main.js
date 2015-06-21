@@ -3,7 +3,8 @@ angular.module('zakaz-xd.main', [
     'zakaz-xd.auth',
     'zakaz-xd.order-list',
     'zakaz-xd.auth.login-form',
-    'zakaz-xd.user-profile'
+    'zakaz-xd.user-profile',
+    'zakaz-xd.manage-users.users-list'
 ])
     .config(['$stateProvider', '$urlRouterProvider', 'ACCESS',
         function ($stateProvider, $urlRouterProvider, ACCESS) {
@@ -60,16 +61,13 @@ angular.module('zakaz-xd.main', [
                         }
                     }
                 })
-                .state('user-profile-change-role-list', {
-                    url: '/profile/change-role-list',
-                    controller: 'UserProfileCtrl',
-                    templateUrl: 'app/main-pages/user-profile/user-profile-change-role-list.tpl.html',
+                .state('users-list', {
+                    url: '/manage-users/users-list',
+                    controller: 'UsersListCtrl',
+                    templateUrl: 'app/main-pages/manage-users/users-list/users-list.tpl.html',
                     resolve: {
-                        user: function ($stateParams, AuthService) {
-                            return AuthService.getCurrentUser();
-                        },
                         hasAccess: function ($stateParams, AuthService) {
-                            return AuthService.checkAccess(ACCESS.CHANGE_OWN_ROLE_LIST);
+                            return AuthService.checkAccess(ACCESS.MANAGE_USERS);
                         }
                     }
                 })
