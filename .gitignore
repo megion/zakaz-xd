@@ -31,6 +31,8 @@ local_package.csx
 .classpath
 .settings
 
+src/public/bower_components
+src/public/node_modules
 config.json
 
 
