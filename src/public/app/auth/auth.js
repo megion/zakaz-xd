@@ -166,7 +166,8 @@ angular.module('zakaz-xd.auth', [
                      * user is not logged in
                      */
                     notAuthenticated: function() {
-                        $injector.get('$state').go('not-authenticated');
+                        //$injector.get('$state').go('not-authenticated');
+                        $injector.get('$state').go('login');
                     },
 
                     /**
