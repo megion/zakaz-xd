@@ -47,6 +47,8 @@ function initWebApp(app) {
     // routes
     var auth = require('./routes/auth');
     app.use('/auth', auth);
+    var users = require('./routes/users');
+    app.use('/users', users);
 
 	app.use(function(err, req, res, next) {
 		if (typeof err == 'number') { // next(404);

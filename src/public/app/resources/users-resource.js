@@ -10,8 +10,8 @@ angular.module('zakaz-xd.resources.users-resource', [
             deleteUser: function (userId) {
                 return $http.post(startUrl + '/delete-user', {userId: userId});
             },
-            getAllUsers: function () {
-                return $http.get(startUrl + '/all-users');
+            getAllUsers: function (page) {
+                return $http.get(startUrl + '/all-users', {page: page});
             },
             getUserById: function () {
                 return $http.get(startUrl + '/user-by-id');
