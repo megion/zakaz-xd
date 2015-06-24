@@ -26,3 +26,15 @@ function AuthError(message) {
 util.inherits(AuthError, Error);
 AuthError.prototype.name = 'AuthError';
 exports.AuthError = AuthError;
+
+// unknown error
+function UnknownError(message) {
+    Error.apply(this, arguments);
+    Error.captureStackTrace(this, UnknownError);
+
+    this.message = message;
+}
+
+util.inherits(UnknownError, Error);
+UnknownError.prototype.name = 'UnknownError';
+exports.UnknownError = UnknownError;

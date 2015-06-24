@@ -22,7 +22,7 @@ angular
                         $state.go('order-list');
                     },
                     function(err) {
-                        ErrorDialog.open(err.data, true);
+                        ErrorDialog.open(err.data);
                     }
                 );
             };

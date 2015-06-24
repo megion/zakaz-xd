@@ -28,6 +28,9 @@ angular
                     function(response) {
                         $scope.userList = response.data.items;
                         $scope.pageConfig.total = response.data.total;
+                    },
+                    function(err) {
+                        ErrorDialog.open(err.data, true);
                     }
                 );
             }

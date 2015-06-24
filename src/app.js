@@ -7,6 +7,7 @@ var config = require('./config');
 var mongodb = require('./lib/mongodb');
 var log = require('./lib/log')(module);
 var HttpError = require('./error').HttpError;
+var UnknownError = require('./error').UnknownError;
 
 
 mongodb.openConnection(function(err, db) {
@@ -51,11 +52,15 @@ function initWebApp(app) {
     app.use('/users', users);
 
 	app.use(function(err, req, res, next) {
-		if (typeof err == 'number') { // next(404);
+        console.info("err", err);
+		if (!err) {
+            err = new UnknownError();
+        } else if (typeof err == 'number') { // next(404);
 			err = new HttpError(err);
 		}
 
-        log.error(err);
+        console.error(err.stack);
+        log.error(err.stack);
 		if (err instanceof HttpError) {
 			res.sendHttpError(err);
 		} else {

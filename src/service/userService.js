@@ -159,9 +159,10 @@ function changeUser(id, user, callback) {
     );
 }
 
-function findAllUsers(callback) {
+function findAllUsers(page, callback) {
     var usersCollection = getCollection();
-    usersCollection.find().toArray(function(err, users) {
+    console.log("page", page);
+    usersCollection.find({}, {skip:1, limit:1}).toArray(function(err, users) {
         if (err) {
             return callback(err);
         }

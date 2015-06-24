@@ -11,8 +11,11 @@ var ACCESSES = require('../utils/accesses').ACCESSES;
 
 router.get('/all-users', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USERS), function(req, res, next) {
     var user = req.user;
+    var page = {itemsPerPage: parseInt(req.params('itemsPerPage')), page: parseInt(req.params('page'))};
 
-    userService.findAllUsers(function(err, users) {
+    console.log("page0", page);
+
+    userService.findAllUsers(page, function(err, users) {
             if (err) {
                 return next(err);
             }
