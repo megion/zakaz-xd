@@ -161,13 +161,14 @@ function changeUser(id, user, callback) {
 
 function findAllUsers(page, callback) {
     var usersCollection = getCollection();
-    console.log("page", page);
-    usersCollection.find({}, {skip:1, limit:1}).toArray(function(err, users) {
+    usersCollection.find({}, {skip:page.skip, limit:page.limit, fields: {username: 1, email: 1}}).toArray(function(err, users) {
         if (err) {
             return callback(err);
         }
 
-        return callback(null, users);
+        usersCollection.count(function(err, count) {
+            return callback(null, {count: count, items: users});
+        });
     });
 }
 

@@ -1,34 +1,27 @@
-<h4>Список пользователей</h4>
+
+<div class="row">
+    <div class="col-sm-6">
+        <h4>Список пользователей</h4>
+    </div>
+    <div class="col-sm-6 text-right">
+        <a ui-sref="create-user" class="btn btn-success">Создать пользователя</a>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-sm-12">
         <table class="table">
-            <caption>Optional table caption.</caption>
             <thead>
             <tr>
-                <th>#</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Username</th>
+                <th>Имя пользователя</th>
+                <th>Email</th>
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-            </tr>
-            <tr>
-                <th scope="row">2</th>
-                <td>Jacob</td>
-                <td>Thornton</td>
-                <td>@fat</td>
-            </tr>
-            <tr>
-                <th scope="row">3</th>
-                <td>Larry</td>
-                <td>the Bird</td>
-                <td>@twitter</td>
+
+            <tr data-ng-repeat="user in userList">
+                <td><a ui-sref="edit-user({id: user._id})">{{user.username}}</a></td>
+                <td>{{user.email}}</td>
             </tr>
             </tbody>
         </table>

@@ -57,12 +57,6 @@ angular
                 );
             };
 
-            $scope.changeRoleList  = function(invalid) {
-                if (invalid) {
-                    return false;
-                }
-            };
-
         }
     ])
 ;

@@ -8,6 +8,7 @@ var mongodb = require('./lib/mongodb');
 var log = require('./lib/log')(module);
 var HttpError = require('./error').HttpError;
 var UnknownError = require('./error').UnknownError;
+var AuthError = require('./error').AuthError;
 
 
 mongodb.openConnection(function(err, db) {
@@ -46,26 +47,23 @@ function initWebApp(app) {
 	app.use(require('./middleware/sendHttpError'));
 
     // routes
-    var auth = require('./routes/auth');
-    app.use('/auth', auth);
-    var users = require('./routes/users');
-    app.use('/users', users);
+    app.use('/auth', require('./routes/auth'));
+    app.use('/users', require('./routes/users'));
+    app.use('/roles', require('./routes/roles'));
 
 	app.use(function(err, req, res, next) {
-        console.info("err", err);
-		if (!err) {
-            err = new UnknownError();
-        } else if (typeof err == 'number') { // next(404);
+		if (typeof err == 'number') { // next(404);
 			err = new HttpError(err);
 		}
 
-        console.error(err.stack);
-        log.error(err.stack);
 		if (err instanceof HttpError) {
+            log.error(err.message);
 			res.sendHttpError(err);
 		} else {
-            err = new HttpError(500);
-            res.sendHttpError(err);
+            log.error(err.stack);
+            var httpErr = new HttpError(500);
+            httpErr.stack = err.stack;
+            res.sendHttpError(httpErr);
 		}
 	});
 }

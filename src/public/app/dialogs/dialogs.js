@@ -44,4 +44,11 @@ angular.module('zakaz-xd.dialogs', [
                 });
             }
         };
+    }])
+    .factory('ErrorHandler', ['ErrorDialog', function (ErrorDialog) {
+        return {
+            handle: function (err) {
+                ErrorDialog.open(err.data, true);
+            }
+        };
     }]);

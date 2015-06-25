@@ -15,11 +15,10 @@ angular
 
             $scope.userList = [];
             $scope.pageConfig = {
-                total: 66,
                 page: 1,
                 itemsPerPage: 10,
                 pageChanged: function(page, itemsPerPage)  {
-                    console.log("page", {page: page, itemsPerPage: itemsPerPage});
+                    refreshUsersTable({page: page, itemsPerPage: itemsPerPage});
                 }
             };
 
@@ -27,7 +26,7 @@ angular
                 UsersResource.getAllUsers(page).then(
                     function(response) {
                         $scope.userList = response.data.items;
-                        $scope.pageConfig.total = response.data.total;
+                        $scope.pageConfig.count = response.data.count;
                     },
                     function(err) {
                         ErrorDialog.open(err.data, true);

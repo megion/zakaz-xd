@@ -16,12 +16,6 @@ function getLogger(module) {
           label: path,
           timestamp: function() {
               return Date(Date.now());
-          },
-          formatter: function(options) {
-              // Return string will be passed to logger.
-              console.log("options", options);
-              return options.timestamp().toString() +' '+ options.level.toUpperCase() +' '+ (undefined !== options.message ? options.message : '') +
-                  (options.meta && Object.keys(options.meta).length ? '\n\t'+ JSON.stringify(options.meta) : '' );
           }
       })
     ]
