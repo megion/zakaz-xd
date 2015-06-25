@@ -5,7 +5,9 @@
     <h4 class="modal-title">Ошибка</h4>
 </div>
 <div class="modal-body">
-    <p class="bg-danger">{{error.message}}</p>
+    <div role="alert" class="alert alert-danger">
+        {{error.message}}
+    </div>
     <pre data-ng-if='error.stack && printStack'>{{error.stack}}></pre>
 </div>
 <div class="modal-footer">

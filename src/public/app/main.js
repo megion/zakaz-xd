@@ -38,7 +38,19 @@ angular.module('zakaz-xd.main', [
                 .state('login', {
                     url: '/login',
                     controller: 'LoginFormCtrl',
-                    templateUrl: 'app/main-pages/auth/login-form/login-form.tpl.html'
+                    templateUrl: 'app/main-pages/auth/login-form/login-form.tpl.html',
+                    resolve: {
+                        isAuthenticated: function ($q, AuthService) {
+                            return AuthService.isAuthenticated();
+                        },
+                        canGo: function ($q, isAuthenticated) {
+                            if (isAuthenticated) {
+                                return $q.reject("User already login");
+                            } else {
+                                return $q.when(true);
+                            }
+                        }
+                    }
                 })
                 .state('user-profile', {
                     url: '/profile',

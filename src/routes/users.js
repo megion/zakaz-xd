@@ -1,6 +1,7 @@
 var router = require('express').Router();
 
 var userService = require('../service/userService');
+var roleService = require('../service/roleService');
 var error = require('../error');
 var HttpError = error.HttpError;
 var log = require('../lib/log')(module);
@@ -36,11 +37,25 @@ router.get('/user-by-id', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USERS
 
 router.post('/create-user', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USERS), function(req, res, next) {
     var user = req.body;
-    userService.createUser(user, function(err) {
+
+    if (!user.username) {
+        return next(new HttpError(400, "Имя пользователя пустое"));
+    }
+
+    if (user.password !== user.repeatPassword) {
+        return next(new HttpError(400, "Пароли не сопадают"));
+    }
+
+    userService.createUser(user, function(err, newUser) {
         if (err)
             return next(err);
 
-        res.send({});
+        roleService.assignUserRoles(newUser, user.roles, function(userRoles, err) {
+            if (err)
+                return next(err);
+
+            res.send({});
+        });
     });
 });
 
