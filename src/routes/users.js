@@ -36,7 +36,7 @@ router.get('/user-by-id', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USERS
 });
 
 router.post('/create-user', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USERS), function(req, res, next) {
-    var user = req.body;
+    var user = req.body.user;
 
     if (!user.username) {
         return next(new HttpError(400, "Имя пользователя пустое"));
@@ -46,16 +46,22 @@ router.post('/create-user', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USE
         return next(new HttpError(400, "Пароли не сопадают"));
     }
 
-    userService.createUser(user, function(err, newUser) {
+    userService.createUser(user.username, user.password, function(err, newUser) {
         if (err)
             return next(err);
 
-        roleService.assignUserRoles(newUser, user.roles, function(userRoles, err) {
-            if (err)
-                return next(err);
+        if (user.roles && user.roles.length>0) {
+            console.log("newUser", newUser);
+            console.log("user.roles", user.roles);
+            roleService.assignUserRoles(newUser, user.roles, function(err, userRoles) {
+                if (err)
+                    return next(err);
 
+                res.send({});
+            });
+        } else {
             res.send({});
-        });
+        }
     });
 });
 

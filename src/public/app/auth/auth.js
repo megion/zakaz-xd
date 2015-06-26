@@ -13,7 +13,11 @@ angular.module('zakaz-xd.auth', [
             } else {
                 if (error.data) {
                     // ошибка сервера
-                    ErrorDialog.open(error.data, true);
+                    if (error.data.status === 401) {
+                        ErrorDialog.open(error.data); // стектрейс не нужен, пользователь не авторизован
+                    } else {
+                        ErrorDialog.open(error.data, true); // показать стектрейс
+                    }
                 } else {
                     // TODO: ошибка в клинтском javascript
                     //ErrorDialog.open(error, true);
@@ -93,7 +97,7 @@ angular.module('zakaz-xd.auth', [
                     var defer = $q.defer();
                     $injector.get('AuthResource').isAuthenticated().then(
                         function (response) {
-                            isLogin= response.data;
+                            isLogin = response.data;
                             defer.resolve(isLogin);
                         },
                         function (err) {
@@ -167,6 +171,7 @@ angular.module('zakaz-xd.auth', [
                      */
                     notAuthenticated: function() {
                         //$injector.get('$state').go('not-authenticated');
+                        isLogin = false;
                         $injector.get('$state').go('login');
                     },
 

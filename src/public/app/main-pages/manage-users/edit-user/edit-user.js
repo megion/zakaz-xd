@@ -16,6 +16,9 @@ angular
             $scope.isCreate = !(user._id);
             $scope.allRoles = allRoles;
             $scope.user = user;
+            if (!$scope.user.roles) {
+                $scope.user.roles = [];
+            }
 
             function setCheckedUserRoles(allRoles, user){
                 if (!user.roles) {
@@ -35,11 +38,33 @@ angular
             }
             setCheckedUserRoles(allRoles, user);
 
+            function addCheckedRolesToUser(allRoles, user) {
+                var userRolesMap = {};
+                if (user.roles && user.roles.length>0) {
+                    for (var i=0; i<user.roles.length; i++) {
+                        var role = user.roles[i];
+                        userRolesMap[role._id] = role;
+                    }
+                }
+
+                for (var j=0; j<allRoles.length; j++) {
+                    var role = allRoles[j];
+                    if (role.checked) {
+                        if(!userRolesMap[role._id]) {
+                            // у пользователя нет этой роли - добавляем
+                            user.roles.push(role);
+                        }
+                    }
+                }
+            }
+
             $scope.save = function(invalid) {
                 if (invalid) {
                     return false;
                 }
 
+                addCheckedRolesToUser($scope.allRoles, $scope.user);
+                console.log("user", $scope.user);
                 if ($scope.isCreate) {
                     UsersResource.createUser($scope.user).then(
                         function (response) {
@@ -59,6 +84,13 @@ angular
                         }
                     );
                 }
+            };
+
+            $scope.lockUser = function() {
+
+            };
+            $scope.deleteUser = function() {
+
             };
         }
     ])

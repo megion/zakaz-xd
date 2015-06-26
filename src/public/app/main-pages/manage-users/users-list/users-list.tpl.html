@@ -20,7 +20,9 @@
             <tbody>
 
             <tr data-ng-repeat="user in userList">
-                <td><a ui-sref="edit-user({id: user._id})">{{user.username}}</a></td>
+                <td>
+                    <a ui-sref="edit-user({id: user._id})">{{user.username}}</a>
+                </td>
                 <td>{{user.email}}</td>
             </tr>
             </tbody>
