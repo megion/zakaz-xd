@@ -48,8 +48,11 @@ router.post('/change-password', loadUser, checkAccess.getAuditor(ACCESSES.CHANGE
 });
 
 router.post('/save-user', loadUser, function(req, res, next) {
-    var user = req.body;
-    userService.changeUser(req.user._id, user, function(err) {
+    var user = req.body.user;
+    var userCopy = {
+        email: user.email
+    };
+    userService.changeUser(req.user._id, userCopy, function(err) {
         if (err)
             return next(err);
 

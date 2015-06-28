@@ -9,7 +9,7 @@ angular.module('zakaz-xd.resources.auth-resource', [
                     {newPassword: newPassword, repeatNewPassword: repeatNewPassword});
             },
             saveUser: function (user) {
-                return $http.post(startUrl + '/save-user', user);
+                return $http.post(startUrl + '/save-user', {user: user});
             },
             getCurrentUser: function () {
                 return $http.get(startUrl + '/current-user', { headers: {'If-Modified-Since': '0'}});

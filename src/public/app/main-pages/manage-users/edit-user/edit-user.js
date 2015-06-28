@@ -39,23 +39,15 @@ angular
             setCheckedUserRoles(allRoles, user);
 
             function addCheckedRolesToUser(allRoles, user) {
-                var userRolesMap = {};
-                if (user.roles && user.roles.length>0) {
-                    for (var i=0; i<user.roles.length; i++) {
-                        var role = user.roles[i];
-                        userRolesMap[role._id] = role;
-                    }
-                }
-
+                var newUserRoles = [];
                 for (var j=0; j<allRoles.length; j++) {
                     var role = allRoles[j];
                     if (role.checked) {
-                        if(!userRolesMap[role._id]) {
-                            // у пользователя нет этой роли - добавляем
-                            user.roles.push(role);
-                        }
+                        newUserRoles.push(role);
                     }
                 }
+                // просто заменяем роли
+                user.roles = newUserRoles;
             }
 
             $scope.save = function(invalid) {
@@ -64,10 +56,10 @@ angular
                 }
 
                 addCheckedRolesToUser($scope.allRoles, $scope.user);
-                console.log("user", $scope.user);
                 if ($scope.isCreate) {
                     UsersResource.createUser($scope.user).then(
                         function (response) {
+                            InfoDialog.open("Пользователь успешно добавлени", 'Информация');
                             $state.go("users-list");
                         },
                         function (err) {
@@ -77,6 +69,7 @@ angular
                 } else {
                     UsersResource.editUser($scope.user).then(
                         function (response) {
+                            InfoDialog.open("Пользователь успешно сохранен", 'Информация');
                             $state.go("users-list");
                         },
                         function (err) {
@@ -91,6 +84,37 @@ angular
             };
             $scope.deleteUser = function() {
 
+            };
+
+            $scope.changePasswordData = {
+                newPassword: null,
+                repeatNewPassword: null
+            };
+
+            $scope.changePassword  = function(invalid) {
+                if (invalid) {
+                    return false;
+                }
+
+                if ($scope.changePasswordData.newPassword !== $scope.changePasswordData.repeatNewPassword) {
+                    return ErrorDialog.open({message: 'Пароли не совпадают'}, true);
+                }
+
+                var passData = {
+                    userId: $scope.user._id,
+                    newPassword: $scope.changePasswordData.newPassword,
+                    repeatNewPassword: $scope.changePasswordData.repeatNewPassword
+                };
+
+                UsersResource.changePassword(passData).then(
+                    function (response) {
+                        InfoDialog.open('Пароль пользователя успешно изменен', 'Изменение пароля');
+                        $state.go("users-list");
+                    },
+                    function (err) {
+                        ErrorDialog.open(err, true);
+                    }
+                );
             };
         }
     ])

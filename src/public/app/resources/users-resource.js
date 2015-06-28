@@ -10,6 +10,9 @@ angular.module('zakaz-xd.resources.users-resource', [
             editUser: function (user) {
                 return $http.post(startUrl + '/edit-user', {user: user});
             },
+            changePassword: function (passData) {
+                return $http.post(startUrl + '/change-password', passData);
+            },
             deleteUser: function (userId) {
                 return $http.post(startUrl + '/delete-user', {userId: userId});
             },

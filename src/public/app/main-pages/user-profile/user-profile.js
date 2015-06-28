@@ -26,7 +26,7 @@ angular
                         AuthService.reloadCurrentUser().then(
                             function(savedUser) {
                                 $scope.user = angular.copy(savedUser);
-                                InfoDialog.open('Сохранение изменений', 'Успешное сохранение изменений');
+                                InfoDialog.open('Успешное сохранение изменений', 'Сохранение изменений');
                             },
                             function (err) {
                                 ErrorDialog.open(err, true);
@@ -49,7 +49,7 @@ angular
 
                 AuthResource.changePassword($scope.data.newPassword, $scope.data.repeatNewPassword).then(
                     function (response) {
-                        InfoDialog.open('Изменение пароля', 'Ваш пароль успешно <span style="color: blue;"> изменен <span>');
+                        InfoDialog.open('Ваш пароль успешно <span style="color: blue;"> изменен <span>', 'Изменение пароля');
                     },
                     function (err) {
                         ErrorDialog.open(err, true);

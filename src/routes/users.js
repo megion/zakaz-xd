@@ -51,8 +51,6 @@ router.post('/create-user', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USE
             return next(err);
 
         if (user.roles && user.roles.length>0) {
-            console.log("newUser", newUser);
-            console.log("user.roles", user.roles);
             roleService.assignUserRoles(newUser, user.roles, function(err, userRoles) {
                 if (err)
                     return next(err);
@@ -66,8 +64,47 @@ router.post('/create-user', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USE
 });
 
 router.post('/edit-user', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USERS), function(req, res, next) {
-    var user = req.body;
-    userService.createUser(user, function(err) {
+    var user = req.body.user;
+    var userCopy = {
+        email: user.email,
+        username: user.username
+    };
+    var userId = new ObjectID(user._id);
+    userService.changeUser(userId, userCopy, function(err, newUser) {
+        if (err)
+            return next(err);
+
+        userCopy._id = userId;
+
+        if (user.roles) {
+            roleService.assignUserRoles(userCopy, user.roles, function(err, userRoles) {
+                if (err)
+                    return next(err);
+
+                res.send({});
+            });
+        } else {
+            res.send({});
+        }
+    });
+});
+
+router.post('/change-password', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USERS), function(req, res, next) {
+    var passData = req.body;
+    var userId = new ObjectID(passData.userId);
+
+    var newPassword = passData.newPassword;
+    var repeatNewPassword = passData.repeatNewPassword;
+
+    if (!newPassword || newPassword.length===0) {
+        return next(new HttpError(400, "Пароль не может быть пустым"));
+    }
+
+    if (newPassword !== repeatNewPassword) {
+        return next(new HttpError(400, "Пароли не сопадают"));
+    }
+
+    userService.changeUserPassword(req.user._id, newPassword, function(err) {
         if (err)
             return next(err);
 

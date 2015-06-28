@@ -141,20 +141,16 @@ function changeUserPassword(id, newPassword, callback) {
 function changeUser(id, user, callback) {
     var usersCollection = getCollection();
 
-    var userCopy = {
-        email: user.email
-    };
-
     usersCollection.updateOne(
         {_id : id},
-        {$set: userCopy},
+        {$set: user},
         {upsert:false, w: 1, multi: false},
         function(err, upResult) {
             if (err) {
                 return callback(err);
             }
 
-            return callback(null, upResult);
+            return callback(null, user);
         }
     );
 }

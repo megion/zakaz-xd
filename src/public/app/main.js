@@ -6,7 +6,8 @@ angular.module('zakaz-xd.main', [
     'zakaz-xd.auth.login-form',
     'zakaz-xd.user-profile',
     'zakaz-xd.manage-users.users-list',
-    'zakaz-xd.manage-users.edit-user'
+    'zakaz-xd.manage-users.edit-user',
+    'zakaz-xd.manage-users.edit-user.change-password'
 ])
     .config(['$stateProvider', '$urlRouterProvider', 'ACCESS',
         function ($stateProvider, $urlRouterProvider, ACCESS) {
@@ -124,6 +125,24 @@ angular.module('zakaz-xd.main', [
                         },
                         allRoles: function($stateParams, RolesResource, ErrorHandler){
                             return RolesResource.getAllRoles().then(
+                                function(response) {
+                                    return response.data;
+                                },
+                                ErrorHandler.handle
+                            );
+                        }
+                    }
+                })
+                .state('change-user-password', {
+                    url: '/manage-users/user/change-password/:id',
+                    controller: 'EditUserChangePasswordCtrl',
+                    templateUrl: 'app/main-pages/manage-users/edit-user/edit-user-change-password.tpl.html',
+                    resolve: {
+                        hasAccess: function ($stateParams, AuthService) {
+                            return AuthService.checkAccess(ACCESS.MANAGE_USERS);
+                        },
+                        user: function($stateParams, UsersResource, ErrorHandler){
+                            return UsersResource.getUserById($stateParams.id).then(
                                 function(response) {
                                     return response.data;
                                 },

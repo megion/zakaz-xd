@@ -26,7 +26,7 @@ angular.module('zakaz-xd.dialogs', [
     }])
     .factory('InfoDialog', ['$q', '$modal', '$sce', function ($q, $modal, $sce) {
         return {
-            open: function (title, message) {
+            open: function (message, title) {
                 var modalInstance = $modal.open({
                     animation: true,
                     backdrop: 'static',
