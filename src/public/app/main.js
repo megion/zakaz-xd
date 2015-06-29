@@ -7,7 +7,8 @@ angular.module('zakaz-xd.main', [
     'zakaz-xd.user-profile',
     'zakaz-xd.manage-users.users-list',
     'zakaz-xd.manage-users.edit-user',
-    'zakaz-xd.manage-users.edit-user.change-password'
+    'zakaz-xd.manage-users.edit-user.change-password',
+    'zakaz-xd.directives.restrict-access'
 ])
     .config(['$stateProvider', '$urlRouterProvider', 'ACCESS',
         function ($stateProvider, $urlRouterProvider, ACCESS) {
