@@ -54,6 +54,10 @@ function assignUserRoles(user, roles, callback) {
             return callback(err);
         }
 
+        if (roles.length===0) {
+            return callback(null, numberRemoved);
+        }
+
         // insert new user roles
         var userRoles = [];
         for (var i = 0; i < roles.length; i++) {

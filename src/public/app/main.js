@@ -98,16 +98,14 @@ angular.module('zakaz-xd.main', [
                             return UsersResource.getUserById($stateParams.id).then(
                                 function(response) {
                                     return response.data;
-                                },
-                                ErrorHandler.handle
+                                }
                             );
                         },
                         allRoles: function($stateParams, RolesResource, ErrorHandler){
                             return RolesResource.getAllRoles().then(
                                 function(response) {
                                     return response.data;
-                                },
-                                ErrorHandler.handle
+                                }
                             );
                         }
                     }
@@ -127,8 +125,7 @@ angular.module('zakaz-xd.main', [
                             return RolesResource.getAllRoles().then(
                                 function(response) {
                                     return response.data;
-                                },
-                                ErrorHandler.handle
+                                }
                             );
                         }
                     }
@@ -145,8 +142,7 @@ angular.module('zakaz-xd.main', [
                             return UsersResource.getUserById($stateParams.id).then(
                                 function(response) {
                                     return response.data;
-                                },
-                                ErrorHandler.handle
+                                }
                             );
                         }
                     }
@@ -190,9 +186,6 @@ angular.module('zakaz-xd.main', [
                     if (isLogin) {
                         AuthService.getCurrentUser();
                     }
-                },
-                function(err) {
-                    ErrorDialog.open(err.data, true);
                 }
             );
 

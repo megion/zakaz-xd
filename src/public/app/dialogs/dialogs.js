@@ -45,6 +45,34 @@ angular.module('zakaz-xd.dialogs', [
             }
         };
     }])
+    .factory('YesNoDialog', ['$q', '$modal', '$sce', function ($q, $modal, $sce) {
+        return {
+            open: function (message, title) {
+                var modalInstance = $modal.open({
+                    animation: true,
+                    backdrop: 'static',
+                    size: 'lg',
+                    templateUrl: 'app/dialogs/yes-no-dialog.tpl.html',
+                    resolve: {
+                    },
+                    controller: function ($scope, $modalInstance) {
+                        $scope.message = $sce.trustAsHtml(message);
+                        $scope.title = title;
+                        $scope.close = function () {
+                            $scope.$dismiss("NO");
+                        };
+                        $scope.yes = function () {
+                            $scope.$close("YES");
+                        };
+                        $scope.no = function () {
+                            $scope.$dismiss("NO");
+                        };
+                    }
+                });
+                return modalInstance.result;
+            }
+        };
+    }])
     .factory('ErrorHandler', ['ErrorDialog', function (ErrorDialog) {
         return {
             handle: function (err) {

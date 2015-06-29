@@ -4,7 +4,7 @@
 angular
     .module('zakaz-xd.manage-users.users-list', [
         'zakaz-xd.dialogs',
-        'zakaz-xd.pagination',
+        'zakaz-xd.directives.pagination',
         'zakaz-xd.resources.users-resource',
         'zakaz-xd.auth'
     ])

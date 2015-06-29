@@ -4,15 +4,14 @@
 angular
     .module('zakaz-xd.manage-users.edit-user', [
         'zakaz-xd.dialogs',
-        'zakaz-xd.pagination',
         'zakaz-xd.resources.users-resource',
         'zakaz-xd.resources.roles-resource',
         'zakaz-xd.auth'
     ])
     .controller('EditUserCtrl', ['$scope', '$stateParams', '$state', 'UsersResource',
-        'ErrorDialog', 'InfoDialog', 'user', 'allRoles',
+        'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'user', 'allRoles',
         function ($scope, $stateParams, $state, UsersResource,
-                  ErrorDialog, InfoDialog, user, allRoles) {
+                  ErrorDialog, InfoDialog, YesNoDialog, user, allRoles) {
             $scope.isCreate = !(user._id);
             $scope.allRoles = allRoles;
             $scope.user = user;
@@ -59,7 +58,7 @@ angular
                 if ($scope.isCreate) {
                     UsersResource.createUser($scope.user).then(
                         function (response) {
-                            InfoDialog.open("Пользователь успешно добавлени", 'Информация');
+                            InfoDialog.open("Пользователь успешно добавлен");
                             $state.go("users-list");
                         },
                         function (err) {
@@ -69,7 +68,7 @@ angular
                 } else {
                     UsersResource.editUser($scope.user).then(
                         function (response) {
-                            InfoDialog.open("Пользователь успешно сохранен", 'Информация');
+                            InfoDialog.open("Пользователь успешно сохранен");
                             $state.go("users-list");
                         },
                         function (err) {
@@ -80,39 +79,47 @@ angular
             };
 
             $scope.lockUser = function() {
-
+                YesNoDialog.open("Вы действительно хотите заблокировать пользователя?").then(
+                    function() {
+                        UsersResource.lockUser($scope.user._id).then(
+                            function (response) {
+                                InfoDialog.open("Пользователь заблокирован");
+                                $state.go("edit-user", {id: $scope.user._id}, {reload: true});
+                            },
+                            function (err) {
+                                ErrorDialog.open(err.data, true);
+                            }
+                        );
+                    }
+                );
+            };
+            $scope.unlockUser = function() {
+                YesNoDialog.open("Вы действительно хотите разблокировать пользователя?").then(
+                    function() {
+                        UsersResource.unlockUser($scope.user._id).then(
+                            function (response) {
+                                InfoDialog.open("Пользователь разблокирован");
+                                $state.go("edit-user", {id: $scope.user._id}, {reload: true});
+                            },
+                            function (err) {
+                                ErrorDialog.open(err.data, true);
+                            }
+                        );
+                    }
+                );
             };
             $scope.deleteUser = function() {
-
-            };
-
-            $scope.changePasswordData = {
-                newPassword: null,
-                repeatNewPassword: null
-            };
-
-            $scope.changePassword  = function(invalid) {
-                if (invalid) {
-                    return false;
-                }
-
-                if ($scope.changePasswordData.newPassword !== $scope.changePasswordData.repeatNewPassword) {
-                    return ErrorDialog.open({message: 'Пароли не совпадают'}, true);
-                }
-
-                var passData = {
-                    userId: $scope.user._id,
-                    newPassword: $scope.changePasswordData.newPassword,
-                    repeatNewPassword: $scope.changePasswordData.repeatNewPassword
-                };
-
-                UsersResource.changePassword(passData).then(
-                    function (response) {
-                        InfoDialog.open('Пароль пользователя успешно изменен', 'Изменение пароля');
-                        $state.go("users-list");
-                    },
-                    function (err) {
-                        ErrorDialog.open(err, true);
+                YesNoDialog.open("Вы действительно хотите удалить пользователя?").then(
+                    function() {
+                        UsersResource.deleteUser($scope.user._id).then(
+                            function (response) {
+                                InfoDialog.open("Пользователь удален");
+                                $state.go("users-list");
+                            },
+                            function (err) {
+                                ErrorDialog.open(err.data, true);
+                            }
+                        );
                     }
                 );
             };

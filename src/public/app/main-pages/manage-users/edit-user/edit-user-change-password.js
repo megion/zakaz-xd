@@ -4,7 +4,6 @@
 angular
     .module('zakaz-xd.manage-users.edit-user.change-password', [
         'zakaz-xd.dialogs',
-        'zakaz-xd.pagination',
         'zakaz-xd.resources.users-resource',
         'zakaz-xd.resources.roles-resource',
         'zakaz-xd.auth'

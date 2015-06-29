@@ -104,7 +104,40 @@ router.post('/change-password', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE
         return next(new HttpError(400, "Пароли не сопадают"));
     }
 
-    userService.changeUserPassword(req.user._id, newPassword, function(err) {
+    userService.changeUserPassword(userId, newPassword, function(err) {
+        if (err)
+            return next(err);
+
+        res.send({});
+    });
+});
+
+router.post('/lock-user', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USERS), function(req, res, next) {
+    var userId = new ObjectID(req.body.userId);
+
+    userService.lockUser(userId, function(err) {
+        if (err)
+            return next(err);
+
+        res.send({});
+    });
+});
+
+router.post('/delete-user', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USERS), function(req, res, next) {
+    var userId = new ObjectID(req.body.userId);
+
+    userService.deleteUser(userId, function(err) {
+        if (err)
+            return next(err);
+
+        res.send({});
+    });
+});
+
+router.post('/unlock-user', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USERS), function(req, res, next) {
+    var userId = new ObjectID(req.body.userId);
+
+    userService.unlockUser(userId, function(err) {
         if (err)
             return next(err);
 

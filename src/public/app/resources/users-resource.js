@@ -16,6 +16,12 @@ angular.module('zakaz-xd.resources.users-resource', [
             deleteUser: function (userId) {
                 return $http.post(startUrl + '/delete-user', {userId: userId});
             },
+            lockUser: function (userId) {
+                return $http.post(startUrl + '/lock-user', {userId: userId});
+            },
+            unlockUser: function (userId) {
+                return $http.post(startUrl + '/unlock-user', {userId: userId});
+            },
             getAllUsers: function (page) {
                 return $http.get(startUrl + '/all-users', {params: page});
             },

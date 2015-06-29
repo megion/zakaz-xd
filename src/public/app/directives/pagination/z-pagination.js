@@ -1,4 +1,4 @@
-angular.module('zakaz-xd.pagination', [
+angular.module('zakaz-xd.directives.pagination', [
     'ui.bootstrap'
 ])
     .directive('zPagination', function () {

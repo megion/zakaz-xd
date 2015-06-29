@@ -73,6 +73,10 @@ router.post("/login", function(req, res, next) {
             }
         }
 
+        if (user.locked) {
+            return next(new HttpError(403, "Пользователь заблокирован"));
+        }
+
         req.session.user = user._id;
         log.info("User success login ID " + req.session.user);
         res.send({});

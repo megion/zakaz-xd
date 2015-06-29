@@ -56,7 +56,8 @@
         </div>
         <div class="col-sm-10 text-right" ng-if="!isCreate">
             <a data-ui-sref="change-user-password({id: user._id})">Сменить пароль</a>
-            <button type='button' data-ng-click="lockUser()" class="btn btn-warning">Заблокировать</button>
+            <button ng-if="!user.locked" type='button' data-ng-click="lockUser()" class="btn btn-warning">Заблокировать</button>
+            <button ng-if="user.locked" type='button' data-ng-click="unlockUser()" class="btn btn-warning">Разблокировать</button>
             <button type='button' data-ng-click="deleteUser()" class="btn btn-danger">Удалить</button>
         </div>
     </div>

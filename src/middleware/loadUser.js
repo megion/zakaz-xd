@@ -28,6 +28,9 @@ module.exports = function(req, res, next) {
         if (!user) {
             return next(new HttpError(404, "Текущий пользователь не найден"));
         }
+        if (user.locked) {
+            return next(new HttpError(403, "Пользователь заблокирован"));
+        }
 
         req.user = user;
         next();

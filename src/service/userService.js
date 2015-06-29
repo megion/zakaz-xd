@@ -155,9 +155,58 @@ function changeUser(id, user, callback) {
     );
 }
 
+function lockUser(id, callback) {
+    var usersCollection = getCollection();
+
+    usersCollection.updateOne(
+        {_id : id},
+        {$set: {locked: true}},
+        {upsert:false, w: 1, multi: false},
+        function(err, upResult) {
+            if (err) {
+                return callback(err);
+            }
+
+            return callback(null, upResult);
+        }
+    );
+}
+
+function unlockUser(id, callback) {
+    var usersCollection = getCollection();
+
+    usersCollection.updateOne(
+        {_id : id},
+        {$set: {locked: false}},
+        {upsert:false, w: 1, multi: false},
+        function(err, upResult) {
+            if (err) {
+                return callback(err);
+            }
+
+            return callback(null, upResult);
+        }
+    );
+}
+
+function deleteUser(id, callback) {
+    var usersCollection = getCollection();
+
+    usersCollection.deleteOne(
+        {_id : id},
+        function(err, res) {
+            if (err) {
+                return callback(err);
+            }
+
+            return callback(null, res);
+        }
+    );
+}
+
 function findAllUsers(page, callback) {
     var usersCollection = getCollection();
-    usersCollection.find({}, {skip:page.skip, limit:page.limit, fields: {username: 1, email: 1}}).toArray(function(err, users) {
+    usersCollection.find({}, {skip:page.skip, limit:page.limit, sort: {username: 1}, fields: {username: 1, email: 1}}).toArray(function(err, users) {
         if (err) {
             return callback(err);
         }
@@ -177,4 +226,7 @@ exports.findWithRolesById = findWithRolesById;
 exports.isAuthorize = isAuthorize;
 exports.changeUserPassword = changeUserPassword;
 exports.changeUser = changeUser;
+exports.unlockUser = unlockUser;
+exports.lockUser = lockUser;
+exports.deleteUser = deleteUser;
 exports.findAllUsers = findAllUsers;

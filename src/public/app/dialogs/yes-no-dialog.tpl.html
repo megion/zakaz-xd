@@ -3,12 +3,12 @@
         <span aria-hidden="true">&times;</span>
     </button>
     <h4 ng-if="title" class="modal-title">{{title}}</h4>
-    <h4 ng-if="!title" class="modal-title">Информация</h4>
+    <h4 ng-if="!title" class="modal-title">Запрос на изменение</h4>
 </div>
 <div class="modal-body">
-    <div role="alert" class="alert alert-success" ng-bind-html="message">
-    </div>
+    <p ng-bind-html="message"></p>
 </div>
 <div class="modal-footer">
-    <button class="btn btn-primary" ng-click="close()">Закрыть</button>
+    <button class="btn btn-primary" ng-click="yes()">Да</button>
+    <button class="btn btn-default" ng-click="no()">Нет</button>
 </div>
