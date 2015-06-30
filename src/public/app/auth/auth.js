@@ -13,11 +13,7 @@ angular.module('zakaz-xd.auth', [
             } else {
                 if (error.data) {
                     // ошибка сервера
-                    if (error.data.status === 401) {
-                        ErrorDialog.open(error.data); // стектрейс не нужен, пользователь не авторизован
-                    } else {
-                        ErrorDialog.open(error.data, true); // показать стектрейс
-                    }
+                    ErrorDialog.open(error.data);
                 } else {
                     // TODO: ошибка в клинтском javascript
                     //ErrorDialog.open(error, true);
@@ -55,8 +51,8 @@ angular.module('zakaz-xd.auth', [
 
     .provider('AuthService', function () {
 
-        this.$get = ['$injector', '$q',
-            function ($injector, $q) {
+        this.$get = ['$injector', '$q', 'ACCESS',
+            function ($injector, $q, ACCESS) {
 
                 var currentUser = null;
                 var isLogin = null;
@@ -160,10 +156,42 @@ angular.module('zakaz-xd.auth', [
                      */
                     hasAccess: function(access) {
                         if (!currentUser) {
-                            throw new Error('User is null');
+                            return false;
                         }
 
                         return isAuthorize(currentUser, access);
+                    },
+
+                    /**
+                     * Has current user specified access
+                     */
+                    hasAccessByCodes: function(accessCodes) {
+                        if (!currentUser) {
+                            return false;
+                        }
+
+                        var accesses = accessCodes.split(",");
+                        if(accesses.length===0) {
+                            return true;
+                        }
+
+                        var accessValue = null;
+                        for (var i=0; i<accesses.length; i++) {
+                            var accKey= accesses[i];
+                            var accVal = ACCESS[accKey];
+                            if (accVal!==null && accVal!==undefined) {
+                                if (accessValue) {
+                                    accessValue = accessValue | accVal;
+                                } else {
+                                    accessValue = accVal;
+                                }
+                            }
+                        }
+
+                        if (accessValue === null) {
+                            return false;
+                        }
+                        return isAuthorize(currentUser, accessValue);
                     },
 
                     /**

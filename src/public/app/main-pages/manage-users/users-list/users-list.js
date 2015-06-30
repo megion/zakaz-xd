@@ -29,7 +29,7 @@ angular
                         $scope.pageConfig.count = response.data.count;
                     },
                     function(err) {
-                        ErrorDialog.open(err.data, true);
+                        ErrorDialog.open(err.data);
                     }
                 );
             }

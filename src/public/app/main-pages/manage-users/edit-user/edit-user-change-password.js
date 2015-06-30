@@ -25,7 +25,7 @@ angular
                 }
 
                 if ($scope.data.newPassword !== $scope.data.repeatNewPassword) {
-                    return ErrorDialog.open({message: 'Пароли не совпадают'}, true);
+                    return ErrorDialog.open({message: 'Пароли не совпадают'});
                 }
 
                 var passData = {
