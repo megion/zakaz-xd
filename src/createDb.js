@@ -96,7 +96,7 @@ function runChangelogs(callback) {
     changesets.push({
         changeId: 5,
         changeFn: function(changeCallback) {
-            userService.createUser("admin", "admin", function(err, newUser) {
+            userService.createUser({username: "admin"}, "admin", function(err, newUser) {
                 if (err) {
                     return changeCallback(err);
                 }

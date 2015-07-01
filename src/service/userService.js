@@ -23,8 +23,8 @@ function getCollection() {
 	return mongodb.getDb().collection("users");
 }
 
-function createUser(username, password, callback) {
-	var user = new User(username);
+function createUser(user, password, callback) {
+	//var user = new User(username);
 	setPassword(user, password);
 	var usersCollection = getCollection();
 	usersCollection.insert(user, function(err, results){

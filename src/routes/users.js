@@ -46,7 +46,7 @@ router.post('/create-user', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USE
         return next(new HttpError(400, "Пароли не сопадают"));
     }
 
-    userService.createUser(user.username, user.password, function(err, newUser) {
+    userService.createUser({username: user.username, email: user.email}, user.password, function(err, newUser) {
         if (err)
             return next(err);
 
