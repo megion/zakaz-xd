@@ -1,6 +1,9 @@
-function Order(title, ownerUserId, orderStatusId, message) {
+function Order(title, message) {
     this.title = title;
-    this.owner_user_id = ownerUserId;
+    //this.author_user_id = authorUserId;
+    //this.status_id = statusId;
+    //this.type_id = typeId;
+    this.message = message;
 }
 
 exports.Order = Order;

@@ -1,7 +1,7 @@
 angular
-    .module('zakaz-xd.order-list', [
+    .module('zakaz-xd.orders.orders-list', [
     ])
-    .controller('OrderListCtrl', ['$scope', '$stateParams', '$state',
+    .controller('OrdersListCtrl', ['$scope', '$stateParams', '$state',
         function ($scope, $stateParams, $state) {
             $scope.helloMsg = 'пока пуст';
         }

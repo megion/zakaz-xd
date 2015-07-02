@@ -176,6 +176,33 @@ function runChangelogs(callback) {
         }
     });
 
+    // assign accesses to role customer
+    changesets.push({
+        changeId: 9,
+        changeFn: function(changeCallback) {
+            roleService.findRolesByCodes([ROLES.CUSTOMER], function(err, roles) {
+                if (err) {
+                    return changeCallback(err);
+                }
+                // назначить начальные доступы на роль ADMIN
+                roleService.findAccessesByValues([ACCESSES.EDIT_OWN_ORDER, ACCESSES.CHANGE_OWN_PASSWORD,
+                        ACCESSES.CREATE_ORDER, ACCESSES.VIEW_OWN_ORDERS],
+                    function(err, accesses) {
+                        if (err) {
+                            return changeCallback(err);
+                        }
+                        roleService.assignRoleAccesses(roles[0], accesses, function(err) {
+                            if (err) {
+                                return changeCallback(err);
+                            }
+                            return changeCallback(null);
+                        });
+                    }
+                );
+            });
+        }
+    });
+
     changelog.executeAllChangesets(changesets, callback);
 }
 

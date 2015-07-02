@@ -2,38 +2,76 @@ angular.module('zakaz-xd.main', [
     'ui.router',
     'zakaz-xd.auth',
     'zakaz-xd.dialogs',
-    'zakaz-xd.order-list',
     'zakaz-xd.auth.login-form',
     'zakaz-xd.user-profile',
     'zakaz-xd.manage-users.users-list',
     'zakaz-xd.manage-users.edit-user',
+    'zakaz-xd.orders.orders-list',
+    'zakaz-xd.orders.edit-order',
     'zakaz-xd.manage-users.edit-user.change-password'
 ])
     .config(['$stateProvider', '$urlRouterProvider', 'ACCESS',
         function ($stateProvider, $urlRouterProvider, ACCESS) {
 
             $stateProvider
-                .state('order-list', {
-                    url: '/orders',
-                    controller: 'OrderListCtrl',
-                    templateUrl: 'app/main-pages/order-list/order-list.tpl.html',
+                // заказы текущего пользователя
+                .state('orders-list', {
+                    url: '/orders-list',
+                    controller: 'OrdersListCtrl',
+                    templateUrl: 'app/main-pages/orders/orders-list/orders-list.tpl.html',
                     resolve: {
                         user: function ($stateParams, AuthService) {
                             return AuthService.getCurrentUser();
+                        },
+                        hasAccess: function ($stateParams, AuthService) {
+                            return AuthService.checkAccess(ACCESS.VIEW_OWN_ORDERS);
                         }
-                    },
-                    data: {
-                        pageTitle: 'Список заказов',
-                        breadcrumbs: [
-                            {
-                                url: "#",
-                                label: 'Дом'
-                            },
-                            {
-                                url: '#/orders',
-                                label: 'Список заказов'
-                            }
-                        ]
+                    }
+                })
+                // редактирование своего заказа
+                .state('edit-order', {
+                    url: '/order/edit/:id',
+                    controller: 'EditOrderCtrl',
+                    templateUrl: 'app/main-pages/orders/edit-order/edit-order.tpl.html',
+                    resolve: {
+                        hasAccess: function ($stateParams, AuthService) {
+                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
+                        },
+                        order: function($stateParams, OrdersResource){
+                            return OrdersResource.getOrderById($stateParams.id).then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
+                        }
+                    }
+                })
+                // создание своего заказа
+                .state('create-order', {
+                    url: '/order/create',
+                    controller: 'EditUserCtrl',
+                    templateUrl: 'app/main-pages/orders/edit-order/edit-order.tpl.html',
+                    resolve: {
+                        hasAccess: function ($stateParams, AuthService) {
+                            return AuthService.checkAccess(ACCESS.CREATE_ORDER);
+                        },
+                        order: function() {
+                            return {};
+                        },
+                        allOrderTypes: function($stateParams, OrdersResource){
+                            return OrdersResource.getAllOrderTypes().then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
+                        },
+                        allOrderStatuses: function($stateParams, OrdersResource){
+                            return OrdersResource.getAllOrderStatuses().then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
+                        }
                     }
                 })
                 .state('login', {
@@ -160,7 +198,7 @@ angular.module('zakaz-xd.main', [
                     templateUrl: 'app/main-pages/auth/not-authenticated/not-authenticated.tpl.html'
                 });
 
-            $urlRouterProvider.otherwise("/orders");
+            $urlRouterProvider.otherwise("/orders-list");
         }
     ])
     .controller('ZakazXdCtrl', ['$rootScope', '$scope', '$location', 'AuthService',
