@@ -16,11 +16,14 @@ angular.module('zakaz-xd.resources.orders-resource', [
             getAllOrders: function (page) {
                 return $http.get(startUrl + '/all-orders', {params: page});
             },
-            getUserOrders: function (userId, page) {
-                return $http.get(startUrl + '/user-orders', {params: {page: page, userId: userId}});
+            getAllUserOrders: function (page) {
+                return $http.get(startUrl + '/user-orders', {params: {page: page}});
             },
             getOrderById: function (orderId) {
                 return $http.get(startUrl + '/order-by-id', {params: {orderId: orderId}});
+            },
+            getUserOrderById: function (orderId) {
+                return $http.get(startUrl + '/user-order-by-id', {params: {orderId: orderId}});
             },
             getAllOrderStatuses: function () {
                 return $http.get(startUrl + '/all-order-statuses');

@@ -212,6 +212,9 @@ function findAllUsers(page, callback) {
         }
 
         usersCollection.count(function(err, count) {
+            if (err) {
+                return callback(err);
+            }
             return callback(null, {count: count, items: users});
         });
     });
