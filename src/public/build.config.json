@@ -13,14 +13,16 @@
       "bower_components/angular-ui-utils/ui-utils.js",
       "bower_components/angular-ui-utils/ui-utils-ieshiv.js",
       "bower_components/bootstrap/dist/js/bootstrap.js",
-      "bower_components/jquery/dist/jquery.js"
+      "bower_components/jquery/dist/jquery.js",
+      "bower_components/angular-ui-select/dist/select.js"
     ],
     "css": [
       "bower_components/angular/angular-csp.css",
       "bower_components/angular-bootstrap/ui-bootstrap-csp.css",
       "bower_components/bootstrap/dist/css/bootstrap.css",
       "bower_components/bootstrap/dist/css/bootstrap-theme.css",
-      "bower_components/font-awesome/css/font-awesome.css"
+      "bower_components/font-awesome/css/font-awesome.css",
+      "bower_components/angular-ui-select/dist/select.css"
     ],
     "assets": [
     ]

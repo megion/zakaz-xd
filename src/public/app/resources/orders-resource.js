@@ -17,7 +17,7 @@ angular.module('zakaz-xd.resources.orders-resource', [
                 return $http.get(startUrl + '/all-orders', {params: page});
             },
             getAllUserOrders: function (page) {
-                return $http.get(startUrl + '/user-orders', {params: {page: page}});
+                return $http.get(startUrl + '/user-orders', {params: page});
             },
             getOrderById: function (orderId) {
                 return $http.get(startUrl + '/order-by-id', {params: {orderId: orderId}});

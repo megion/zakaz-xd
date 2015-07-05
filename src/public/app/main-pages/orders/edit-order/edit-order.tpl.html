@@ -2,6 +2,22 @@
 <h4 ng-if="!isCreate">Редактирование заказа</h4>
 <form class="form-horizontal" ng-submit="save(changeOrderForm.$invalid)" name="changeOrderForm" novalidate>
 
+    <div class="form-group required" ng-class="{'has-error': changeOrderForm.$submitted && changeOrderForm.title.$error.required}">
+        <label class="col-sm-2 control-label">Наименование</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" name="title" placeholder="Наименование заказа"
+                   data-ng-model="order.title" required>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Текст</label>
+        <div class="col-sm-10">
+            <textarea class="form-control" name="message" placeholder="Текст заказа" rows="6" data-ng-model="order.message">
+            </textarea>
+        </div>
+    </div>
+
     <div class="form-group">
         <div class="col-sm-2">
             <button type="submit" class="btn btn-primary">Сохранить</button>

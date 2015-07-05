@@ -43,13 +43,30 @@ angular.module('zakaz-xd.main', [
                                     return response.data;
                                 }
                             );
+                        },
+                        allOrderTypes: function($stateParams, OrdersResource){
+                            return OrdersResource.getAllOrderTypes().then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
+                        },
+                        allOrderStatuses: function($stateParams, OrdersResource){
+                            return OrdersResource.getAllOrderStatuses().then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
+                        },
+                        user: function ($stateParams, AuthService) {
+                            return AuthService.getCurrentUser();
                         }
                     }
                 })
                 // создание своего заказа
                 .state('create-order', {
                     url: '/order/create',
-                    controller: 'EditUserCtrl',
+                    controller: 'EditOrderCtrl',
                     templateUrl: 'app/main-pages/orders/edit-order/edit-order.tpl.html',
                     resolve: {
                         hasAccess: function ($stateParams, AuthService) {
@@ -71,7 +88,11 @@ angular.module('zakaz-xd.main', [
                                     return response.data;
                                 }
                             );
+                        },
+                        user: function ($stateParams, AuthService) {
+                            return AuthService.getCurrentUser();
                         }
+
                     }
                 })
                 .state('login', {
@@ -132,7 +153,7 @@ angular.module('zakaz-xd.main', [
                         hasAccess: function ($stateParams, AuthService) {
                             return AuthService.checkAccess(ACCESS.MANAGE_USERS);
                         },
-                        user: function($stateParams, UsersResource, ErrorHandler){
+                        user: function($stateParams, UsersResource){
                             return UsersResource.getUserById($stateParams.id).then(
                                 function(response) {
                                     return response.data;
