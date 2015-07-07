@@ -1,16 +1,16 @@
 angular
-    .module('zakaz-xd.orders.orders-list', [
+    .module('zakaz-xd.products.products-list', [
         'zakaz-xd.dialogs',
         'zakaz-xd.directives.pagination',
-        'zakaz-xd.resources.orders-resource',
+        'zakaz-xd.resources.products-resource',
         'zakaz-xd.auth'
     ])
-    .controller('OrdersListCtrl', ['$scope', '$stateParams', '$state', 'OrdersResource',
+    .controller('ProductsListCtrl', ['$scope', '$stateParams', '$state', 'ProductsResource',
         'ErrorDialog', 'InfoDialog', 'user',
-        function ($scope, $stateParams, $state, OrdersResource, ErrorDialog, InfoDialog, user) {
+        function ($scope, $stateParams, $state, ProductsResource, ErrorDialog, InfoDialog, user) {
             $scope.user = user;
 
-            $scope.orderList = [];
+            $scope.productList = [];
             $scope.pageConfig = {
                 page: 1,
                 itemsPerPage: 10,
@@ -19,10 +19,10 @@ angular
                 }
             };
 
-            function refreshOrdersTable(page) {
-                OrdersResource.getAllUserOrders(page).then(
+            function refreshProductsTable(page) {
+                ProductsResource.getAllProducts(page).then(
                     function(response) {
-                        $scope.orderList = response.data.items;
+                        $scope.productList = response.data.items;
                         $scope.pageConfig.count = response.data.count;
                     },
                     function(err) {
@@ -31,7 +31,7 @@ angular
                 );
             }
 
-            refreshOrdersTable({page: $scope.pageConfig.page, itemsPerPage: $scope.pageConfig.itemsPerPage});
+            refreshProductsTable({page: $scope.pageConfig.page, itemsPerPage: $scope.pageConfig.itemsPerPage});
         }
     ])
 ;

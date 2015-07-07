@@ -1,9 +1,9 @@
 <div class="row">
     <div class="col-sm-6">
-        <h4>Список заказов пользователя {{user.username}}</h4>
+        <h4>Список товаров</h4>
     </div>
     <div class="col-sm-6 text-right">
-        <a ui-sref="create-order" class="btn btn-success">Создать заказ</a>
+        <a ui-sref="create-order" class="btn btn-success">Создать товар</a>
     </div>
 </div>
 <div class="row">
@@ -22,11 +22,11 @@
             </thead>
             <tbody>
 
-            <tr data-ng-repeat="order in orderList">
+            <tr data-ng-repeat="product in productList">
                 <td>
-                    <a ui-sref="edit-order({id: order._id})">{{order.title}}</a>
+                    <a ui-sref="edit-product({id: product._id})">{{product.title}}</a>
                 </td>
-                <td>{{order.createdDate}}</td>
+                <td>{{product.createdDate}}</td>
             </tr>
             </tbody>
         </table>

@@ -2,17 +2,17 @@
  * Изменение\создание продукта
  */
 angular
-    .module('zakaz-xd.products.edit-order', [
+    .module('zakaz-xd.products.edit-product', [
         'zakaz-xd.dialogs',
-        'zakaz-xd.resources.orders-resource',
+        'zakaz-xd.resources.products-resource',
         'zakaz-xd.auth'
     ])
-    .controller('EditOrderCtrl', ['$scope', '$stateParams', '$state', 'OrdersResource',
-        'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'order', 'user',
-        function ($scope, $stateParams, $state, OrdersResource,
-                  ErrorDialog, InfoDialog, YesNoDialog, order, user) {
-            $scope.isCreate = !(order._id);
-            $scope.order = order;
+    .controller('EditProductCtrl', ['$scope', '$stateParams', '$state', 'ProductsResource',
+        'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'product', 'user',
+        function ($scope, $stateParams, $state, ProductsResource,
+                  ErrorDialog, InfoDialog, YesNoDialog, product, user) {
+            $scope.isCreate = !(product._id);
+            $scope.product = product;
 
             $scope.save = function(invalid) {
                 console.log(invalid);
@@ -21,20 +21,20 @@ angular
                 }
 
                 if ($scope.isCreate) {
-                    OrdersResource.createOrder($scope.order).then(
+                    ProductsResource.createProduct($scope.product).then(
                         function (response) {
-                            InfoDialog.open("Ваш заказ успешно создан");
-                            $state.go("orders-list");
+                            InfoDialog.open("Товар успешно создан");
+                            $state.go("products-list");
                         },
                         function (err) {
                             ErrorDialog.open(err.data, true);
                         }
                     );
                 } else {
-                    OrdersResource.editOrder($scope.order).then(
+                    ProductsResource.editProduct($scope.product).then(
                         function (response) {
-                            InfoDialog.open("Ваш заказ успешно изменен");
-                            $state.go("orders-list");
+                            InfoDialog.open("Товар успешно изменен");
+                            $state.go("products-list");
                         },
                         function (err) {
                             ErrorDialog.open(err.data, true);
@@ -43,13 +43,13 @@ angular
                 }
             };
 
-            $scope.deleteOrder = function() {
-                YesNoDialog.open("Вы действительно хотите удалить заказ?").then(
+            $scope.deleteProduct = function() {
+                YesNoDialog.open("Вы действительно хотите удалить продукт?").then(
                     function() {
-                        OrdersResource.deleteOrder($scope.order._id).then(
+                        ProductsResource.deleteProduct($scope.product._id).then(
                             function (response) {
-                                InfoDialog.open("Заказ удален");
-                                $state.go("orders-list");
+                                InfoDialog.open("Продукт удален");
+                                $state.go("products-list");
                             },
                             function (err) {
                                 ErrorDialog.open(err.data, true);
