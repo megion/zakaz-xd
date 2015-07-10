@@ -75,22 +75,10 @@ function runChangelogs(callback) {
     });
 
     // insert roles
-    changesets.push({
-        changeId: 4,
-        changeFn: function(changeCallback) {
-            var roles = [
-                new Role(ROLES.ADMIN, 'Администратор'),
-                new Role(ROLES.CUSTOMER, 'Заказчик')
-            ];
-
-            roleService.createRoles(roles, function(err, newRoles) {
-                if (err) {
-                    return changeCallback(err);
-                }
-                return changeCallback(null);
-            });
-        }
-    });
+    changesets.push(_createInsertNewRolesChangeset(4, [
+        new Role(ROLES.ADMIN, 'Администратор'),
+        new Role(ROLES.CUSTOMER, 'Заказчик')
+    ]));
 
     // insert admin and assign role ADMIN
     changesets.push({
@@ -124,30 +112,19 @@ function runChangelogs(callback) {
         }
     });
     // insert accesses
-    changesets.push({
-        changeId: 7,
-        changeFn: function(changeCallback) {
-            var accesses = [
-                new Access('MANAGE_USERS', ACCESSES.MANAGE_USERS, 'Управление пользователями'),
-                new Access('CREATE_ORDER', ACCESSES.CREATE_ORDER, 'Создание заказа'),
-                new Access('VIEW_OWN_ORDERS', ACCESSES.VIEW_OWN_ORDERS, 'Просмотр своих заказов'),
-                new Access('EDIT_OWN_ORDER', ACCESSES.EDIT_OWN_ORDER, 'Редактирование своего заказа'),
-                new Access('REMOVE_OWN_ORDER', ACCESSES.REMOVE_OWN_ORDER, 'Удаление своего заказа'),
-                new Access('VIEW_ALL_ORDER', ACCESSES.VIEW_ALL_ORDER, 'Просмотр всех заказов'),
-                new Access('EDIT_ANY_ORDER', ACCESSES.EDIT_ANY_ORDER, 'Редактирование любого заказа'),
-                new Access('REMOVE_ANY_ORDER', ACCESSES.REMOVE_ANY_ORDER, 'Удаление любого заказа'),
-                new Access('CHANGE_OWN_PASSWORD', ACCESSES.CHANGE_OWN_PASSWORD, 'Изменение своего пароля'),
-                new Access('CHANGE_OWN_ROLE_LIST', ACCESSES.CHANGE_OWN_ROLE_LIST, 'Изменение списка назначеных ролей'),
-                new Access('VIEW_ROLES', ACCESSES.VIEW_ROLES, 'Просмотр всех ролей')
-            ];
-            roleService.createAccesses(accesses, function(err, insertedAccesses) {
-                if (err) {
-                    return changeCallback(err);
-                }
-                return changeCallback(null);
-            });
-        }
-    });
+    changesets.push(_createInsertNewAccessesChangeset(7, [
+        new Access('MANAGE_USERS', ACCESSES.MANAGE_USERS, 'Управление пользователями'),
+        new Access('CREATE_ORDER', ACCESSES.CREATE_ORDER, 'Создание заказа'),
+        new Access('VIEW_OWN_ORDERS', ACCESSES.VIEW_OWN_ORDERS, 'Просмотр своих заказов'),
+        new Access('EDIT_OWN_ORDER', ACCESSES.EDIT_OWN_ORDER, 'Редактирование своего заказа'),
+        new Access('REMOVE_OWN_ORDER', ACCESSES.REMOVE_OWN_ORDER, 'Удаление своего заказа'),
+        new Access('VIEW_ALL_ORDER', ACCESSES.VIEW_ALL_ORDER, 'Просмотр всех заказов'),
+        new Access('EDIT_ANY_ORDER', ACCESSES.EDIT_ANY_ORDER, 'Редактирование любого заказа'),
+        new Access('REMOVE_ANY_ORDER', ACCESSES.REMOVE_ANY_ORDER, 'Удаление любого заказа'),
+        new Access('CHANGE_OWN_PASSWORD', ACCESSES.CHANGE_OWN_PASSWORD, 'Изменение своего пароля'),
+        new Access('CHANGE_OWN_ROLE_LIST', ACCESSES.CHANGE_OWN_ROLE_LIST, 'Изменение списка назначеных ролей'),
+        new Access('VIEW_ROLES', ACCESSES.VIEW_ROLES, 'Просмотр всех ролей')
+    ]));
 
     // assign accesses to role admin
     changesets.push({
@@ -202,6 +179,75 @@ function runChangelogs(callback) {
             });
         }
     });
+
+    function _createInsertNewAccessesChangeset(chId, accesses) {
+        return {
+            changeId: chId,
+            changeFn: function(changeCallback) {
+                roleService.createAccesses(accesses, function(err, insertedAccesses) {
+                    if (err) {
+                        return changeCallback(err);
+                    }
+                    return changeCallback(null);
+                });
+            }
+        }
+    }
+
+    changesets.push(_createInsertNewAccessesChangeset(10, [
+        new Access('MANAGE_ORDERS', ACCESSES.MANAGE_ORDERS, 'Управление заказами'),
+        new Access('MANAGE_PRODUCTS', ACCESSES.MANAGE_PRODUCTS, 'Управление товарами')
+    ]));
+
+    function _createInsertNewRolesChangeset(chId, roles) {
+        return {
+            changeId: chId,
+            changeFn: function(changeCallback) {
+                roleService.createRoles(roles, function(err, newRoles) {
+                    if (err) {
+                        return changeCallback(err);
+                    }
+                    return changeCallback(null);
+                });
+            }
+        }
+    }
+
+    // insert roles order and product manager
+    changesets.push(_createInsertNewRolesChangeset(11, [
+        new Role(ROLES.ORDERS_MANAGER, 'Менеджер заказов'),
+        new Role(ROLES.PRODUCTS_MANAGER, 'Менеджер товаров')
+    ]));
+
+    function _createAssignRoleAccessesChangeset(chId, roleCode, accessValues) {
+        return {
+            changeId: chId,
+            changeFn: function(changeCallback) {
+                roleService.findRolesByCodes([roleCode], function(err, roles) {
+                    if (err) {
+                        return changeCallback(err);
+                    }
+                    // назначить доступы
+                    roleService.findAccessesByValues(accessValues,
+                        function(err, accesses) {
+                            if (err) {
+                                return changeCallback(err);
+                            }
+                            roleService.assignRoleAccesses(roles[0], accesses, function(err) {
+                                if (err) {
+                                    return changeCallback(err);
+                                }
+                                return changeCallback(null);
+                            });
+                        }
+                    );
+                });
+            }
+        }
+    }
+
+    changesets.push(_createAssignRoleAccessesChangeset(12, ROLES.ORDERS_MANAGER, [ACCESSES.MANAGE_ORDERS]));
+    changesets.push(_createAssignRoleAccessesChangeset(13, ROLES.PRODUCTS_MANAGER, [ACCESSES.MANAGE_PRODUCTS]));
 
     changelog.executeAllChangesets(changesets, callback);
 }

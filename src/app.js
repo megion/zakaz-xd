@@ -44,13 +44,13 @@ function initWebApp(app) {
 	}));
 
     app.use(express.static(path.join(__dirname, 'public')));
-	app.use(require('./middleware/sendHttpError'));
 
     // routes
     app.use('/auth', require('./routes/auth'));
     app.use('/users', require('./routes/users'));
     app.use('/roles', require('./routes/roles'));
     app.use('/orders', require('./routes/orders'));
+    app.use('/products', require('./routes/products'));
 
 	app.use(function(err, req, res, next) {
 		if (typeof err == 'number') { // next(404);
@@ -59,12 +59,14 @@ function initWebApp(app) {
 
 		if (err instanceof HttpError) {
             log.error(err.message);
-			res.sendHttpError(err);
+
+            res.status(err.status);
+            res.json({message: err.message, status: err.status, stack: err.stack});
 		} else {
             log.error(err.stack);
-            var httpErr = new HttpError(500);
-            httpErr.stack = err.stack;
-            res.sendHttpError(httpErr);
+
+            res.status(500);
+            res.json({message: err.message, status: err.status, stack: err.stack});
 		}
 	});
 }
