@@ -5,7 +5,9 @@ angular
     .module('zakaz-xd.products.edit-product', [
         'zakaz-xd.dialogs',
         'zakaz-xd.resources.products-resource',
-        'zakaz-xd.auth'
+        'zakaz-xd.auth',
+        'ui.select',
+        'ngSanitize'
     ])
     .controller('EditProductCtrl', ['$scope', '$stateParams', '$state', 'ProductsResource',
         'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'product', 'user', 'allMeasureUnits',
@@ -14,6 +16,8 @@ angular
             $scope.isCreate = !(product._id);
             $scope.product = product;
             $scope.allMeasureUnits = allMeasureUnits;
+
+            console.log("allMeasureUnits: ", $scope.allMeasureUnits);
 
             $scope.save = function(invalid) {
                 console.log(invalid);
