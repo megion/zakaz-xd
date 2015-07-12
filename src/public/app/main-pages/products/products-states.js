@@ -42,6 +42,13 @@ angular.module('zakaz-xd.products.states', [
                         },
                         user: function ($stateParams, AuthService) {
                             return AuthService.getCurrentUser();
+                        },
+                        allMeasureUnits: function($stateParams, ProductsResource){
+                            return ProductsResource.getAllMeasureUnits().then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
                         }
                     }
                 })
@@ -59,6 +66,13 @@ angular.module('zakaz-xd.products.states', [
                         },
                         user: function ($stateParams, AuthService) {
                             return AuthService.getCurrentUser();
+                        },
+                        allMeasureUnits: function($stateParams, ProductsResource){
+                            return ProductsResource.getAllMeasureUnits().then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
                         }
                     }
                 });

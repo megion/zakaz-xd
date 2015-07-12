@@ -18,6 +18,9 @@ angular.module('zakaz-xd.resources.products-resource', [
             },
             getProductById: function (id) {
                 return $http.get(startUrl + '/product-by-id', {params: {id: id}});
+            },
+            getAllMeasureUnits: function () {
+                return $http.get(startUrl + '/all-measure-units');
             }
         };
     }]);

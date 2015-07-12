@@ -8,11 +8,12 @@ angular
         'zakaz-xd.auth'
     ])
     .controller('EditProductCtrl', ['$scope', '$stateParams', '$state', 'ProductsResource',
-        'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'product', 'user',
+        'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'product', 'user', 'allMeasureUnits',
         function ($scope, $stateParams, $state, ProductsResource,
-                  ErrorDialog, InfoDialog, YesNoDialog, product, user) {
+                  ErrorDialog, InfoDialog, YesNoDialog, product, user, allMeasureUnits) {
             $scope.isCreate = !(product._id);
             $scope.product = product;
+            $scope.allMeasureUnits = allMeasureUnits;
 
             $scope.save = function(invalid) {
                 console.log(invalid);
