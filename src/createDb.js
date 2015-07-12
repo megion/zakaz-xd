@@ -3,8 +3,10 @@ var changelog = require('./lib/changelog');
 asyncUtils = require('./utils/asyncUtils');
 var userService = require('./service/userService');
 var roleService = require('./service/roleService');
+var measureUnitService = require('./service/measureUnitService');
 var Access = require('./models/access').Access;
 var Role = require('./models/role').Role;
+var MeasureUnit = require('./models/measureUnit').MeasureUnit;
 var ACCESSES = require('./utils/accesses').ACCESSES;
 var ROLES = require('./utils/roles').ROLES;
 
@@ -213,6 +215,20 @@ function runChangelogs(callback) {
         }
     }
 
+    function _createInsertNewMeasureUnitsChangeset(chId, measureUnits) {
+        return {
+            changeId: chId,
+            changeFn: function(changeCallback) {
+                measureUnitService.createMeasureUnits(measureUnits, function(err, items) {
+                    if (err) {
+                        return changeCallback(err);
+                    }
+                    return changeCallback(null);
+                });
+            }
+        }
+    }
+
     // insert roles order and product manager
     changesets.push(_createInsertNewRolesChangeset(11, [
         new Role(ROLES.ORDERS_MANAGER, 'Менеджер заказов'),
@@ -248,6 +264,15 @@ function runChangelogs(callback) {
 
     changesets.push(_createAssignRoleAccessesChangeset(12, ROLES.ORDERS_MANAGER, [ACCESSES.MANAGE_ORDERS]));
     changesets.push(_createAssignRoleAccessesChangeset(13, ROLES.PRODUCTS_MANAGER, [ACCESSES.MANAGE_PRODUCTS]));
+
+    changesets.push(_createInsertNewMeasureUnitsChangeset(14, [
+        new MeasureUnit('KG', 'кг'),
+        new MeasureUnit('PIECE', 'штука'),
+        new MeasureUnit('PALLET', 'палет'),
+        new MeasureUnit('BOX', 'коробка')
+    ]));
+
+
 
     changelog.executeAllChangesets(changesets, callback);
 }

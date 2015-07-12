@@ -5,6 +5,7 @@
  */
 function Product(title) {
     this.title = title; // наименование товара
+
 }
 
 exports.Product = Product;
