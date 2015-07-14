@@ -13,12 +13,20 @@
     <div class="form-group required" ng-class="{'has-error': changeProductForm.$submitted && changeProductForm.measureUnit.$error.required}">
         <label class="col-sm-2 control-label">Единица измерения</label>
         <div class="col-sm-10">
-            <ui-select ng-model="product.measureUnit" theme="bootstrap">
+            <ui-select ng-model="product.measureUnit" theme="bootstrap" name="measureUnit">
                 <ui-select-match placeholder="Единица измерения">{{$select.selected.title}}</ui-select-match>
                 <ui-select-choices repeat="item in allMeasureUnits | filter: $select.search">
                     <div ng-bind-html="item.title | highlight: $select.search"></div>
                 </ui-select-choices>
             </ui-select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Кратность в упаковке</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" name="packageMultiplicity" placeholder="Кратность в упаковке"
+                   data-ng-model="product.packageMultiplicity">
         </div>
     </div>
 

@@ -23,9 +23,9 @@ router.get('/all-products', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_PRO
 });
 
 router.get('/product-by-id', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_PRODUCTS), function(req, res, next) {
-    var orderId = new ObjectID(req.param('orderId'));
+    var id = new ObjectID(req.param('id'));
 
-    productService.findOneById(orderId, function(err, result) {
+    productService.findOneById(id, function(err, result) {
             if (err) {
                 return next(err);
             }
@@ -42,6 +42,29 @@ router.get('/all-measure-units', loadUser, function(req, res, next) {
             res.json(result);
         }
     );
+});
+
+router.post('/create-product', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_PRODUCTS), function(req, res, next) {
+    var product = req.body.product;
+
+    if (!product.measureUnit) {
+        return next(new HttpError(400, "Поле единица измерения пустое"));
+    }
+
+    if (!product.title) {
+        return next(new HttpError(400, "Поле наименование пустое"));
+    }
+
+    product.measureUnit_id = product.measureUnit._id;
+    delete product.measureUnit;
+    product.createdDate = new Date();
+
+    productService.createProduct(product, function(err, newUser) {
+        if (err)
+            return next(err);
+
+        res.send({});
+    });
 });
 
 module.exports = router;

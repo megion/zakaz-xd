@@ -32,7 +32,7 @@ angular
                             $state.go("products-list");
                         },
                         function (err) {
-                            ErrorDialog.open(err.data, true);
+                            ErrorDialog.open(err.data);
                         }
                     );
                 } else {
@@ -42,7 +42,7 @@ angular
                             $state.go("products-list");
                         },
                         function (err) {
-                            ErrorDialog.open(err.data, true);
+                            ErrorDialog.open(err.data);
                         }
                     );
                 }
