@@ -10,6 +10,13 @@
         </div>
     </div>
 
+    <div class="form-group" ng-if="!isCreate">
+        <label class="col-sm-2 control-label">Дата создания</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">{{product.createdDate}}</p>
+        </div>
+    </div>
+
     <div class="form-group required" ng-class="{'has-error': changeProductForm.$submitted && changeProductForm.measureUnit.$error.required}">
         <label class="col-sm-2 control-label">Единица измерения</label>
         <div class="col-sm-10">
@@ -22,11 +29,32 @@
         </div>
     </div>
 
+    <!-- Тип -->
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Тип</label>
+        <div class="col-sm-10">
+            <ui-select ng-model="product.type" theme="bootstrap" name="type">
+                <ui-select-match placeholder="Тип" allow-clear="true">{{$select.selected.title}}</ui-select-match>
+                <ui-select-choices repeat="item in allProductTypes | filter: $select.search">
+                    <div ng-bind-html="item.title | highlight: $select.search"></div>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+    </div>
+
     <div class="form-group">
         <label class="col-sm-2 control-label">Кратность в упаковке</label>
         <div class="col-sm-10">
             <input type="text" class="form-control" name="packageMultiplicity" placeholder="Кратность в упаковке"
                    data-ng-model="product.packageMultiplicity">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Штрих код</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" name="barcode" placeholder="Штрих код"
+                   data-ng-model="product.barcode">
         </div>
     </div>
 

@@ -13,15 +13,15 @@
             <li ng-show="isLogin() && AuthService.hasAccessByCodes('VIEW_OWN_ORDERS')"><a data-ui-sref="orders-list">Заказы</a></li>
 
 
-            <li data-ng-show="isLogin() && AuthService.hasAccessByCodes('MANAGE_USERS')" class="dropdown">
+            <li data-ng-show="isLogin() && AuthService.hasAccessByCodes('MANAGE_USERS,MANAGE_ORDERS,MANAGE_PRODUCTS')" class="dropdown">
                 <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                     Администрирование
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a href="#/manage-users/users-list">Управление пользователями</a></li>
-                    <li><a data-ui-sref="all-orders">Управление заказами</a></li>
-                    <li><a data-ui-sref="products-list">Товары</a></li>
+                    <li ng-if="AuthService.hasAccessByCodes('MANAGE_USERS')"><a href="#/manage-users/users-list">Управление пользователями</a></li>
+                    <li ng-if="AuthService.hasAccessByCodes('MANAGE_PRODUCTS')"><a data-ui-sref="products-list">Управление товарами</a></li>
+                    <li ng-if="AuthService.hasAccessByCodes('MANAGE_ORDERS')"><a data-ui-sref="all-orders">Управление заказами</a></li>
                 </ul>
             </li>
 

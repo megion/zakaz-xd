@@ -18,6 +18,8 @@
             <tr>
                 <th>Наименование</th>
                 <th>Дата создания</th>
+                <th>Единица измерения</th>
+                <th>Тип</th>
             </tr>
             </thead>
             <tbody>
@@ -27,6 +29,8 @@
                     <a ui-sref="edit-product({id: product._id})">{{product.title}}</a>
                 </td>
                 <td>{{product.createdDate}}</td>
+                <td>{{product.measureUnit.title}}</td>
+                <td>{{product.type.title}}</td>
             </tr>
             </tbody>
         </table>

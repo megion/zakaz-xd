@@ -49,6 +49,13 @@ angular.module('zakaz-xd.products.states', [
                                     return response.data;
                                 }
                             );
+                        },
+                        allProductTypes: function($stateParams, ProductsResource){
+                            return ProductsResource.getAllProductTypes().then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
                         }
                     }
                 })
@@ -69,6 +76,13 @@ angular.module('zakaz-xd.products.states', [
                         },
                         allMeasureUnits: function($stateParams, ProductsResource){
                             return ProductsResource.getAllMeasureUnits().then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
+                        },
+                        allProductTypes: function($stateParams, ProductsResource){
+                            return ProductsResource.getAllProductTypes().then(
                                 function(response) {
                                     return response.data;
                                 }

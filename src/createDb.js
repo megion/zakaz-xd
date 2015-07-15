@@ -1,12 +1,14 @@
 var mongodb = require('./lib/mongodb');
 var changelog = require('./lib/changelog');
-asyncUtils = require('./utils/asyncUtils');
+var asyncUtils = require('./utils/asyncUtils');
 var userService = require('./service/userService');
 var roleService = require('./service/roleService');
 var measureUnitService = require('./service/measureUnitService');
+var productTypeService = require('./service/productTypeService');
 var Access = require('./models/access').Access;
 var Role = require('./models/role').Role;
 var MeasureUnit = require('./models/measureUnit').MeasureUnit;
+var ProductType = require('./models/productType').ProductType;
 var ACCESSES = require('./utils/accesses').ACCESSES;
 var ROLES = require('./utils/roles').ROLES;
 
@@ -272,7 +274,25 @@ function runChangelogs(callback) {
         new MeasureUnit('BOX', 'коробка')
     ]));
 
+    function _createInsertNewProductTypesChangeset(chId, items) {
+        return {
+            changeId: chId,
+            changeFn: function(changeCallback) {
+                productTypeService.createProductTypes(items, function(err, _items) {
+                    if (err) {
+                        return changeCallback(err);
+                    }
+                    return changeCallback(null);
+                });
+            }
+        }
+    }
 
+    // вес/штука
+    changesets.push(_createInsertNewProductTypesChangeset(15, [
+        new ProductType('WEIGHT', 'вес'),
+        new ProductType('PIECE', 'штука')
+    ]));
 
     changelog.executeAllChangesets(changesets, callback);
 }

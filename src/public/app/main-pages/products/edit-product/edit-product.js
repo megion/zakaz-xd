@@ -10,12 +10,13 @@ angular
         'ngSanitize'
     ])
     .controller('EditProductCtrl', ['$scope', '$stateParams', '$state', 'ProductsResource',
-        'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'product', 'user', 'allMeasureUnits',
+        'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'product', 'user', 'allMeasureUnits', 'allProductTypes',
         function ($scope, $stateParams, $state, ProductsResource,
-                  ErrorDialog, InfoDialog, YesNoDialog, product, user, allMeasureUnits) {
+                  ErrorDialog, InfoDialog, YesNoDialog, product, user, allMeasureUnits, allProductTypes) {
             $scope.isCreate = !(product._id);
             $scope.product = product;
             $scope.allMeasureUnits = allMeasureUnits;
+            $scope.allProductTypes = allProductTypes;
 
             console.log("allMeasureUnits: ", $scope.allMeasureUnits);
 
