@@ -1,6 +1,7 @@
 var router = require('express').Router();
 
 var productService = require('../service/productService');
+var userProductService = require('../service/userProductService');
 var measureUnitService = require('../service/measureUnitService');
 var productTypeService = require('../service/productTypeService');
 var error = require('../error');
@@ -126,6 +127,19 @@ router.post('/delete-product', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_
 
         res.send({});
     });
+});
+
+router.get('/product-users-by-product-id', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_PRODUCTS), function(req, res, next) {
+    var id = new ObjectID(req.param('id'));
+    var page = pagination.createMongodbPage(req);
+
+    userProductService.findUserProductsByProductId(page, id, function(err, result) {
+            if (err) {
+                return next(err);
+            }
+            res.json(result);
+        }
+    );
 });
 
 module.exports = router;

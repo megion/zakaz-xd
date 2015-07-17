@@ -205,18 +205,38 @@ function deleteUser(id, callback) {
 }
 
 function findAllUsers(page, callback) {
-    var usersCollection = getCollection();
-    usersCollection.find({}, {skip:page.skip, limit:page.limit, sort: {username: 1}, fields: {username: 1, email: 1}}).toArray(function(err, users) {
+    findUsersByFilter({}, page, callback);
+}
+
+function findUsersByIds(ids, callback) {
+    findUsersByFilter({_id : {$in : ids}}, null, callback);
+}
+
+function findUsersByFilter(filter, page, callback) {
+    var coll = getCollection();
+    var conf = {
+        sort: {username: 1},
+        fields: {username: 1, email: 1}
+    };
+    if (page) {
+        conf.skip = page.skip;
+        conf.limit = page.limit;
+    }
+    coll.find(filter, conf).toArray(function(err, users) {
         if (err) {
             return callback(err);
         }
 
-        usersCollection.count(function(err, count) {
-            if (err) {
-                return callback(err);
-            }
-            return callback(null, {count: count, items: users});
-        });
+        if (page) {
+            coll.find(filter).count(function(err, count) {
+                if (err) {
+                    return callback(err);
+                }
+                return callback(null, {count: count, items: users});
+            });
+        } else {
+            return callback(null, users);
+        }
     });
 }
 
@@ -233,3 +253,4 @@ exports.unlockUser = unlockUser;
 exports.lockUser = lockUser;
 exports.deleteUser = deleteUser;
 exports.findAllUsers = findAllUsers;
+exports.findUsersByIds = findUsersByIds;

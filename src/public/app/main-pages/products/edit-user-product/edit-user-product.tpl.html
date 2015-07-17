@@ -1,5 +1,5 @@
-<h4 ng-if="isCreate">Создание товара</h4>
-<h4 ng-if="!isCreate">Редактирование товара</h4>
+<h4 ng-if="isCreate">Создание связи товара с пользователем</h4>
+<h4 ng-if="!isCreate">Редактирование связи товара с пользователем</h4>
 <form class="form-horizontal" ng-submit="save(changeProductForm.$invalid)" name="changeProductForm" novalidate>
 
     <div class="form-group required" ng-class="{'has-error': changeProductForm.$submitted && changeProductForm.title.$error.required}">

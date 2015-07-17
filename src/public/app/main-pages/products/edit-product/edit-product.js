@@ -18,8 +18,6 @@ angular
             $scope.allMeasureUnits = allMeasureUnits;
             $scope.allProductTypes = allProductTypes;
 
-            console.log("allMeasureUnits: ", $scope.allMeasureUnits);
-
             $scope.save = function(invalid) {
                 console.log(invalid);
                 if (invalid) {

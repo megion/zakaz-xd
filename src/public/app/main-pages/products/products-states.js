@@ -4,7 +4,9 @@ angular.module('zakaz-xd.products.states', [
     'zakaz-xd.dialogs',
     'zakaz-xd.resources.products-resource',
     'zakaz-xd.products.products-list',
-    'zakaz-xd.products.edit-product'
+    'zakaz-xd.products.edit-product',
+    'zakaz-xd.products.product-users-list',
+    'zakaz-xd.products.edit-user-product'
 ])
     .config(['$stateProvider', '$urlRouterProvider', 'ACCESS',
         function ($stateProvider, $urlRouterProvider, ACCESS) {
@@ -87,6 +89,24 @@ angular.module('zakaz-xd.products.states', [
                                     return response.data;
                                 }
                             );
+                        }
+                    }
+                })
+                // список пользователей указанного товара
+                .state('product-users-list', {
+                    url: '/product-users-list/:id',
+                    controller: 'ProductUsersListCtrl',
+                    templateUrl: 'app/main-pages/products/product-users-list/product-users-list.tpl.html',
+                    resolve: {
+                        product: function($stateParams, ProductsResource){
+                            return ProductsResource.getProductById($stateParams.id).then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
+                        },
+                        hasAccess: function ($stateParams, AuthService) {
+                            return AuthService.checkAccess(ACCESS.MANAGE_PRODUCTS);
                         }
                     }
                 });
