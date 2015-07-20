@@ -36,6 +36,9 @@ angular.module('zakaz-xd.resources.products-resource', [
             },
             editUserProduct: function (userProduct) {
                 return $http.post(startUrl + '/edit-user-product', {userProduct: userProduct});
+            },
+            getUserProductById: function (id) {
+                return $http.get(startUrl + '/user-product-by-id', {params: {id: id}});
             }
         };
     }]);

@@ -109,6 +109,52 @@ angular.module('zakaz-xd.products.states', [
                             return AuthService.checkAccess(ACCESS.MANAGE_PRODUCTS);
                         }
                     }
+                })
+                // создание user-product
+                .state('create-user-product', {
+                    url: '/product/user-product/create/:productId',
+                    controller: 'EditUserProductCtrl',
+                    templateUrl: 'app/main-pages/products/edit-product/edit-product.tpl.html',
+                    resolve: {
+                        hasAccess: function ($stateParams, AuthService) {
+                            return AuthService.checkAccess(ACCESS.MANAGE_PRODUCTS);
+                        },
+                        product: function($stateParams, ProductsResource) {
+                            return ProductsResource.getProductById($stateParams.productId).then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
+                        },
+                        userProduct: function(){
+                            return {};
+                        }
+                    }
+                })
+                // редактирование user-product
+                .state('edit-user-product', {
+                    url: '/product/user-product/edit/:userProductId',
+                    controller: 'EditUserProductCtrl',
+                    templateUrl: 'app/main-pages/products/edit-product/edit-product.tpl.html',
+                    resolve: {
+                        hasAccess: function ($stateParams, AuthService) {
+                            return AuthService.checkAccess(ACCESS.MANAGE_PRODUCTS);
+                        },
+                        userProduct: function($stateParams, ProductsResource){
+                            return ProductsResource.getUserProductById($stateParams.userProductId).then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
+                        },
+                        product: function($stateParams, ProductsResource, userProduct) {
+                            return ProductsResource.getUserProductById(userProduct.product._id).then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
+                        }
+                    }
                 });
         }
     ]);
