@@ -15,6 +15,7 @@ angular
                   ErrorDialog, InfoDialog, YesNoDialog, product, userProduct) {
             $scope.isCreate = !(userProduct._id);
             $scope.product = product;
+            $scope.userProduct = userProduct;
 
             $scope.save = function(invalid) {
                 if (invalid) {

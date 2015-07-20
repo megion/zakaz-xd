@@ -1,60 +1,11 @@
 <h4 ng-if="isCreate">Создание связи товара с пользователем</h4>
 <h4 ng-if="!isCreate">Редактирование связи товара с пользователем</h4>
-<form class="form-horizontal" ng-submit="save(changeProductForm.$invalid)" name="changeProductForm" novalidate>
-
-    <div class="form-group required" ng-class="{'has-error': changeProductForm.$submitted && changeProductForm.title.$error.required}">
-        <label class="col-sm-2 control-label">Наименование</label>
-        <div class="col-sm-10">
-            <input type="text" class="form-control" name="title" placeholder="Наименование"
-                   data-ng-model="product.title" required>
-        </div>
-    </div>
-
-    <div class="form-group" ng-if="!isCreate">
-        <label class="col-sm-2 control-label">Дата создания</label>
-        <div class="col-sm-10">
-            <p class="form-control-static">{{product.createdDate}}</p>
-        </div>
-    </div>
-
-    <div class="form-group required" ng-class="{'has-error': changeProductForm.$submitted && changeProductForm.measureUnit.$error.required}">
-        <label class="col-sm-2 control-label">Единица измерения</label>
-        <div class="col-sm-10">
-            <ui-select ng-model="product.measureUnit" theme="bootstrap" name="measureUnit">
-                <ui-select-match placeholder="Единица измерения">{{$select.selected.title}}</ui-select-match>
-                <ui-select-choices repeat="item in allMeasureUnits | filter: $select.search">
-                    <div ng-bind-html="item.title | highlight: $select.search"></div>
-                </ui-select-choices>
-            </ui-select>
-        </div>
-    </div>
-
-    <!-- Тип -->
-    <div class="form-group">
-        <label class="col-sm-2 control-label">Тип</label>
-        <div class="col-sm-10">
-            <ui-select ng-model="product.type" theme="bootstrap" name="type">
-                <ui-select-match placeholder="Тип" allow-clear="true">{{$select.selected.title}}</ui-select-match>
-                <ui-select-choices repeat="item in allProductTypes | filter: $select.search">
-                    <div ng-bind-html="item.title | highlight: $select.search"></div>
-                </ui-select-choices>
-            </ui-select>
-        </div>
-    </div>
+<form class="form-horizontal" ng-submit="save(changeForm.$invalid)" name="changeForm" novalidate>
 
     <div class="form-group">
-        <label class="col-sm-2 control-label">Кратность в упаковке</label>
+        <label class="col-sm-2 control-label">Продукт</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" name="packageMultiplicity" placeholder="Кратность в упаковке"
-                   data-ng-model="product.packageMultiplicity">
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-sm-2 control-label">Штрих код</label>
-        <div class="col-sm-10">
-            <input type="text" class="form-control" name="barcode" placeholder="Штрих код"
-                   data-ng-model="product.barcode">
+            <p class="form-control-static">{{product.title}}</p>
         </div>
     </div>
 
@@ -63,8 +14,7 @@
             <button type="submit" class="btn btn-primary">Сохранить</button>
         </div>
         <div class="col-sm-10 text-right" ng-if="!isCreate">
-            <a data-ui-sref="product-users-list({id: product._id})">Список пользователей товара</a>
-            <button type='button' data-ng-click="deleteProduct()" class="btn btn-danger">Удалить</button>
+            <button type='button' data-ng-click="delete()" class="btn btn-danger">Удалить</button>
         </div>
     </div>
 

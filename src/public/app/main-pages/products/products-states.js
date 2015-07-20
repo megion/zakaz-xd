@@ -114,7 +114,7 @@ angular.module('zakaz-xd.products.states', [
                 .state('create-user-product', {
                     url: '/product/user-product/create/:productId',
                     controller: 'EditUserProductCtrl',
-                    templateUrl: 'app/main-pages/products/edit-product/edit-product.tpl.html',
+                    templateUrl: 'app/main-pages/products/edit-user-product/edit-user-product.tpl.html',
                     resolve: {
                         hasAccess: function ($stateParams, AuthService) {
                             return AuthService.checkAccess(ACCESS.MANAGE_PRODUCTS);
@@ -135,7 +135,7 @@ angular.module('zakaz-xd.products.states', [
                 .state('edit-user-product', {
                     url: '/product/user-product/edit/:userProductId',
                     controller: 'EditUserProductCtrl',
-                    templateUrl: 'app/main-pages/products/edit-product/edit-product.tpl.html',
+                    templateUrl: 'app/main-pages/products/edit-user-product/edit-user-product.tpl.html',
                     resolve: {
                         hasAccess: function ($stateParams, AuthService) {
                             return AuthService.checkAccess(ACCESS.MANAGE_PRODUCTS);
