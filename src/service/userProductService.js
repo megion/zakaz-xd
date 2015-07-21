@@ -1,5 +1,6 @@
 var mongodb = require('../lib/mongodb');
 var userService = require('../service/userService');
+var productService = require('../service/productService');
 var ObjectID = require('mongodb').ObjectID;
 
 function getCollection() {
@@ -37,10 +38,21 @@ function editUserProduct(id, item, callback) {
  * Обогощение данных
  */
 function enrichmentUserProducts(items, callback) {
-
     var userIds = [];
+    var productIds = [];
+
+    var productIdSet = {};
+    var userIdSet = {};
     for (var i=0; i<items.length; i++) {
-        userIds.push(items.user_id);
+        var item = items[i];
+        if (!productIdSet[item.product_id.toString()]) {
+            productIdSet[item.product_id.toString()] = true;
+            productIds.push(item.product_id);
+        }
+        if (!userIdSet[item.user_id.toString()]) {
+            userIdSet[item.user_id.toString()] = true;
+            userIds.push(item.user_id);
+        }
     }
 
     userService.findUsersByIds(userIds, function(err, users) {
@@ -48,24 +60,38 @@ function enrichmentUserProducts(items, callback) {
             return callback(err);
         }
 
-        var usersMap = {};
-        if (users) {
-            for (i=0; i<users.length; i++) {
-                var user = users[i];
-                usersMap[user._id.toString()] = user;
+        productService.findAllProductsByFilter(null, {_id: {$in : productIds}}, function(err, products) {
+            if (err) {
+                return callback(err);
             }
-        }
 
-        // обогощение
-        for (i=0; i<items.length; i++) {
-            var item = items[i];
-            if (item.user_id) {
+            var usersMap = {};
+            if (users) {
+                for (i=0; i<users.length; i++) {
+                    var user = users[i];
+                    usersMap[user._id.toString()] = user;
+                }
+            }
+
+            var productsMap = {};
+            if (products) {
+                for (i=0; i<products.length; i++) {
+                    var product = products[i];
+                    productsMap[product._id.toString()] = product;
+                }
+            }
+
+            // обогощение
+            for (i=0; i<items.length; i++) {
+                var item = items[i];
                 item.user = usersMap[item.user_id.toString()];
+                delete item.user_id;
+                item.product = productsMap[item.product_id.toString()];
+                delete item.product_id;
             }
-        }
 
-        callback(null, items);
-
+            callback(null, items);
+        });
     });
 }
 
@@ -131,8 +157,24 @@ function findOneById(id, callback) {
     findOneUserProductByFilter({_id: id}, callback);
 }
 
+function deleteUserProduct(id, callback) {
+    var coll = getCollection();
+
+    coll.deleteOne(
+        {_id : id},
+        function(err, res) {
+            if (err) {
+                return callback(err);
+            }
+
+            return callback(null, res);
+        }
+    );
+}
+
 exports.getCollection = getCollection;
 exports.createUserProducts = createUserProducts;
 exports.editUserProduct = editUserProduct;
 exports.findUserProductsByProductId = findUserProductsByProductId;
 exports.findOneById = findOneById;
+exports.deleteUserProduct = deleteUserProduct;

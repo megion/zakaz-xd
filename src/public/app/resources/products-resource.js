@@ -34,6 +34,9 @@ angular.module('zakaz-xd.resources.products-resource', [
             createUserProduct: function (newUserProduct) {
                 return $http.post(startUrl + '/create-user-product', {userProduct: newUserProduct});
             },
+            deleteUserProduct: function (id) {
+                return $http.post(startUrl + '/delete-user-product', {id: id});
+            },
             editUserProduct: function (userProduct) {
                 return $http.post(startUrl + '/edit-user-product', {userProduct: userProduct});
             },

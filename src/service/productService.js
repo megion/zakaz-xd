@@ -56,7 +56,14 @@ function enrichmentProducts(products, callback) {
 
 function findAllProductsByFilter(page, filter, callback) {
     var coll = getCollection();
-    coll.find(filter, {skip:page.skip, limit:page.limit, sort: {created_date: 1}}).toArray(function(err, items) {
+    var conf = {
+        sort: {created_date: 1}
+    };
+    if (page) {
+        conf.skip = page.skip;
+        conf.limit = page.limit;
+    }
+    coll.find(filter, conf).toArray(function(err, items) {
         if (err) {
             return callback(err);
         }
@@ -66,12 +73,16 @@ function findAllProductsByFilter(page, filter, callback) {
                 return callback(err);
             }
 
-            coll.count(function(err, count) {
-                if (err) {
-                    return callback(err);
-                }
-                return callback(null, {count: count, items: eItems});
-            });
+            if (page) {
+                coll.find(filter).count(function(err, count) {
+                    if (err) {
+                        return callback(err);
+                    }
+                    return callback(null, {count: count, items: eItems});
+                });
+            } else {
+                return callback(null, eItems);
+            }
         });
     });
 }
@@ -153,6 +164,8 @@ exports.findOneById = findOneById;
 exports.createProduct = createProduct;
 exports.editProduct = editProduct;
 exports.deleteProduct = deleteProduct;
+exports.findOneProductByFilter = findOneProductByFilter;
+exports.findAllProductsByFilter = findAllProductsByFilter;
 
 
 
