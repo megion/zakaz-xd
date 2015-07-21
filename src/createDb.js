@@ -5,6 +5,7 @@ var userService = require('./service/userService');
 var roleService = require('./service/roleService');
 var measureUnitService = require('./service/measureUnitService');
 var productTypeService = require('./service/productTypeService');
+var userProductService = require('./service/userProductService');
 var Access = require('./models/access').Access;
 var Role = require('./models/role').Role;
 var MeasureUnit = require('./models/measureUnit').MeasureUnit;
@@ -293,6 +294,15 @@ function runChangelogs(callback) {
         new ProductType('WEIGHT', 'вес'),
         new ProductType('PIECE', 'штука')
     ]));
+
+    // create UserProduct index
+    changesets.push({
+        changeId: 16,
+        changeFn: function(changeCallback) {
+            var coll = userProductService.getCollection();
+            coll.createIndex( { "user_id": 1, "product_id": 1 }, { unique: true }, changeCallback);
+        }
+    });
 
     changelog.executeAllChangesets(changesets, callback);
 }

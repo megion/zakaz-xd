@@ -5,7 +5,29 @@
     <div class="form-group">
         <label class="col-sm-2 control-label">Продукт</label>
         <div class="col-sm-10">
-            <p class="form-control-static">{{product.title}}</p>
+            <p class="form-control-static">{{userProduct.product.title}}</p>
+        </div>
+    </div>
+
+    <!-- цена товара -->
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Цена товара</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" name="productPrice" placeholder="Цена товара"
+                   data-ng-model="userProduct.productPrice">
+        </div>
+    </div>
+
+    <!-- User -->
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Пользователь</label>
+        <div class="col-sm-10">
+            <ui-select ng-model="userProduct.user" theme="bootstrap" name="user">
+                <ui-select-match placeholder="Пользователь" allow-clear="true">{{$select.selected.username}}</ui-select-match>
+                <ui-select-choices repeat="item in allUserList | filter: $select.search">
+                    <div ng-bind-html="item.username | highlight: $select.search"></div>
+                </ui-select-choices>
+            </ui-select>
         </div>
     </div>
 

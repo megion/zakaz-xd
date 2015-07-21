@@ -15,7 +15,7 @@ angular
                 page: 1,
                 itemsPerPage: 10,
                 pageChanged: function(page, itemsPerPage)  {
-                    refreshOrdersTable({page: page, itemsPerPage: itemsPerPage});
+                    refreshProductsTable({page: page, itemsPerPage: itemsPerPage});
                 }
             };
 

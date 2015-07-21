@@ -131,6 +131,7 @@ router.post('/delete-product', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_
 
 router.get('/product-users-by-product-id', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_PRODUCTS), function(req, res, next) {
     var id = new ObjectID(req.param('id'));
+    console.log("id", id);
     var page = pagination.createMongodbPage(req);
 
     userProductService.findUserProductsByProductId(page, id, function(err, result) {
@@ -140,6 +141,25 @@ router.get('/product-users-by-product-id', loadUser, checkAccess.getAuditor(ACCE
             res.json(result);
         }
     );
+});
+
+router.post('/create-user-product', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_PRODUCTS), function(req, res, next) {
+    var userProduct = req.body.userProduct;
+
+    userProduct.user_id = new ObjectID(userProduct.user._id);
+    delete userProduct.user;
+
+    userProduct.product_id = new ObjectID(userProduct.product._id);
+    delete userProduct.product;
+
+    userProduct.createdDate = new Date();
+
+    userProductService.createUserProducts([userProduct], function(err, newUserProduct) {
+        if (err)
+            return next(err);
+
+        res.send({});
+    });
 });
 
 module.exports = router;

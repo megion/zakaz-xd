@@ -126,8 +126,10 @@ angular.module('zakaz-xd.products.states', [
                                 }
                             );
                         },
-                        userProduct: function(){
-                            return {};
+                        userProduct: function(product){
+                            return {
+                                product: product
+                            };
                         }
                     }
                 })

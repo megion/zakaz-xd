@@ -16,6 +16,23 @@ function createUserProducts(items, callback) {
     });
 }
 
+function editUserProduct(id, item, callback) {
+    var coll = getCollection();
+
+    coll.updateOne(
+        {_id : id},
+        {$set: item},
+        {upsert:false, w: 1, multi: false},
+        function(err, upResult) {
+            if (err) {
+                return callback(err);
+            }
+
+            return callback(null, item);
+        }
+    );
+}
+
 /**
  * Обогощение данных
  */
@@ -85,10 +102,37 @@ function findAllUserProductsByFilter(page, filter, callback) {
     });
 }
 
+function findOneUserProductByFilter(filter, callback) {
+    var coll = getCollection();
+    coll.findOne(filter, function(err, item) {
+        if (err) {
+            return callback(err);
+        }
+
+        if (!item) {
+            return callback(null, null);
+        }
+
+        enrichmentUserProducts([item], function(err, eItems) {
+            if (err) {
+                return callback(err);
+            }
+
+            callback(null, eItems[0]);
+        });
+    });
+}
+
 function findUserProductsByProductId(page, productId, callback) {
     findAllUserProductsByFilter(page, {product_id: productId}, callback);
 }
 
+function findOneById(id, callback) {
+    findOneUserProductByFilter({_id: id}, callback);
+}
+
 exports.getCollection = getCollection;
 exports.createUserProducts = createUserProducts;
+exports.editUserProduct = editUserProduct;
 exports.findUserProductsByProductId = findUserProductsByProductId;
+exports.findOneById = findOneById;
