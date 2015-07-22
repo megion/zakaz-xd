@@ -55,10 +55,10 @@ router.post('/create-user', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USE
                 if (err)
                     return next(err);
 
-                res.send({});
+                res.send(newUser);
             });
         } else {
-            res.send({});
+            res.send(newUser);
         }
     });
 });
