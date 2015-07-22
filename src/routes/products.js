@@ -1,7 +1,6 @@
 var router = require('express').Router();
 
 var productService = require('../service/productService');
-var userProductService = require('../service/userProductService');
 var measureUnitService = require('../service/measureUnitService');
 var productTypeService = require('../service/productTypeService');
 var error = require('../error');
@@ -67,11 +66,11 @@ router.post('/create-product', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_
         return next(new HttpError(400, "Поле наименование пустое"));
     }
 
-    product.measureUnit_id = product.measureUnit._id;
+    product.measureUnit_id = new ObjectID(product.measureUnit._id);
     delete product.measureUnit;
 
     if (product.type) {
-        product.type_id = product.type._id;
+        product.type_id = new ObjectID(product.type._id);
         delete product.type;
     }
 
@@ -100,11 +99,11 @@ router.post('/edit-product', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_PR
         return next(new HttpError(400, "Поле наименование пустое"));
     }
 
-    product.measureUnit_id = product.measureUnit._id;
+    product.measureUnit_id = new ObjectID(product.measureUnit._id);
     delete product.measureUnit;
 
     if (product.type) {
-        product.type_id = product.type._id;
+        product.type_id = new ObjectID(product.type._id);
         delete product.type;
     } else {
         product.type_id = null;
@@ -122,61 +121,6 @@ router.post('/delete-product', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_
     var id = new ObjectID(req.param('id'));
 
     productService.deleteProduct(id, function(err) {
-        if (err)
-            return next(err);
-
-        res.send({});
-    });
-});
-
-router.get('/product-users-by-product-id', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_PRODUCTS), function(req, res, next) {
-    var id = new ObjectID(req.param('id'));
-    var page = pagination.createMongodbPage(req);
-
-    userProductService.findUserProductsByProductId(page, id, function(err, result) {
-            if (err) {
-                return next(err);
-            }
-            res.json(result);
-        }
-    );
-});
-
-router.post('/create-user-product', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_PRODUCTS), function(req, res, next) {
-    var userProduct = req.body.userProduct;
-
-    userProduct.user_id = new ObjectID(userProduct.user._id);
-    delete userProduct.user;
-
-    userProduct.product_id = new ObjectID(userProduct.product._id);
-    delete userProduct.product;
-
-    userProduct.createdDate = new Date();
-
-    userProductService.createUserProducts([userProduct], function(err, newUserProduct) {
-        if (err)
-            return next(err);
-
-        res.send({});
-    });
-});
-
-router.get('/user-product-by-id', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_PRODUCTS), function(req, res, next) {
-    var id = new ObjectID(req.param('id'));
-
-    userProductService.findOneById(id, function(err, result) {
-            if (err) {
-                return next(err);
-            }
-            res.json(result);
-        }
-    );
-});
-
-router.post('/delete-user-product', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_PRODUCTS), function(req, res, next) {
-    var id = new ObjectID(req.param('id'));
-
-    userProductService.deleteUserProduct(id, function(err) {
         if (err)
             return next(err);
 

@@ -98,7 +98,7 @@ function runChangelogs(callback) {
                     if (err) {
                         return changeCallback(err);
                     }
-                    roleService.assignUserRoles(newUser, roles, function(err) {
+                    roleService.assignUserRoles(newUser._id, roles, function(err) {
                         if (err) {
                             return changeCallback(err);
                         }
@@ -146,7 +146,7 @@ function runChangelogs(callback) {
                         if (err) {
                             return changeCallback(err);
                         }
-                        roleService.assignRoleAccesses(roles[0], accesses, function(err) {
+                        roleService.assignRoleAccesses(roles[0]._id, accesses, function(err) {
                             if (err) {
                                 return changeCallback(err);
                             }
@@ -173,7 +173,7 @@ function runChangelogs(callback) {
                         if (err) {
                             return changeCallback(err);
                         }
-                        roleService.assignRoleAccesses(roles[0], accesses, function(err) {
+                        roleService.assignRoleAccesses(roles[0]._id, accesses, function(err) {
                             if (err) {
                                 return changeCallback(err);
                             }
@@ -252,7 +252,7 @@ function runChangelogs(callback) {
                             if (err) {
                                 return changeCallback(err);
                             }
-                            roleService.assignRoleAccesses(roles[0], accesses, function(err) {
+                            roleService.assignRoleAccesses(roles[0]._id, accesses, function(err) {
                                 if (err) {
                                     return changeCallback(err);
                                 }
@@ -301,6 +301,24 @@ function runChangelogs(callback) {
         changeFn: function(changeCallback) {
             var coll = userProductService.getCollection();
             coll.createIndex( { "user_id": 1, "product_id": 1 }, { unique: true }, changeCallback);
+        }
+    });
+
+    // create UserRole index
+    changesets.push({
+        changeId: 17,
+        changeFn: function(changeCallback) {
+            var coll = roleService.getUserRolesCollection();
+            coll.createIndex( { "user_id": 1, "role_id": 1 }, { unique: true }, changeCallback);
+        }
+    });
+
+    // create RoleAccess index
+    changesets.push({
+        changeId: 18,
+        changeFn: function(changeCallback) {
+            var coll = roleService.getRoleAccessesCollection();
+            coll.createIndex( { "role_id": 1, "access_id": 1 }, { unique: true }, changeCallback);
         }
     });
 

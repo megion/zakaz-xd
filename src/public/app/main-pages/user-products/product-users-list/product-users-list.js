@@ -1,13 +1,13 @@
 angular
-    .module('zakaz-xd.products.product-users-list', [
+    .module('zakaz-xd.user-products.product-users-list', [
         'zakaz-xd.dialogs',
         'zakaz-xd.directives.pagination',
-        'zakaz-xd.resources.products-resource',
+        'zakaz-xd.resources.user-products-resource',
         'zakaz-xd.auth'
     ])
-    .controller('ProductUsersListCtrl', ['$scope', '$stateParams', '$state', 'ProductsResource',
+    .controller('ProductUsersListCtrl', ['$scope', '$stateParams', '$state', 'UserProductsResource',
         'ErrorDialog', 'InfoDialog', 'product',
-        function ($scope, $stateParams, $state, ProductsResource, ErrorDialog, InfoDialog, product) {
+        function ($scope, $stateParams, $state, UserProductsResource, ErrorDialog, InfoDialog, product) {
             $scope.product = product;
 
             $scope.items = [];
@@ -20,7 +20,7 @@ angular
             };
 
             function refreshTable(page) {
-                ProductsResource.getProductUsersByProductId($scope.product._id, page).then(
+                UserProductsResource.getProductUsersByProductId($scope.product._id, page).then(
                     function(response) {
                         $scope.items = response.data.items;
                         $scope.pageConfig.count = response.data.count;

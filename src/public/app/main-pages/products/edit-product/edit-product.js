@@ -19,7 +19,6 @@ angular
             $scope.allProductTypes = allProductTypes;
 
             $scope.save = function(invalid) {
-                console.log(invalid);
                 if (invalid) {
                     return false;
                 }

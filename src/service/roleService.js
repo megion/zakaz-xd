@@ -4,6 +4,7 @@ var Access = require('../models/access').Access;
 var UserRole = require('../models/userRole').UserRole;
 var RoleAccess = require('../models/roleAccess').RoleAccess;
 var mongodb = require('../lib/mongodb');
+var ObjectID = require('mongodb').ObjectID;
 
 function getCollection() {
 	return mongodb.getDb().collection("roles");
@@ -46,10 +47,10 @@ function createAccesses(accesses, callback) {
     });
 }
 
-function assignUserRoles(user, roles, callback) {
+function assignUserRoles(userId, roles, callback) {
     var userRolesCollection = getUserRolesCollection();
     // remove all user roles
-    userRolesCollection.remove({user_id: user._id}, function(err, numberRemoved) {
+    userRolesCollection.remove({user_id: userId}, function(err, numberRemoved) {
         if (err) {
             return callback(err);
         }
@@ -62,7 +63,7 @@ function assignUserRoles(user, roles, callback) {
         var userRoles = [];
         for (var i = 0; i < roles.length; i++) {
             var role = roles[i];
-            userRoles.push(new UserRole(user._id, role._id));
+            userRoles.push(new UserRole(userId, new ObjectID(role._id)));
         }
 
         userRolesCollection.insert(userRoles, {w: 1}, function(err, results){
@@ -148,10 +149,10 @@ function findAllRolesWithAccesses(callback) {
     });
 }
 
-function findUserRoles(user, callback) {
+function findUserRoles(userId, callback) {
     var userRolesCollection = getUserRolesCollection();
 
-    userRolesCollection.find({user_id : user._id}).toArray(function(err, userRoles) {
+    userRolesCollection.find({user_id : userId}).toArray(function(err, userRoles) {
         if (err) {
             return callback(err);
         }
@@ -186,10 +187,10 @@ function findUserRoles(user, callback) {
     });
 }
 
-function assignRoleAccesses(role, accesses, callback) {
+function assignRoleAccesses(roleId, accesses, callback) {
     var roleAccessesCollection = getRoleAccessesCollection();
     // remove all role access
-    roleAccessesCollection.remove({role_id: role._id}, function(err, numberRemoved) {
+    roleAccessesCollection.remove({role_id: roleId}, function(err, numberRemoved) {
         if (err) {
             return callback(err);
         }
@@ -198,7 +199,7 @@ function assignRoleAccesses(role, accesses, callback) {
         var roleAccesses = [];
         for (var i = 0; i < accesses.length; i++) {
             var access = accesses[i];
-            roleAccesses.push(new RoleAccess(role._id, access._id));
+            roleAccesses.push(new RoleAccess(roleId, access._id));
         }
 
         roleAccessesCollection.insert(roleAccesses, {w: 1}, function(err, results){
@@ -266,4 +267,6 @@ exports.findAccessesByCodes = findAccessesByCodes;
 exports.findAccessesByValues = findAccessesByValues;
 exports.findUserRoles = findUserRoles;
 exports.findAllRolesWithAccesses = findAllRolesWithAccesses;
+exports.getUserRolesCollection = getUserRolesCollection;
+exports.getRoleAccessesCollection = getRoleAccessesCollection;
 

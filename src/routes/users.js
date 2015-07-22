@@ -11,7 +11,7 @@ var ACCESSES = require('../utils/accesses').ACCESSES;
 var pagination = require('../utils/pagination');
 var ObjectID = require('mongodb').ObjectID;
 
-router.get('/all-users', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USERS), function(req, res, next) {
+router.get('/all-users', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USERS | ACCESSES.MANAGE_PRODUCTS), function(req, res, next) {
     //var user = req.user;
     var page = pagination.createMongodbPage(req);
     userService.findAllUsers(page, function(err, result) {
@@ -51,7 +51,7 @@ router.post('/create-user', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USE
             return next(err);
 
         if (user.roles && user.roles.length>0) {
-            roleService.assignUserRoles(newUser, user.roles, function(err, userRoles) {
+            roleService.assignUserRoles(newUser._id, user.roles, function(err, userRoles) {
                 if (err)
                     return next(err);
 
@@ -77,7 +77,7 @@ router.post('/edit-user', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USERS
         userCopy._id = userId;
 
         if (user.roles) {
-            roleService.assignUserRoles(userCopy, user.roles, function(err, userRoles) {
+            roleService.assignUserRoles(userId, user.roles, function(err, userRoles) {
                 if (err)
                     return next(err);
 

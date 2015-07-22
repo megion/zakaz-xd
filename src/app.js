@@ -51,6 +51,7 @@ function initWebApp(app) {
     app.use('/roles', require('./routes/roles'));
     app.use('/orders', require('./routes/orders'));
     app.use('/products', require('./routes/products'));
+    app.use('/user-products', require('./routes/user-products'));
 
 	app.use(function(err, req, res, next) {
 		if (typeof err == 'number') { // next(404);

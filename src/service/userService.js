@@ -94,7 +94,7 @@ function findWithRolesById(id, callback) {
             return callback(null, user);
         }
 
-        roleService.findUserRoles(user, function(err, roles) {
+        roleService.findUserRoles(id, function(err, roles) {
             if (err) {
                 return callback(err);
             }
