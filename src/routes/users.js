@@ -145,4 +145,16 @@ router.post('/unlock-user', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USE
     });
 });
 
+router.post('/add-user-delivery-point', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USERS), function(req, res, next) {
+    var userId = new ObjectID(req.body.userId);
+    var deliveryPoint = req.body.deliveryPoint
+
+    userService.addUserDeliveryPoint(userId, deliveryPoint, function(err, result) {
+        if (err)
+            return next(err);
+
+        res.send(result);
+    });
+});
+
 module.exports = router;

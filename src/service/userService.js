@@ -240,6 +240,67 @@ function findUsersByFilter(filter, page, callback) {
     });
 }
 
+function findUserByIdAndDeliveryPointId(userId, deliveryPointId, callback) {
+    var coll = getCollection();
+    coll.find({_id: userId}, { deliveryPoints: { $elemMatch: { _id: deliveryPointId } } }).toArray(function(err, result) {
+        if (err) {
+            return callback(err);
+        }
+
+        return callback(null, result);
+    });
+}
+function removeDeliveryPoint(userId, deliveryPointId, callback) {
+    var coll = getCollection();
+
+    coll.update(
+        {_id : userId},
+        { $pull: { deliveryPoints: { _id: deliveryPointId } } },
+        { multi: false },
+        function(err, res) {
+            if (err) {
+                return callback(err);
+            }
+
+            return callback(null, res);
+        }
+    );
+}
+
+function addUserDeliveryPoint(userId, deliveryPoint, callback) {
+    var coll = getCollection();
+
+    deliveryPoint._id = new ObjectID(); // generate id
+
+    coll.update(
+        { _id: userId },
+        { $push: { deliveryPoints: deliveryPoint } },
+        function(err, result) {
+            if (err) {
+                return callback(err);
+            }
+
+            return callback(null, result);
+        }
+    );
+}
+
+function updateUserDeliveryPoint(userId, deliveryPointId, deliveryPoint, callback) {
+    var coll = getCollection();
+
+    coll.update(
+        { _id: userId, deliveryPoints: {$elemMatch: {_id: deliveryPointId}} },
+        { $set: { "deliveryPoints.$" : deliveryPoint} },
+        function(err, result) {
+            if (err) {
+                return callback(err);
+            }
+
+            return callback(null, result);
+        }
+    );
+}
+
 exports.setPassword = setPassword;
 exports.authorize = authorize;
 exports.createUser = createUser;
@@ -254,3 +315,8 @@ exports.lockUser = lockUser;
 exports.deleteUser = deleteUser;
 exports.findAllUsers = findAllUsers;
 exports.findUsersByIds = findUsersByIds;
+// DeliveryPoint
+exports.addUserDeliveryPoint = addUserDeliveryPoint;
+exports.findUserByIdAndDeliveryPointId = findUserByIdAndDeliveryPointId;
+exports.removeDeliveryPoint = removeDeliveryPoint;
+exports.updateUserDeliveryPoint = updateUserDeliveryPoint;

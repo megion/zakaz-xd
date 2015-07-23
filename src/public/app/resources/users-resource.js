@@ -27,6 +27,11 @@ angular.module('zakaz-xd.resources.users-resource', [
             },
             getUserById: function (userId) {
                 return $http.get(startUrl + '/user-by-id', {params: {userId: userId}});
+            },
+
+            // Delivery Point
+            addUserDeliveryPoint: function (userId, deliveryPoint) {
+                return $http.post(startUrl + '/add-user-delivery-point', {userId: userId, deliveryPoint: deliveryPoint});
             }
         };
     }]);
