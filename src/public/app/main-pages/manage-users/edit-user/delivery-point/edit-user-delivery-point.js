@@ -8,67 +8,33 @@ angular
         'zakaz-xd.auth'
     ])
     .controller('EditUserDeliveryPointCtrl', ['$scope', '$stateParams', '$state', 'UsersResource',
-        'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'user', 'allRoles',
+        'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'user', 'deliveryPoint',
         function ($scope, $stateParams, $state, UsersResource,
-                  ErrorDialog, InfoDialog, YesNoDialog, user, allRoles) {
-            $scope.isCreate = !(user._id);
-            $scope.allRoles = allRoles;
+                  ErrorDialog, InfoDialog, YesNoDialog, user, deliveryPoint) {
+            $scope.isCreate = !(deliveryPoint._id);
             $scope.user = user;
-            if (!$scope.user.roles) {
-                $scope.user.roles = [];
-            }
-
-            function setCheckedUserRoles(allRoles, user){
-                if (!user.roles) {
-                    return;
-                }
-                var allRolesMap = {};
-                for (var i=0; i<allRoles.length; i++) {
-                    var role = allRoles[i];
-                    allRolesMap[role._id] = role;
-                }
-                for (var j=0; j<user.roles.length; j++) {
-                    var userRole = user.roles[j];
-                    if (allRolesMap[userRole._id]) {
-                        allRolesMap[userRole._id].checked = true;
-                    }
-                }
-            }
-            setCheckedUserRoles(allRoles, user);
-
-            function addCheckedRolesToUser(allRoles, user) {
-                var newUserRoles = [];
-                for (var j=0; j<allRoles.length; j++) {
-                    var role = allRoles[j];
-                    if (role.checked) {
-                        newUserRoles.push(role);
-                    }
-                }
-                // просто заменяем роли
-                user.roles = newUserRoles;
-            }
+            $scope.deliveryPoint = deliveryPoint;
 
             $scope.save = function(invalid) {
                 if (invalid) {
                     return false;
                 }
 
-                addCheckedRolesToUser($scope.allRoles, $scope.user);
                 if ($scope.isCreate) {
-                    UsersResource.createUser($scope.user).then(
+                    UsersResource.addUserDeliveryPoint($scope.user._id, $scope.deliveryPoint).then(
                         function (response) {
-                            InfoDialog.open("Пользователь успешно добавлен");
-                            $state.go("users-list");
+                            InfoDialog.open("Точка доставки добавлена");
+                            $state.go("edit-user", {id: $scope.user._id});
                         },
                         function (err) {
                             ErrorDialog.open(err.data, true);
                         }
                     );
                 } else {
-                    UsersResource.editUser($scope.user).then(
+                    UsersResource.updateUserDeliveryPoint($scope.user._id, $scope.deliveryPoint).then(
                         function (response) {
-                            InfoDialog.open("Пользователь успешно сохранен");
-                            $state.go("users-list");
+                            InfoDialog.open("Изменение точки доставки успешно");
+                            $state.go("edit-user", {id: $scope.user._id});
                         },
                         function (err) {
                             ErrorDialog.open(err.data, true);
@@ -77,43 +43,13 @@ angular
                 }
             };
 
-            $scope.lockUser = function() {
-                YesNoDialog.open("Вы действительно хотите заблокировать пользователя?").then(
+            $scope.delete = function() {
+                YesNoDialog.open("Вы действительно хотите удалить точку доставки?").then(
                     function() {
-                        UsersResource.lockUser($scope.user._id).then(
+                        UsersResource.removeUserDeliveryPoint($scope.user._id, $scope.deliveryPoint._id).then(
                             function (response) {
-                                InfoDialog.open("Пользователь заблокирован");
-                                $state.go("edit-user", {id: $scope.user._id}, {reload: true});
-                            },
-                            function (err) {
-                                ErrorDialog.open(err.data, true);
-                            }
-                        );
-                    }
-                );
-            };
-            $scope.unlockUser = function() {
-                YesNoDialog.open("Вы действительно хотите разблокировать пользователя?").then(
-                    function() {
-                        UsersResource.unlockUser($scope.user._id).then(
-                            function (response) {
-                                InfoDialog.open("Пользователь разблокирован");
-                                $state.go("edit-user", {id: $scope.user._id}, {reload: true});
-                            },
-                            function (err) {
-                                ErrorDialog.open(err.data, true);
-                            }
-                        );
-                    }
-                );
-            };
-            $scope.deleteUser = function() {
-                YesNoDialog.open("Вы действительно хотите удалить пользователя?").then(
-                    function() {
-                        UsersResource.deleteUser($scope.user._id).then(
-                            function (response) {
-                                InfoDialog.open("Пользователь удален");
-                                $state.go("users-list");
+                                InfoDialog.open("Точка доставки удалена");
+                                $state.go("edit-user", {id: $scope.user._id});
                             },
                             function (err) {
                                 ErrorDialog.open(err.data, true);

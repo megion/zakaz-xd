@@ -123,6 +123,22 @@ angular
                     }
                 );
             };
+
+            $scope.removeAllUserDeliveryPoints = function() {
+                YesNoDialog.open("Вы действительно хотите удалить все точки доставки пользователя?").then(
+                    function() {
+                        UsersResource.removeAllUserDeliveryPoints($scope.user._id).then(
+                            function (response) {
+                                InfoDialog.open("Все точки доствки пользователя удалены");
+                                $state.reload();
+                            },
+                            function (err) {
+                                ErrorDialog.open(err.data, true);
+                            }
+                        );
+                    }
+                );
+            };
         }
     ])
 ;

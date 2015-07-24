@@ -5,6 +5,7 @@ var Role = require('../models/role').Role;
 var mongodb = require('../lib/mongodb');
 var AuthError = require('../error').AuthError;
 var roleService = require('../service/roleService');
+var ObjectID = require('mongodb').ObjectID;
 
 function encryptPassword(user, password) {
 	return crypto.createHmac('sha1', user.salt).update(password).digest('hex');
@@ -250,13 +251,31 @@ function findUserByIdAndDeliveryPointId(userId, deliveryPointId, callback) {
         return callback(null, result);
     });
 }
-function removeDeliveryPoint(userId, deliveryPointId, callback) {
+
+function removeUserDeliveryPoint(userId, deliveryPointId, callback) {
     var coll = getCollection();
 
     coll.update(
         {_id : userId},
         { $pull: { deliveryPoints: { _id: deliveryPointId } } },
         { multi: false },
+        function(err, res) {
+            if (err) {
+                return callback(err);
+            }
+
+            return callback(null, res);
+        }
+    );
+}
+
+function removeAllUserDeliveryPoints(userId, callback) {
+    var coll = getCollection();
+
+    coll.update(
+        {_id : userId},
+        { $pull: { deliveryPoints: {} } },
+        { multi: true },
         function(err, res) {
             if (err) {
                 return callback(err);
@@ -290,7 +309,7 @@ function updateUserDeliveryPoint(userId, deliveryPointId, deliveryPoint, callbac
 
     coll.update(
         { _id: userId, deliveryPoints: {$elemMatch: {_id: deliveryPointId}} },
-        { $set: { "deliveryPoints.$" : deliveryPoint} },
+        { $set: { "deliveryPoints.$.title" : deliveryPoint.title, "deliveryPoints.$.address" : deliveryPoint.address, "deliveryPoints.$.email" : deliveryPoint.email } },
         function(err, result) {
             if (err) {
                 return callback(err);
@@ -318,5 +337,6 @@ exports.findUsersByIds = findUsersByIds;
 // DeliveryPoint
 exports.addUserDeliveryPoint = addUserDeliveryPoint;
 exports.findUserByIdAndDeliveryPointId = findUserByIdAndDeliveryPointId;
-exports.removeDeliveryPoint = removeDeliveryPoint;
+exports.removeUserDeliveryPoint = removeUserDeliveryPoint;
 exports.updateUserDeliveryPoint = updateUserDeliveryPoint;
+exports.removeAllUserDeliveryPoints = removeAllUserDeliveryPoints;

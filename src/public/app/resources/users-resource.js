@@ -32,6 +32,16 @@ angular.module('zakaz-xd.resources.users-resource', [
             // Delivery Point
             addUserDeliveryPoint: function (userId, deliveryPoint) {
                 return $http.post(startUrl + '/add-user-delivery-point', {userId: userId, deliveryPoint: deliveryPoint});
+            },
+            updateUserDeliveryPoint: function (userId, deliveryPoint) {
+                return $http.post(startUrl + '/update-user-delivery-point', {userId: userId, deliveryPoint: deliveryPoint});
+            },
+            removeUserDeliveryPoint: function (userId, deliveryPointId) {
+                return $http.post(startUrl + '/remove-user-delivery-point', {userId: userId, deliveryPointId: deliveryPointId});
+            },
+            removeAllUserDeliveryPoints: function (userId) {
+                return $http.post(startUrl + '/remove-all-user-delivery-points', {userId: userId});
             }
+
         };
     }]);

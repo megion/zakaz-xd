@@ -69,7 +69,7 @@ angular.module('zakaz-xd.manage-users.states', [
                 .state('change-user-password', {
                     url: '/manage-users/user/change-password/:id',
                     controller: 'EditUserChangePasswordCtrl',
-                    templateUrl: 'app/main-pages/manage-users/edit-user/edit-user-change-password.tpl.html',
+                    templateUrl: 'app/main-pages/manage-users/edit-user/change-password/edit-user-change-password.tpl.html',
                     resolve: {
                         hasAccess: function ($stateParams, AuthService) {
                             return AuthService.checkAccess(ACCESS.MANAGE_USERS);
@@ -80,6 +80,53 @@ angular.module('zakaz-xd.manage-users.states', [
                                     return response.data;
                                 }
                             );
+                        }
+                    }
+                })
+                .state('add-user-delivery-point', {
+                    url: '/manage-users/user/add-user-delivery-point/:id',
+                    controller: 'EditUserDeliveryPointCtrl',
+                    templateUrl: 'app/main-pages/manage-users/edit-user/delivery-point/edit-user-delivery-point.tpl.html',
+                    resolve: {
+                        hasAccess: function ($stateParams, AuthService) {
+                            return AuthService.checkAccess(ACCESS.MANAGE_USERS);
+                        },
+                        deliveryPoint: function() {
+                            return {};
+                        },
+                        user: function($stateParams, UsersResource, ErrorHandler){
+                            return UsersResource.getUserById($stateParams.id).then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
+                        }
+                    }
+                })
+                .state('edit-user-delivery-point', {
+                    url: '/manage-users/user/edit-user-delivery-point/:userId/:deliveryPointId',
+                    controller: 'EditUserDeliveryPointCtrl',
+                    templateUrl: 'app/main-pages/manage-users/edit-user/delivery-point/edit-user-delivery-point.tpl.html',
+                    resolve: {
+                        hasAccess: function ($stateParams, AuthService) {
+                            return AuthService.checkAccess(ACCESS.MANAGE_USERS);
+                        },
+                        user: function($stateParams, UsersResource, ErrorHandler){
+                            return UsersResource.getUserById($stateParams.userId).then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
+                        },
+                        deliveryPoint: function($stateParams, user) {
+                            // найдем точку достаки без запроса на сервер
+                            for (var i=0; i<user.deliveryPoints.length; i++) {
+                                var dp = user.deliveryPoints[i];
+                                if (dp._id === $stateParams.deliveryPointId) {
+                                    return dp;
+                                }
+                            }
+                            return null;
                         }
                     }
                 });

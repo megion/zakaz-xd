@@ -147,9 +147,45 @@ router.post('/unlock-user', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USE
 
 router.post('/add-user-delivery-point', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USERS), function(req, res, next) {
     var userId = new ObjectID(req.body.userId);
-    var deliveryPoint = req.body.deliveryPoint
+    var deliveryPoint = req.body.deliveryPoint;
 
     userService.addUserDeliveryPoint(userId, deliveryPoint, function(err, result) {
+        if (err)
+            return next(err);
+
+        res.send(result);
+    });
+});
+
+router.post('/update-user-delivery-point', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USERS), function(req, res, next) {
+    var userId = new ObjectID(req.body.userId);
+    var deliveryPoint = req.body.deliveryPoint;
+    var deliveryPointId = new ObjectID(deliveryPoint._id);
+
+    userService.updateUserDeliveryPoint(userId, deliveryPointId, deliveryPoint, function(err, result) {
+        if (err)
+            return next(err);
+
+        res.send(result);
+    });
+});
+
+router.post('/remove-user-delivery-point', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USERS), function(req, res, next) {
+    var userId = new ObjectID(req.body.userId);
+    var deliveryPointId = new ObjectID(req.body.deliveryPointId);
+
+    userService.removeUserDeliveryPoint(userId, deliveryPointId, function(err, result) {
+        if (err)
+            return next(err);
+
+        res.send(result);
+    });
+});
+
+router.post('/remove-all-user-delivery-points', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USERS), function(req, res, next) {
+    var userId = new ObjectID(req.body.userId);
+
+    userService.removeAllUserDeliveryPoints(userId, function(err, result) {
         if (err)
             return next(err);
 
