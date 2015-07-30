@@ -8,23 +8,9 @@ function getStatusesCollection() {
     return mongodb.getDb().collection("orderStatuses");
 }
 
-function getTypesCollection() {
-    return mongodb.getDb().collection("orderTypes");
-}
-
 function createStatuses(orderStatuses, callback) {
     var coll = getStatusesCollection();
     coll.insert(orderStatuses, {w: 1}, function(err, results){
-        if (err) {
-            return callback(err);
-        }
-        callback(null, results.ops);
-    });
-}
-
-function createTypes(orderTypes, callback) {
-    var coll = getTypesCollection();
-    coll.insert(orderTypes, {w: 1}, function(err, results){
         if (err) {
             return callback(err);
         }

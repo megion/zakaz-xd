@@ -1,0 +1,11 @@
+/**
+ * Order statuses constants
+ */
+var ORDER_STATUSES = {
+    NEW: 'ADMIN',
+    CLOSED: 'CUSTOMER',
+    PRODUCTS_MANAGER: 'PRODUCTS_MANAGER',
+    ORDERS_MANAGER: 'ORDERS_MANAGER'
+};
+
+exports.ORDER_STATUSES = ORDER_STATUSES;
