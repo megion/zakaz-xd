@@ -190,6 +190,11 @@ function unlockUser(id, callback) {
     );
 }
 
+/**
+ * Ошибки:
+ * 1) Назначил товару пользователя, потом его похерил, у товара остался пустой пользователь
+ * 2) Удалить из связки с ролями
+ */
 function deleteUser(id, callback) {
     var usersCollection = getCollection();
 
