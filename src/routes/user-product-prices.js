@@ -21,6 +21,20 @@ router.get('/user-product-prices-by-user-product-id', loadUser, checkAccess.getA
     );
 });
 
+router.get('/user-product-price-by-id', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_PRODUCTS), function(req, res, next) {
+    var id = new ObjectID(req.param('id'));
+
+    userProductPriceService.findOneById(id, function(err, result) {
+            if (err) {
+                return next(err);
+            }
+
+            res.json(result);
+        }
+    );
+});
+
+
 router.post('/create-user-product-price', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_PRODUCTS), function(req, res, next) {
     var userProductPrice = req.body.userProductPrice;
 
@@ -28,7 +42,10 @@ router.post('/create-user-product-price', loadUser, checkAccess.getAuditor(ACCES
     delete userProductPrice.userProduct;
 
     userProductPrice.createdDate = new Date();
-    userProductPrice.priceDate = new Date(userProductPrice.priceDate);
+    console.log("userProductPrice:", userProductPrice);
+    if (userProductPrice.priceDate) {
+        userProductPrice.priceDate = new Date(userProductPrice.priceDate);
+    }
 
     userProductPriceService.createUserProductPrices([userProductPrice], function(err, results) {
         if (err)

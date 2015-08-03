@@ -57,7 +57,7 @@ function enrichmentProducts(products, callback) {
 function findAllProductsByFilter(page, filter, callback) {
     var coll = getCollection();
     var conf = {
-        sort: {created_date: 1}
+        sort: {createdDate: 1}
     };
     if (page) {
         conf.skip = page.skip;

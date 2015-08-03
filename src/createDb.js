@@ -6,6 +6,7 @@ var roleService = require('./service/roleService');
 var measureUnitService = require('./service/measureUnitService');
 var productTypeService = require('./service/productTypeService');
 var userProductService = require('./service/userProductService');
+var userProductPriceService = require('./service/userProductPriceService');
 var Access = require('./models/access').Access;
 var Role = require('./models/role').Role;
 var MeasureUnit = require('./models/measureUnit').MeasureUnit;
@@ -319,6 +320,15 @@ function runChangelogs(callback) {
         changeFn: function(changeCallback) {
             var coll = roleService.getRoleAccessesCollection();
             coll.createIndex( { "role_id": 1, "access_id": 1 }, { unique: true }, changeCallback);
+        }
+    });
+
+    // create UserProductPrice.priceDate index
+    changesets.push({
+        changeId: 19,
+        changeFn: function(changeCallback) {
+            var coll = userProductPriceService.getCollection();
+            coll.createIndex( { "priceDate": 1, "userPoduct_id": 1 }, { unique: true }, changeCallback);
         }
     });
 

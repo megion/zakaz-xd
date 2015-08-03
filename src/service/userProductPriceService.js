@@ -1,4 +1,5 @@
 var mongodb = require('../lib/mongodb');
+var userProductService = require('../service/userProductService');
 
 function getCollection() {
 	return mongodb.getDb().collection("userProductPrices");
@@ -65,7 +66,19 @@ function findOneUserProductPriceByFilter(filter, callback) {
             return callback(err);
         }
 
-        callback(null, item);
+        if (!item) {
+            return callback(null, null);
+        }
+
+        userProductService.findOneById(item.userProduct_id, function(err, userProduct) {
+            if (err) {
+                return callback(err);
+            }
+
+            item.userProduct = userProduct;
+            delete item.userProduct_id;
+            callback(null, item);
+        });
     });
 }
 

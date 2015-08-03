@@ -9,15 +9,6 @@
         </div>
     </div>
 
-    <!-- цена товара -->
-    <div class="form-group">
-        <label class="col-sm-2 control-label">Цена товара</label>
-        <div class="col-sm-10">
-            <input type="text" class="form-control" name="productPrice" placeholder="Цена товара"
-                   data-ng-model="userProduct.productPrice">
-        </div>
-    </div>
-
     <!-- User -->
     <div class="form-group required" ng-class="{'has-error': changeForm.$submitted && changeForm.user.$error.required}">
         <label class="col-sm-2 control-label">Пользователь</label>
@@ -28,6 +19,41 @@
                     <div ng-bind-html="item.username | highlight: $select.search"></div>
                 </ui-select-choices>
             </ui-select>
+        </div>
+    </div>
+
+    <!-- цена товара -->
+    <div class="form-group" ng-if="!isCreate">
+        <label class="col-sm-2 control-label">Цены</label>
+        <div class="col-sm-10">
+            <div class="row">
+                <div class="col-sm-12">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Цена</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="userProductPrice in userProductPrices">
+                            <td><a data-ui-sref="edit-user-product-price({userProductPriceId: userProductPrice._id})">{{userProductPrice.priceDate}}</a></td>
+                            <td>{{userProductPrice.productPrice}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-8">
+                    <z-pagination config="pageConfig" page="pageConfig.page"></z-pagination>
+                </div>
+                <div class="col-sm-4">
+                    <ul class="nav nav-pills pull-right" ng-if="!isCreate">
+                        <li><a data-ui-sref="add-user-product-price({userProductId: userProduct._id})">Добавить цену</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 

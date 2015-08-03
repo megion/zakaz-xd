@@ -5,14 +5,17 @@ angular
     .module('zakaz-xd.user-products.edit-user-product', [
         'zakaz-xd.dialogs',
         'zakaz-xd.resources.user-products-resource',
+        'zakaz-xd.resources.user-product-prices-resource',
         'zakaz-xd.resources.users-resource',
         'zakaz-xd.auth',
         'ui.select',
         'ngSanitize'
     ])
-    .controller('EditUserProductCtrl', ['$scope', '$stateParams', '$state', 'UserProductsResource', 'UsersResource',
+    .controller('EditUserProductCtrl', ['$scope', '$stateParams', '$state', 'UserProductsResource',
+        'UsersResource', 'UserProductPricesResource',
         'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'userProduct',
-        function ($scope, $stateParams, $state, UserProductsResource, UsersResource,
+        function ($scope, $stateParams, $state, UserProductsResource,
+                  UsersResource, UserProductPricesResource,
                   ErrorDialog, InfoDialog, YesNoDialog, userProduct) {
             $scope.isCreate = !(userProduct._id);
             $scope.userProduct = userProduct;
@@ -25,6 +28,31 @@ angular
                     ErrorDialog.open(err.data);
                 }
             );
+
+            if (!$scope.isCreate) {
+                $scope.userProductPrices = [];
+                $scope.pageConfig = {
+                    page: 1,
+                    itemsPerPage: 5,
+                    pageChanged: function(page, itemsPerPage)  {
+                        refreshUserProductPricesTable({page: page, itemsPerPage: itemsPerPage});
+                    }
+                };
+
+                refreshUserProductPricesTable({page: $scope.pageConfig.page, itemsPerPage: $scope.pageConfig.itemsPerPage});
+            }
+
+            function refreshUserProductPricesTable(page) {
+                UserProductPricesResource.getProductUserPricesByUserProductId($scope.userProduct._id, page).then(
+                    function(response) {
+                        $scope.userProductPrices = response.data.items;
+                        $scope.pageConfig.count = response.data.count;
+                    },
+                    function(err) {
+                        ErrorDialog.open(err.data);
+                    }
+                );
+            }
 
             $scope.save = function(invalid) {
                 if (invalid) {

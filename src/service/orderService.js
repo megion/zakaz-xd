@@ -164,9 +164,7 @@ function findOneById(id, callback) {
 
 exports.getCollection = getCollection;
 exports.getStatusesCollection = getStatusesCollection;
-exports.getTypesCollection = getTypesCollection;
 exports.createStatuses = createStatuses;
-exports.createTypes = createTypes;
 exports.findAllOrders = findAllOrders;
 exports.findAllStatuses = findAllStatuses;
 exports.findAllTypes = findAllTypes;
