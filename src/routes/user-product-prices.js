@@ -28,50 +28,36 @@ router.post('/create-user-product-price', loadUser, checkAccess.getAuditor(ACCES
     delete userProductPrice.userProduct;
 
     userProductPrice.createdDate = new Date();
+    userProductPrice.priceDate = new Date(userProductPrice.priceDate);
 
-    userProductService.createUserProducts([userProduct], function(err, newUserProduct) {
+    userProductPriceService.createUserProductPrices([userProductPrice], function(err, results) {
         if (err)
             return next(err);
 
-        res.send({});
+        res.send(results[0]);
     });
 });
 
-router.post('/edit-user-product', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_PRODUCTS), function(req, res, next) {
-    var userProduct = req.body.userProduct;
+router.post('/edit-user-product-price', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_PRODUCTS), function(req, res, next) {
+    var userProductPrice = req.body.userProductPrice;
 
-    var id = new ObjectID(userProduct._id);
-    delete userProduct._id; // не изменяемое поле
-    delete userProduct.createdDate; // не изменяемое поле
-    delete userProduct.product; // не изменяемое поле
+    var id = new ObjectID(userProductPrice._id);
+    delete userProductPrice._id; // не изменяемое поле
+    delete userProductPrice.createdDate; // не изменяемое поле
+    delete userProductPrice.userPoduct; // не изменяемое поле
 
-    userProduct.user_id = new ObjectID(userProduct.user._id);
-    delete userProduct.user;
-
-    userProductService.editUserProduct(id, userProduct, function(err, _product) {
+    userProductPriceService.editUserProductPrice(id, userProductPrice, function(err, result) {
         if (err)
             return next(err);
 
-        res.send(_product);
+        res.send(result);
     });
 });
 
-router.get('/user-product-by-id', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_PRODUCTS), function(req, res, next) {
+router.post('/delete-user-product-price', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_PRODUCTS), function(req, res, next) {
     var id = new ObjectID(req.param('id'));
 
-    userProductService.findOneById(id, function(err, result) {
-            if (err) {
-                return next(err);
-            }
-            res.json(result);
-        }
-    );
-});
-
-router.post('/delete-user-product', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_PRODUCTS), function(req, res, next) {
-    var id = new ObjectID(req.param('id'));
-
-    userProductService.deleteUserProduct(id, function(err) {
+    userProductPriceService.deleteUserProductPrice(id, function(err) {
         if (err)
             return next(err);
 

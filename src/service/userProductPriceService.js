@@ -77,8 +77,24 @@ function findOneById(id, callback) {
     findOneUserProductPriceByFilter({_id: id}, callback);
 }
 
+function deleteUserProductPrice(id, callback) {
+    var coll = getCollection();
+
+    coll.deleteOne(
+        {_id : id},
+        function(err, res) {
+            if (err) {
+                return callback(err);
+            }
+
+            return callback(null, res);
+        }
+    );
+}
+
 exports.getCollection = getCollection;
 exports.createUserProductPrices = createUserProductPrices;
 exports.editUserProductPrice = editUserProductPrice;
+exports.deleteUserProductPrice = deleteUserProductPrice;
 exports.findUserProductPricesByUserProductId = findUserProductPricesByUserProductId;
 exports.findOneById = findOneById;
