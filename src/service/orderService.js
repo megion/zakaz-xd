@@ -26,39 +26,23 @@ function enrichmentOrders(orders, callback) {
         if (err) {
             return callback(err);
         }
-        findAllTypes(function(err, allTypes) {
-            if (err) {
-                return callback(err);
+        var statusesMap = {};
+        if (allStatuses) {
+            for (i=0; i<allStatuses.length; i++) {
+                var status = allStatuses[i];
+                statusesMap[status._id.toString()] = status;
             }
+        }
 
-            var typesMap = {};
-            if (allTypes) {
-                for (var i=0; i<allTypes.length; i++) {
-                    var type = allTypes[i];
-                    typesMap[type._id.toString()] = type;
-                }
+        // обогощение
+        for (i=0; i<orders.length; i++) {
+            var order = orders[i];
+            if (order.status_id) {
+                order.status = statusesMap[order.status_id.toString()]
             }
-            var statusesMap = {};
-            if (allStatuses) {
-                for (i=0; i<allStatuses.length; i++) {
-                    var status = allStatuses[i];
-                    statusesMap[status._id.toString()] = status;
-                }
-            }
+        }
 
-            // обогощение
-            for (i=0; i<orders.length; i++) {
-                var order = orders[i];
-                if (order.type_id) {
-                    order.type = typesMap[order.type_id.toString()];
-                }
-                if (order.status_id) {
-                    order.status = statusesMap[order.status_id.toString()]
-                }
-            }
-
-            callback(null, orders);
-        });
+        callback(null, orders);
     });
 
 }
@@ -103,28 +87,8 @@ function findAllStatuses(callback) {
     });
 }
 
-function findAllTypes(callback) {
-    var coll = getTypesCollection();
-    coll.find({}).toArray(function(err, result) {
-        if (err) {
-            return callback(err);
-        }
-        return callback(null, result);
-    });
-}
-
 function findStatusesByCodes(codes, callback) {
     var coll = getStatusesCollection();
-    coll.find({code : {$in : codes}}).toArray(function(err, results) {
-        if (err) {
-            return callback(err);
-        }
-        return callback(null, results);
-    });
-}
-
-function findTypesByCodes(codes, callback) {
-    var coll = getTypesCollection();
     coll.find({code : {$in : codes}}).toArray(function(err, results) {
         if (err) {
             return callback(err);
@@ -167,9 +131,7 @@ exports.getStatusesCollection = getStatusesCollection;
 exports.createStatuses = createStatuses;
 exports.findAllOrders = findAllOrders;
 exports.findAllStatuses = findAllStatuses;
-exports.findAllTypes = findAllTypes;
 exports.findStatusesByCodes = findStatusesByCodes;
-exports.findTypesByCodes = findTypesByCodes;
 exports.findAllOrdersByAuthorId = findAllOrdersByAuthorId;
 exports.findOneByIdAndAuthorId = findOneByIdAndAuthorId;
 exports.findOneById = findOneById;

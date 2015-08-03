@@ -25,6 +25,8 @@ angular
                     return false;
                 }
 
+                console.log("$scope.userProductPrice", $scope.userProductPrice);
+
                 if ($scope.isCreate) {
                     UserProductPricesResource.createUserProductPrice($scope.userProductPrice).then(
                         function (response) {

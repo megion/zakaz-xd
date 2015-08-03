@@ -1,7 +1,6 @@
 var router = require('express').Router();
 
 var orderService = require('../service/orderService');
-var roleService = require('../service/roleService');
 var error = require('../error');
 var HttpError = error.HttpError;
 var log = require('../lib/log')(module);
@@ -60,16 +59,6 @@ router.get('/user-order-by-id', loadUser, checkAccess.getAuditor(ACCESSES.VIEW_O
 router.get('/all-order-statuses', loadUser, checkAccess.getAuditor(ACCESSES.VIEW_OWN_ORDERS | ACCESSES.VIEW_ALL_ORDER), function(req, res, next) {
 
     orderService.findAllStatuses(function(err, result) {
-            if (err) {
-                return next(err);
-            }
-            res.json(result);
-        }
-    );
-});
-router.get('/all-order-types', loadUser, checkAccess.getAuditor(ACCESSES.VIEW_OWN_ORDERS | ACCESSES.VIEW_ALL_ORDER), function(req, res, next) {
-
-    orderService.findAllTypes(function(err, result) {
             if (err) {
                 return next(err);
             }

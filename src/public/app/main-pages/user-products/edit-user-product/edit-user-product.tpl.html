@@ -37,7 +37,8 @@
                         </thead>
                         <tbody>
                         <tr ng-repeat="userProductPrice in userProductPrices">
-                            <td><a data-ui-sref="edit-user-product-price({userProductPriceId: userProductPrice._id})">{{userProductPrice.priceDate}}</a></td>
+                            <td><a data-ui-sref="edit-user-product-price({userProductPriceId: userProductPrice._id})">
+                                {{userProductPrice.priceDate | date:'dd.MM.yyyy'}}</a></td>
                             <td>{{userProductPrice.productPrice}}</td>
                         </tr>
                         </tbody>
