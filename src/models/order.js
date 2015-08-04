@@ -16,6 +16,8 @@
  authorDeliveryPoint - точка доставки
  products - товары
 
+ количество отгруженное - запонятеся только при изменени стостояния на Отгружен
+
  */
 function Order(title, message) {
     this.title = title;
