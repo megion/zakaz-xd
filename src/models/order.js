@@ -4,7 +4,6 @@
  SENDER - тот кто отправил заказ плательщик или редко точка доставки
  DELIVERYPLACE- точка доставки
  BUYER - плательщик (пользователь)
- EDIINTERCHANGEID - хз
  Products - массив товаров
 
  title - название заказа, произвольный текст
@@ -19,12 +18,18 @@
  количество отгруженное - запонятеся только при изменени стостояния на Отгружен
 
  */
-function Order(title, message) {
-    this.title = title;
-    //this.author_user_id = authorUserId;
-    //this.status_id = statusId;
-    //this.type_id = typeId;
-    this.message = message;
+function Order(number, deliveryDate, author, authorDeliveryPoint, authorProducts) {
+    this.number = number;
+
+    this.createdDate = new Date();
+    this.deliveryDate = deliveryDate;
+    this.title = null;
+    this.authorDeliveryPoint_id = authorDeliveryPoint._id;
+    this.author_id = author._id;
+    this.status_id = null; // STATUS.CREATED
+    this.message = null;
+    this.shippedCount = null; // количество отгруженных товаров - запонятеся только при изменени стостояния на Отгружен
+    this.authorProducts = authorProducts;
 }
 
 exports.Order = Order;

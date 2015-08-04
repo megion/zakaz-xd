@@ -1,11 +1,13 @@
 /**
  * Order statuses constants
+ *  Создан, Активен, Подтвержден, Отгружен, Закрыт.
  */
 var ORDER_STATUSES = {
-    NEW: 'ADMIN',
-    CLOSED: 'CUSTOMER',
-    PRODUCTS_MANAGER: 'PRODUCTS_MANAGER',
-    ORDERS_MANAGER: 'ORDERS_MANAGER'
+    CREATED: 'CREATED',
+    ACTIVE: 'ACTIVE',
+    APPROVED: 'APPROVED',
+    SHIPPED: 'SHIPPED',
+    CLOSED: 'CLOSED'
 };
 
 exports.ORDER_STATUSES = ORDER_STATUSES;

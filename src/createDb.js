@@ -5,14 +5,17 @@ var userService = require('./service/userService');
 var roleService = require('./service/roleService');
 var measureUnitService = require('./service/measureUnitService');
 var productTypeService = require('./service/productTypeService');
+var orderStatusService = require('./service/orderStatusService');
 var userProductService = require('./service/userProductService');
 var userProductPriceService = require('./service/userProductPriceService');
 var Access = require('./models/access').Access;
 var Role = require('./models/role').Role;
 var MeasureUnit = require('./models/measureUnit').MeasureUnit;
 var ProductType = require('./models/productType').ProductType;
+var OrderStatus = require('./models/orderStatus').OrderStatus;
 var ACCESSES = require('./utils/accesses').ACCESSES;
 var ROLES = require('./utils/roles').ROLES;
+var ORDER_STATUSES = require('./utils/orderStatuses').ORDER_STATUSES;
 
 asyncUtils.eachSeries([ open, runChangelogs, close ],
     // iterator function
@@ -331,6 +334,38 @@ function runChangelogs(callback) {
             coll.createIndex( { "priceDate": 1, "userPoduct_id": 1 }, { unique: true }, changeCallback);
         }
     });
+
+    // create OrderStatus.code index
+    changesets.push({
+        changeId: 20,
+        changeFn: function(changeCallback) {
+            var coll = orderStatusService.getCollection();
+            coll.createIndex( { "code": 1 }, { unique: true }, changeCallback);
+        }
+    });
+
+    function _createInsertNewOrderStatusesChangeset(chId, items) {
+        return {
+            changeId: chId,
+            changeFn: function(changeCallback) {
+                orderStatusService.createOrderStatuses(items, function(err, _items) {
+                    if (err) {
+                        return changeCallback(err);
+                    }
+                    return changeCallback(null);
+                });
+            }
+        }
+    }
+
+    // Создан, Активен, Подтвержден, Отгружен, Закрыт.
+    changesets.push(_createInsertNewOrderStatusesChangeset(21, [
+        new OrderStatus(ORDER_STATUSES.CREATED, 'Создан'),
+        new OrderStatus(ORDER_STATUSES.ACTIVE, 'Активен'),
+        new OrderStatus(ORDER_STATUSES.APPROVED, 'Подтвержден'),
+        new OrderStatus(ORDER_STATUSES.SHIPPED, 'Отгружен'),
+        new OrderStatus(ORDER_STATUSES.CLOSED, 'Закрыт')
+    ]));
 
     changelog.executeAllChangesets(changesets, callback);
 }
