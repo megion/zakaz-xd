@@ -28,7 +28,7 @@
                 <td>
                     <a ui-sref="edit-product({id: product._id})">{{product.title}}</a>
                 </td>
-                <td>{{product.createdDate}}</td>
+                <td>{{product.createdDate | date:'dd.MM.yyyy HH:mm:ss'}}</td>
                 <td>{{product.measureUnit.title}}</td>
                 <td>{{product.type.title}}</td>
             </tr>

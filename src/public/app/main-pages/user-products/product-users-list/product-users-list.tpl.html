@@ -18,15 +18,13 @@
             <tr>
                 <th>Дата создания</th>
                 <th>Имя пользователя</th>
-                <th>Цена товара</th>
             </tr>
             </thead>
             <tbody>
 
             <tr data-ng-repeat="item in items">
-                <td><a ui-sref="edit-user-product({userProductId: item._id})">{{item.createdDate}}</a></td>
+                <td><a ui-sref="edit-user-product({userProductId: item._id})">{{item.createdDate | date:'dd.MM.yyyy HH:mm:ss'}}</a></td>
                 <td><a ui-sref="edit-user({id: item.user._id})">{{item.user.username}}</a></td>
-                <td>{{item.productPrice}}</td>
             </tr>
             </tbody>
         </table>
