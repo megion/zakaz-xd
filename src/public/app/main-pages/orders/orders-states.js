@@ -40,13 +40,6 @@ angular.module('zakaz-xd.orders.states', [
                                 }
                             );
                         },
-                        allOrderTypes: function($stateParams, OrdersResource){
-                            return OrdersResource.getAllOrderTypes().then(
-                                function(response) {
-                                    return response.data;
-                                }
-                            );
-                        },
                         allOrderStatuses: function($stateParams, OrdersResource){
                             return OrdersResource.getAllOrderStatuses().then(
                                 function(response) {
@@ -70,13 +63,6 @@ angular.module('zakaz-xd.orders.states', [
                         },
                         order: function() {
                             return {};
-                        },
-                        allOrderTypes: function($stateParams, OrdersResource){
-                            return OrdersResource.getAllOrderTypes().then(
-                                function(response) {
-                                    return response.data;
-                                }
-                            );
                         },
                         allOrderStatuses: function($stateParams, OrdersResource){
                             return OrdersResource.getAllOrderStatuses().then(

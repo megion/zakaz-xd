@@ -1,20 +1,17 @@
 var mongodb = require('../lib/mongodb');
+var orderStatusService = require('../service/orderStatusService');
 
 function getCollection() {
 	return mongodb.getDb().collection("orders");
 }
 
-function getStatusesCollection() {
-    return mongodb.getDb().collection("orderStatuses");
-}
-
-function createStatuses(orderStatuses, callback) {
-    var coll = getStatusesCollection();
-    coll.insert(orderStatuses, {w: 1}, function(err, results){
+function createOrder(item, callback) {
+    var coll = getCollection();
+    coll.insert(item, function(err, results){
         if (err) {
             return callback(err);
         }
-        callback(null, results.ops);
+        return callback(null, item);
     });
 }
 
@@ -22,7 +19,7 @@ function createStatuses(orderStatuses, callback) {
  * Обогощение данных
  */
 function enrichmentOrders(orders, callback) {
-    findAllStatuses(function(err, allStatuses) {
+    orderStatusService.findAllOrderStatuses(function(err, allStatuses) {
         if (err) {
             return callback(err);
         }
@@ -44,7 +41,6 @@ function enrichmentOrders(orders, callback) {
 
         callback(null, orders);
     });
-
 }
 
 function findAllOrdersByFilter(page, filter, callback) {
@@ -77,26 +73,6 @@ function findAllOrdersByAuthorId(page, authorId, callback) {
     findAllOrdersByFilter(page, {author_id: authorId}, callback);
 }
 
-function findAllStatuses(callback) {
-    var coll = getStatusesCollection();
-    coll.find({}).toArray(function(err, result) {
-        if (err) {
-            return callback(err);
-        }
-        return callback(null, result);
-    });
-}
-
-function findStatusesByCodes(codes, callback) {
-    var coll = getStatusesCollection();
-    coll.find({code : {$in : codes}}).toArray(function(err, results) {
-        if (err) {
-            return callback(err);
-        }
-        return callback(null, results);
-    });
-}
-
 function findOneOrderByFilter(filter, callback) {
     var coll = getCollection();
     coll.findOne(filter, function(err, order) {
@@ -127,11 +103,7 @@ function findOneById(id, callback) {
 }
 
 exports.getCollection = getCollection;
-exports.getStatusesCollection = getStatusesCollection;
-exports.createStatuses = createStatuses;
 exports.findAllOrders = findAllOrders;
-exports.findAllStatuses = findAllStatuses;
-exports.findStatusesByCodes = findStatusesByCodes;
 exports.findAllOrdersByAuthorId = findAllOrdersByAuthorId;
 exports.findOneByIdAndAuthorId = findOneByIdAndAuthorId;
 exports.findOneById = findOneById;

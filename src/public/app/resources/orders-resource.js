@@ -27,9 +27,6 @@ angular.module('zakaz-xd.resources.orders-resource', [
             },
             getAllOrderStatuses: function () {
                 return $http.get(startUrl + '/all-order-statuses');
-            },
-            getAllOrderTypes: function () {
-                return $http.get(startUrl + '/all-order-types');
             }
         };
     }]);
