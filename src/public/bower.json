@@ -10,7 +10,8 @@
     "bootstrap": "~3.3.4",
     "angular-bootstrap": "~0.13.0",
     "angular-ui-select": "~0.12.0",
-    "font-awesome": "~4.3.0"
+    "font-awesome": "~4.3.0",
+    "lodash": "2.4.1"
    }
 }
 

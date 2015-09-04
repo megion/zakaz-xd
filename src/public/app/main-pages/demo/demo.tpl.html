@@ -1,0 +1,16 @@
+<h4>Demo</h4>
+
+<form class="form-horizontal" name="demoForm" novalidate>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Multiselect</label>
+        <div class="col-sm-10">
+            <multiselect multiple="true"
+                         ng-model="selectedCars"
+                         options="c.name for c in cars"
+                         change="changeSelection1()"
+                         header="generateHeader()"></multiselect>
+        </div>
+    </div>
+
+</form>

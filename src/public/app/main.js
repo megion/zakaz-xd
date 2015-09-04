@@ -9,7 +9,8 @@ angular.module('zakaz-xd.main', [
 
     'zakaz-xd.orders.states',
     'zakaz-xd.products.states',
-    'zakaz-xd.manage-users.states'
+    'zakaz-xd.manage-users.states',
+    'zakaz-xd.demo.states'
 ])
     .config(['$stateProvider', '$urlRouterProvider', 'ACCESS',
         function ($stateProvider, $urlRouterProvider, ACCESS) {
