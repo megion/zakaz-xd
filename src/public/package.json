@@ -7,7 +7,8 @@
     "event-stream": "~3.1.0",
     "gulp": "^3.9",
     "gulp-concat": "~2.1.7",
-    "gulp-less": "^3.0.3"
+    "gulp-less": "^3.0.3",
+    "through2": "^2.0.0"
   },
   "scripts": {
     "postinstall": "bower install"

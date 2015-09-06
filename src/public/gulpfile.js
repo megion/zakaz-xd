@@ -1,7 +1,9 @@
 var fs = require('fs');
 var gulp = require('gulp');
+var path = require('path');
 var del = require('del');
 var less = require('gulp-less');
+var through2 = require('through2');
 
 var config = require('./build.config.json');
 
@@ -30,7 +32,26 @@ gulp.task('clean', function(cb) {
 
 /* copy vendors files */
 gulp.task('vendor-js', ['vendor-js-clean'], function() {
+    var fcount = 0;
     gulp.src(config.vendor_files.js)
+        .pipe(
+        through2.obj(function(file, enc, next) {
+            if (!file.isDirectory()) {
+                console.log(file.base);
+                var relPath = config.vendor_files.js[fcount];
+                var srcPaths = relPath.split('/');
+                var newPath;
+                if (srcPaths.length > 1) {
+                    newPath = relPath.substring(0, relPath.length - srcPaths[srcPaths.length-1].length);
+                } else {
+                    newPath = relPath;
+                }
+                file.path = path.join(file.base, newPath, path.basename(file.path));
+                this.push(file);
+                fcount++;
+            }
+            next();
+        }))
         .pipe(gulp.dest(config.build_dir + '/vendor/js'))
 });
 gulp.task('vendor-css', ['vendor-css-clean'], function() {

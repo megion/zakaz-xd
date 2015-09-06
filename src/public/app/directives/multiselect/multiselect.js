@@ -280,7 +280,7 @@ angular.module('zakaz-xd.directives.multiselect', ['lodash'])
             restrict: 'E',
             scope: false,
             replace: true,
-            templateUrl: 'multiselect/multiselect.tpl.html',
+            templateUrl: 'app/directives/multiselect/multiselect.tpl.html',
             link: function (scope, element, attrs) {
 
                 scope.isVisible = false;
