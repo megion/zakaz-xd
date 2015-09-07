@@ -8,20 +8,11 @@ var through2 = require('through2');
 var config = require('./build.config.json');
 
 gulp.task('default', ['build']);
-gulp.task('build', ['vendor-js', 'vendor-css', 'vendor-fonts', 'build-less']);
+gulp.task('build', ['vendor-files', 'less']);
 
 /* cleans */
 gulp.task('vendor-clean', function(cb) {
-    del([config.build_dir + '/vendor'], cb);
-});
-gulp.task('vendor-js-clean', function(cb) {
-    del([config.build_dir + '/vendor/js'], cb);
-});
-gulp.task('vendor-css-clean', function(cb) {
-    del([config.build_dir + '/vendor/css'], cb);
-});
-gulp.task('vendor-fonts-clean', function(cb) {
-    del([config.build_dir + '/vendor/fonts'], cb);
+    del([path.join(config.build_dir, config.vendor_dir)], cb);
 });
 gulp.task('css-clean', function(cb) {
     del([config.build_dir + '/css'], cb);
@@ -30,15 +21,18 @@ gulp.task('clean', function(cb) {
   del([config.build_dir], cb);
 });
 
-/* copy vendors files */
-gulp.task('vendor-js', ['vendor-js-clean'], function() {
-    var fcount = 0;
-    gulp.src(config.vendor_files.js)
+/**
+ * Copy src files with relative path, for example
+ * src file is "bower_components/angular/angular.js" then it will be copied to
+ * <destPath> + "bower_components/angular/"
+ */
+function copyWithRelativePath(srcFiles, destPath) {
+    var _count = 0;
+    var stream = gulp.src(srcFiles)
         .pipe(
         through2.obj(function(file, enc, next) {
             if (!file.isDirectory()) {
-                console.log(file.base);
-                var relPath = config.vendor_files.js[fcount];
+                var relPath = srcFiles[_count];
                 var srcPaths = relPath.split('/');
                 var newPath;
                 if (srcPaths.length > 1) {
@@ -48,22 +42,26 @@ gulp.task('vendor-js', ['vendor-js-clean'], function() {
                 }
                 file.path = path.join(file.base, newPath, path.basename(file.path));
                 this.push(file);
-                fcount++;
+                _count++;
             }
             next();
         }))
-        .pipe(gulp.dest(config.build_dir + '/vendor/js'))
-});
-gulp.task('vendor-css', ['vendor-css-clean'], function() {
-    gulp.src(config.vendor_files.css)
-        .pipe(gulp.dest(config.build_dir + '/vendor/css'))
-});
-gulp.task('vendor-fonts', ['vendor-fonts-clean'], function() {
-    gulp.src(config.vendor_files.fonts)
-        .pipe(gulp.dest(config.build_dir + '/vendor/fonts'))
+        .pipe(gulp.dest(destPath));
+
+    return stream;
+};
+
+/* copy vendors files */
+gulp.task('vendor-files', ['vendor-clean'], function() {
+    copyWithRelativePath(config.vendor_files.js, config.build_dir);
+    copyWithRelativePath(config.vendor_files.css, config.build_dir);
+    copyWithRelativePath(config.vendor_files.fonts, config.build_dir);
 });
 
-gulp.task('build-less', ['css-clean'], function () {
+/**
+ * Build app less
+ */
+gulp.task('less', ['css-clean'], function () {
     return gulp.src('./less/**/*.less')
         .pipe(less())
         .pipe(gulp.dest(config.build_dir + '/css'));

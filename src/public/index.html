@@ -14,20 +14,22 @@
     <!-- link rel="icon" href="/favicon.ico" -->
 
     <!-- bootstrap -->
-    <link href="/build/vendor/css/bootstrap.css" rel="stylesheet">
-    <link href="/build/vendor/css/ui-bootstrap-csp.css" rel="stylesheet">
+    <link href="/build/bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+    <link href="/build/bower_components/angular-bootstrap/ui-bootstrap-csp.css" rel="stylesheet">
     <!-- font awesome -->
-    <link href="/build/vendor/css/font-awesome.css" rel="stylesheet">
-    <link href="/build/vendor/css/select.css" rel="stylesheet">
-    <link href="/build/vendor/css/select2.css" rel="stylesheet">
-    <link href="/build/vendor/css/select2-bootstrap.css" rel="stylesheet">
+    <link href="/build/bower_components/font-awesome/css/font-awesome.css" rel="stylesheet">
+
+    <link href="/build/bower_components/angular-ui-select/dist/select.css" rel="stylesheet">
+    <link href="/build/bower_components/select2/select2.css" rel="stylesheet">
+    <link href="/build/bower_components/select2/select2-bootstrap.css" rel="stylesheet">
 
     <link href="/build/css/multiselect.css" rel="stylesheet">
+    <link href="/build/css/multiselect2.css" rel="stylesheet">
 
     <link href="/css/styles.css" rel="stylesheet">
 
     <!-- jQuery as dependency bootstrap -->
-    <script src="/build/vendor/js/jquery.js"></script>
+    <script src="/build/bower_components/jquery/dist/jquery.js"></script>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -62,19 +64,22 @@
 </footer>
 
 <!-- Placed at the end of the document so the pages load faster -->
-<script src="/build/vendor/js/bootstrap.js"></script>
-<script src="/build/vendor/js/angular.js"></script>
-<script src="/build/vendor/js/angular-resource.js"></script>
-<script src="/build/vendor/js/angular-cookies.js"></script>
-<script src="/build/vendor/js/angular-sanitize.js"></script>
-<script src="/build/vendor/js/ui-bootstrap.js"></script>
-<script src="/build/vendor/js/ui-bootstrap-tpls.js"></script>
-<script src="/build/vendor/js/select.js"></script>
-<script src="/build/vendor/js/select2.js"></script>
-<script src="/build/vendor/js/"></script>
-<script src="/build/vendor/js/angular-ui-router.js"></script>
-<script src="/build/vendor/js/lodash.js"></script>
 
+<!-- vendors js-->
+<script src="/build/bower_components/bootstrap/dist/js/bootstrap.js"></script>
+<script src="/build/bower_components/angular/angular.js"></script>
+<script src="/build/bower_components/angular-resource/angular-resource.js"></script>
+<script src="/build/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+<script src="/build/bower_components/angular-cookies/angular-cookies.js"></script>
+<script src="/build/bower_components/angular-sanitize/angular-sanitize.js"></script>
+<script src="/build/bower_components/angular-bootstrap/ui-bootstrap.js"></script>
+<script src="/build/bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+<script src="/build/bower_components/angular-ui-select/dist/select.js"></script>
+<script src="/build/bower_components/angular-ui-select2/src/select2.js"></script>
+<script src="/build/bower_components/select2/select2.js"></script>
+<script src="/build/bower_components/lodash/dist/lodash.js"></script>
+
+<!-- app files -->
 <script src="/app/errors/access-error.js"></script>
 <script src="/app/auth/access.js"></script>
 <script src="/app/auth/auth.js"></script>
@@ -118,6 +123,8 @@
 <script src="/app/directives/pagination/z-pagination.js"></script>
 <script src="/app/directives/datepicker/z-datepicker.js"></script>
 <script src="/app/directives/multiselect/multiselect.js"></script>
+<script src="/app/directives/multiselect2/hcs-select2.js"></script>
+<script src="/app/directives/multiselect2/multiselect2.js"></script>
 
 
 </body>

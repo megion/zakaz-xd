@@ -1,13 +1,13 @@
 angular
     .module('zakaz-xd.demo', [
         'zakaz-xd.directives.multiselect',
+        'zakaz-xd.directives.multiselect2',
         'ui.select',
         'ui.select2',
         'ngSanitize'
     ])
     .controller('DemoCtrl', ['$scope', '$stateParams', '$state',
         function ($scope, $stateParams, $state) {
-            $scope.name = 'World';
             $scope.cars = [{id:1, name: 'Audi'}, {id:2, name: 'BMW'}, {id:3, name: 'Honda'}, {id:4, name: 'Mercedes'}];
             $scope.selectedCars = [];
 
@@ -25,13 +25,51 @@ angular
 
             $scope.models = {};
 
-            $scope.select3Results = [{id:1, text: 'Audi'}, {id:2, text: 'BMW'}, {id:3, text: 'Honda'}, {id:4, text: 'Mercedes'}];
+
+
+            $scope.select3Results = [{guid:1, name: 'Audi'}, {guid:2, name: 'BMW'}, {guid:3, name: 'Honda'}, {guid:4, name: 'Mercedes'}];
+            $scope.models.selectModel3 = [{guid:10, name: 'Audi test'}, $scope.select3Results[2]];
+            $scope.models.selectModel2 = [{id:10, name:'test'}];
             $scope.select2Options = {
                 multiple: true,
                 placeholder: "Select a cars",
-                query: function (query) {
-                    query.callback({ results: $scope.select3Results });
-                }//,
+                //query: function (query) {
+                //    console.log(query);
+                //    query.callback({ results: $scope.select3Results });
+                //},
+                data: {
+                    results: $scope.select3Results,
+                    text: function(item) {
+                        return item.name;
+                    }
+                },
+                id : function(item) {
+                    return item.guid;
+                },
+                formatSelection: function(item) {
+                    return item.name;
+                },
+                formatResult : function(item, container, query) {
+                    return item.name;
+                }
+                //initSelection: function (element, callback) {
+                //    var modelVal = $(element).data('$ngModelController').$modelValue;
+                //    console.log("modelVal", modelVal);
+                //
+                //    // если данные необходимо обоготить - то делаем запрос
+                //    //var id = modelVal ? modelVal.id : null;
+                //    //if (id) {
+                //    //    someService.getDataById(id).then(
+                //    //        function(results) {
+                //    //            callback(results);
+                //    //        }
+                //    //    );
+                //    //}
+                //
+                //    callback(modelVal);
+                //
+                //}
+                //,
                 //initSelection: function(element, callback) {
                 //    var val = $(element).select2('val'),
                 //        results = [];
@@ -41,6 +79,8 @@ angular
                 //    callback(results);
                 //}
             };
+
+            //console.log("window.Select2", window.Select2);
         }
     ])
 ;
