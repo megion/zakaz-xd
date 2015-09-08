@@ -6,13 +6,13 @@
         <label class="col-sm-2 control-label">Multiselect</label>
         <div class="col-sm-10">
             <multiselect multiple="true"
-                         ng-model="selectedCars"
+                         ng-model="models.selectedCars"
                          options="c.name for c in cars"
                          change="changeSelection1()"
                          required
                          name="selectCar1"
                          header="generateHeader()"></multiselect>
-            {{selectedCars}}
+            {{models.selectedCars}}
         </div>
     </div>
 
@@ -33,8 +33,8 @@
         <label class="col-sm-2 control-label">UI select2 multi</label>
         <div class="col-sm-10">
             <!--<select style="width:300px" ui-select2="select2Options" multiple ng-model="models.selectModel3"></select>-->
-            <input type="hidden" style="width:100%" ui-select2="select2Options" ng-model="models.selectModel3"/>
-            {{models.selectModel3}}
+            <!--<input type="hidden" style="width:100%" ui-select2="select2Options" ng-model="models.selectModel3"/>-->
+            <!--{{models.selectModel3}}-->
         </div>
     </div>
 
@@ -57,8 +57,8 @@
         <label class="col-sm-2 control-label">UI select2 multi</label>
         <div class="col-sm-10">
             <!--<select style="width:300px" ui-select2="select2Options" multiple ng-model="models.selectModel3"></select>-->
-            <input class="form-control form-base__form-control" type="hidden" style="width:100%" ui-select2="select2Options" ng-model="models.selectModel3"/>
-            {{models.selectModel3}}
+            <!--<input class="form-control form-base__form-control" type="hidden" style="width:100%" ui-select2="select2Options" ng-model="models.selectModel3"/>-->
+            <!--{{models.selectModel3}}-->
         </div>
     </div>
 

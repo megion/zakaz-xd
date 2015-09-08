@@ -13,24 +13,24 @@ angular
 
             $scope.generateHeader = function() {
                 var txt = 'Сгенерированный header: ';
-                for (var i in $scope.selectedCars) {
-                    txt += $scope.selectedCars[i].name.substring(0, 1);
+                for (var i in $scope.models.selectedCars) {
+                    txt += $scope.models.selectedCars[i].name.substring(0, 1);
                 }
                 return txt;
             };
 
             $scope.changeSelection1 = function() {
-                console.log("changeSelection1");
+                console.log("changeSelection1", $scope.models.selectedCars);
             };
 
             $scope.models = {};
 
             $scope.testChange = function(newVal) {
-                console.log("test change", newVal);
+                console.log("test change", $scope.models.selectModel3);
             };
 
             $scope.select3Results = [{guid:1, name: 'Audi'}, {guid:2, name: 'BMW'}, {guid:3, name: 'Honda'}, {guid:4, name: 'Mercedes'}];
-            $scope.models.selectModel3 = [{guid:10, name: 'Audi test'}, $scope.select3Results[2]];
+            $scope.models.selectModel3 = [$scope.select3Results[2]];
             $scope.models.selectModel2 = [{id:10, name:'test'}];
             $scope.select2Options = {
                 multiple: true,

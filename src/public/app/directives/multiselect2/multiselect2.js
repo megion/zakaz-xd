@@ -1,7 +1,7 @@
 angular.module('zakaz-xd.directives.multiselect2', [
     'common.hcs.ui.select2'
 ])
-    .directive('multiselect2', function () {
+    .directive('multiselect2', ['$timeout', function ($timeout) {
         return {
             restrict: 'E',
             scope: {
@@ -22,16 +22,48 @@ angular.module('zakaz-xd.directives.multiselect2', [
                     placeholder: "Выберите одно или несколько значений",
                     overloadedClasses: {
                         multi: HcsMulti
+                    },
+                    data: {
+                        text: function(item) {
+                            throw new Error("'data.text' function not implemented");
+                        }
+                    },
+                    id: function(item) {
+                        throw new Error("'id' function not implemented");
+                    },
+                    formatResult: function(item, container, query) {
+                        throw new Error("'formatResult' function not implemented");
+                    },
+                    formatSelection: function(item) {
+                        throw new Error("'formatSelection' function not implemented");
                     }
+
                 };
 
                 var select2El = $element.find("input");
 
-                $scope.$onChangeModels = function() {
-                    if ($scope.onChange) {
-                        $scope.onChange($scope.ngModel);
+                $scope.$watch(function () {
+                    return $scope.ngModel;
+                }, function (newVal, oldVal) {
+                    if (oldVal && oldVal.length===0 && (!newVal || newVal.length===0)) {
+                        return;
                     }
-                };
+                    if (newVal && newVal.length===0 && (!oldVal || oldVal.length===0)) {
+                        return;
+                    }
+                    if (!newVal && !oldVal) {
+                        return;
+                    }
+                    if (!$scope.ngModel) {
+                        $scope.ngModel = [];
+                    }
+                    if ($scope.onChange) {
+                        // hot fix: run callback after digest cycle for ngModel is changed complete
+                        $timeout(function () {
+                            $scope.onChange($scope.ngModel);
+                        });
+                    }
+                }, true);
 
                 // remove attribute class for container
                 if ($scope.class) {
@@ -56,13 +88,24 @@ angular.module('zakaz-xd.directives.multiselect2', [
                     var self = this;
                     selectAllLink.click(function(event) {
                         // check all selected already
-                        if(!angular.equals($scope.ngModel, $scope.options.data.results)) {
-                            $scope.$apply(function () {
+                        $scope.$apply(function () {
+                            if ($scope.ngModel) {
+                                var valuesMap = {};
+                                for (var i=0; i<$scope.ngModel.length; i++) {
+                                    var v = $scope.ngModel[i];
+                                    valuesMap[$scope.options.id(v)] = v;
+                                }
+                                for (var j=0; j<$scope.options.data.results.length; j++) {
+                                    var vr = $scope.options.data.results[j];
+                                    if (!valuesMap[$scope.options.id(vr)]) {
+                                        $scope.ngModel.push(vr);
+                                    }
+                                }
+                            } else {
                                 $scope.ngModel = [].concat($scope.options.data.results);
-                                select2El.trigger("change");
-                                $scope.$onChangeModels();
-                            });
-                        }
+                            }
+                            select2El.trigger("change");
+                        });
 
                         self.close();
                         event.preventDefault();
@@ -100,5 +143,5 @@ angular.module('zakaz-xd.directives.multiselect2', [
 
             }]
         };
-    })
+    }])
 ;
