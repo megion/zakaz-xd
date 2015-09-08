@@ -43,6 +43,7 @@
         <div class="col-sm-10">
             <multiselect2 class="form-control form-base__form-control" ng-model="models.selectModel3" options="select2Options" required="true" name="selectCar3"
                     on-change="testChange"></multiselect2>
+            {{models.selectModel3}}
         </div>
     </div>
     <div class="form-group required" ng-class="{'has-error': demoForm.$submitted && demoForm.selectCar4.$error.required}">

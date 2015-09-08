@@ -34,7 +34,7 @@ angular
             $scope.models.selectModel2 = [{id:10, name:'test'}];
             $scope.select2Options = {
                 multiple: true,
-                placeholder: "Select a cars",
+                //placeholder: "Select a cars",
                 //query: function (query) {
                 //    console.log(query);
                 //    query.callback({ results: $scope.select3Results });
