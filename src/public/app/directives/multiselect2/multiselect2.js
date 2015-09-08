@@ -8,7 +8,11 @@ angular.module('zakaz-xd.directives.multiselect2', [
                 options: '=',
                 ngModel: '=',
                 required: '=',
-                name: '@'
+                disabled: '=',
+                readonly: '=',
+                onChange: '=',
+                name: '@',
+                class: '@'
             },
             templateUrl: 'app/directives/multiselect2/multiselect2.tpl.html',
             controller: ['$scope', '$element', function ($scope, $element) {
@@ -18,6 +22,11 @@ angular.module('zakaz-xd.directives.multiselect2', [
                         multi: HcsMulti
                     }
                 };
+
+                // remove attribute class for container
+                if ($scope.class) {
+                    $element.removeAttr('class');
+                }
 
                 var MultiSelect2 = window.Select2["class"].multi;
                 // define class HcsMulti for override createContainer function
@@ -32,7 +41,6 @@ angular.module('zakaz-xd.directives.multiselect2', [
                 };
 
                 $scope.options = angular.extend(defaultOptions, $scope.options);
-
             }]
         };
     })

@@ -25,7 +25,9 @@ angular
 
             $scope.models = {};
 
-
+            $scope.testChange = function(newVal) {
+                console.log("test change", newVal);
+            };
 
             $scope.select3Results = [{guid:1, name: 'Audi'}, {guid:2, name: 'BMW'}, {guid:3, name: 'Honda'}, {guid:4, name: 'Mercedes'}];
             $scope.models.selectModel3 = [{guid:10, name: 'Audi test'}, $scope.select3Results[2]];

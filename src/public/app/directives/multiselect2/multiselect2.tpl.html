@@ -1,1 +1,2 @@
-<input type="hidden" style="width:100%" hcs-ui-select2="options" ng-model="ngModel" name="name" ng-required="required"/>
+<input type="hidden" hcs-ui-select2="options" ng-model="ngModel" name="{{name}}" ng-required="required"
+        ng-disabled="disabled" ng-readonly="readonly" ng-change="onChange(ngModel)" class="{{class}}"/>

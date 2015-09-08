@@ -19,8 +19,8 @@
     <div class="form-group required" ng-class="{'has-error': demoForm.$submitted && demoForm.selectCar2.$error.required}">
         <label class="col-sm-2 control-label">UI select multi</label>
         <div class="col-sm-10">
-            <ui-select multiple ng-model="models.selectModel2" ng-disabled="disabled" required name="selectCar2">
-                <ui-select-match placeholder="Select colors...">{{$item.name}}</ui-select-match>
+            <ui-select theme="bootstrap" ng-model="models.selectModel2" ng-disabled="disabled" required name="selectCar2">
+                <ui-select-match placeholder="Select colors...">{{$select.selected.title}}</ui-select-match>
                 <ui-select-choices repeat="car in cars | filter:$select.search">
                     {{car.name}}
                 </ui-select-choices>
@@ -41,7 +41,14 @@
     <div class="form-group required" ng-class="{'has-error': demoForm.$submitted && demoForm.selectCar3.$error.required}">
         <label class="col-sm-2 control-label">UI select2 multi by directive</label>
         <div class="col-sm-10">
-            <multiselect2 ng-model="models.selectModel3" options="select2Options" required="true" name="selectCar3"></multiselect2>
+            <multiselect2 class="form-control form-base__form-control" ng-model="models.selectModel3" options="select2Options" required="true" name="selectCar3"
+                    on-change="testChange"></multiselect2>
+        </div>
+    </div>
+    <div class="form-group required" ng-class="{'has-error': demoForm.$submitted && demoForm.selectCar4.$error.required}">
+        <label class="col-sm-2 control-label">UI select2 multi by directive 4</label>
+        <div class="col-sm-10">
+            <multiselect2 ng-model="models.selectModel4" options="select2Options" required="true" name="selectCar4"></multiselect2>
         </div>
     </div>
 
@@ -49,7 +56,7 @@
         <label class="col-sm-2 control-label">UI select2 multi</label>
         <div class="col-sm-10">
             <!--<select style="width:300px" ui-select2="select2Options" multiple ng-model="models.selectModel3"></select>-->
-            <input type="hidden" style="width:100%" ui-select2="select2Options" ng-model="models.selectModel3"/>
+            <input class="form-control form-base__form-control" type="hidden" style="width:100%" ui-select2="select2Options" ng-model="models.selectModel3"/>
             {{models.selectModel3}}
         </div>
     </div>
