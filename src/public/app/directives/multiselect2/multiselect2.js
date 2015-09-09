@@ -1,7 +1,7 @@
 angular.module('zakaz-xd.directives.multiselect2', [
     'common.hcs.ui.select2'
 ])
-    .directive('multiselect2', ['$timeout', function ($timeout) {
+    .directive('multiselect2', function () {
         return {
             restrict: 'E',
             scope: {
@@ -45,23 +45,12 @@ angular.module('zakaz-xd.directives.multiselect2', [
                 $scope.$watch(function () {
                     return $scope.ngModel;
                 }, function (newVal, oldVal) {
-                    if (oldVal && oldVal.length===0 && (!newVal || newVal.length===0)) {
+                    // skip if oldVal empty or NULL and newVal empty or NULL
+                    if ((!oldVal || oldVal.length===0) && (!newVal || newVal.length===0)) {
                         return;
-                    }
-                    if (newVal && newVal.length===0 && (!oldVal || oldVal.length===0)) {
-                        return;
-                    }
-                    if (!newVal && !oldVal) {
-                        return;
-                    }
-                    if (!$scope.ngModel) {
-                        $scope.ngModel = [];
                     }
                     if ($scope.onChange) {
-                        // hot fix: run callback after digest cycle for ngModel is changed complete
-                        $timeout(function () {
-                            $scope.onChange($scope.ngModel);
-                        });
+                        $scope.onChange($scope.ngModel);
                     }
                 }, true);
 
@@ -143,5 +132,5 @@ angular.module('zakaz-xd.directives.multiselect2', [
 
             }]
         };
-    }])
+    })
 ;

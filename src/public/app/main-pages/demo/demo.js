@@ -30,7 +30,7 @@ angular
             };
 
             $scope.select3Results = [{guid:1, name: 'Audi'}, {guid:2, name: 'BMW'}, {guid:3, name: 'Honda'}, {guid:4, name: 'Mercedes'}];
-            $scope.models.selectModel3 = [$scope.select3Results[2]];
+            //$scope.models.selectModel3 = [$scope.select3Results[2]];
             $scope.models.selectModel2 = [{id:10, name:'test'}];
             $scope.select2Options = {
                 multiple: true,
