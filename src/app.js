@@ -43,7 +43,8 @@ function initWebApp(app) {
 		cookie : config.session.cookie
 	}));
 
-    app.use(express.static(path.join(__dirname, 'public')));
+    app.use(express.static(path.join(__dirname, 'web', 'build')));
+    app.use(express.static(path.join(__dirname, 'web', 'src')));
 
     // routes
     app.use('/auth', require('./routes/auth'));

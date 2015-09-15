@@ -32,5 +32,8 @@
     ],
     "assets": [
     ]
-  }
+  },
+
+  "banner": "/*\n * Version: 1.0 - <%= timestamp %>\n */\n\n\n"
+
 }

@@ -1,0 +1,15 @@
+{
+  //"indent": 4,
+  //"maxlen": 80,
+  //"undef": true,
+  "nonew": true,
+//  "quotmark": "single",
+  "curly": true,
+  "immed": true,
+  "newcap": true,
+  "noarg": true,
+  "sub": true,
+  "boss": true,
+  "eqnull": true,
+  "laxbreak": true
+}
