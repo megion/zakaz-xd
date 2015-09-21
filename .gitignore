@@ -33,6 +33,8 @@ local_package.csx
 
 src/web/bower_components
 src/web/node_modules
+src/web/build/src
+src/web/build/_index.html
 config.json
 
 
