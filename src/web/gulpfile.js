@@ -18,22 +18,20 @@ var es = require('event-stream');
 var del = require('del');
 var less = require('gulp-less');
 var through2 = require('through2');
+var globby = require('globby');
 
 var config = require('./build.config.json');
 
-gulp.task('default', ['build']);
-gulp.task('build', ['vendor-files', 'less', 'scripts', 'index']);
+var paths = {
+    srcApp: ['./src/app/**/*.js', './src/app/**/*.tpl.html'],
+    srcAppTemplate: ['./src/app/**/*.tpl.html'],
+    srcAppJs: ['./src/app/**/*.js'],
+    srcLess: ['./src/less/**/*.less']
+};
 
-/* cleans */
-gulp.task('vendor-clean', function(cb) {
-    del([path.join(config.build_dir, config.vendor_dir)], cb);
-});
-gulp.task('css-clean', function(cb) {
-    del([config.build_dir + '/css'], cb);
-});
-gulp.task('js-clean', function(cb) {
-    del([config.build_dir + '/js'], cb);
-});
+gulp.task('default', ['build']);
+gulp.task('build', ['vendor-files', 'less', 'scripts', 'index', '_index']);
+
 gulp.task('clean', function(cb) {
   del([config.build_dir], cb);
 });
@@ -69,7 +67,8 @@ function copyWithRelativePath(srcFiles, destPath) {
 };
 
 /* copy vendors files */
-gulp.task('vendor-files', ['vendor-clean'], function() {
+gulp.task('vendor-files', function() {
+    del.sync([path.join(config.build_dir, config.vendor_dir)]);
     copyWithRelativePath(config.vendor_files.js, config.build_dir);
     copyWithRelativePath(config.vendor_files.css, config.build_dir);
     copyWithRelativePath(config.vendor_files.fonts, config.build_dir);
@@ -80,21 +79,24 @@ gulp.task('vendor-files', ['vendor-clean'], function() {
  */
 gulp.task('less', function () {
     del.sync([config.build_dir + '/zakaz-xd-styles.css']);
-    return gulp.src('./src/less/**/*.less')
+    return gulp.src(paths.srcLess)
+        .pipe(plumber({
+            errorHandler: handleError
+        }))
         .pipe(less())
         .pipe(concat('zakaz-xd-styles.css'))
         .pipe(gulp.dest(config.build_dir));
 });
 
-gulp.task('dev-copy-src', function() {
+gulp.task('src-app-copy', function() {
     del.sync([config.build_dir + '/src']);
-    return gulp.src('./src/**/*.js')
+    return gulp.src(paths.srcAppJs, { base: './src' })
         .pipe(gulp.dest(config.build_dir + '/src'));
 });
 
 gulp.task('compile-templates', function() {
     del.sync([config.build_dir + '/templates-zakaz-xd.js']);
-    return gulp.src('./src/app/**/*.tpl.html')
+    return gulp.src(paths.srcAppTemplate)
         .pipe(plumber({
             errorHandler: handleError
         }))
@@ -112,7 +114,7 @@ gulp.task('scripts', ['compile-templates'], function() {
     del.sync([config.build_dir + '/zakaz-xd.js',
         config.build_dir + '/zakaz-xd.min.js']);
     // build src scripts
-    return gulp.src(['./src/app/**/*.js'])
+    return gulp.src(paths.srcAppJs)
         .pipe(plumber({
             errorHandler: handleError
         }))
@@ -133,15 +135,35 @@ gulp.task('scripts', ['compile-templates'], function() {
 });
 
 gulp.task('index', function () {
-    del.sync([config.build_dir + '/index.html', config.build_dir + '/_index.html']);
-    gulp.src('src/index.html')
-        .pipe(template({scripts: []}))
-        .pipe(concat('_index.html'))
-        .pipe(gulp.dest(config.build_dir))
+    del.sync([config.build_dir + '/index.html']);
     return gulp.src('src/index.html')
+        .pipe(plumber({
+            errorHandler: handleError
+        }))
         .pipe(template({scripts: ['zakaz-xd.js', 'templates-zakaz-xd.js']}))
         .pipe(concat('index.html'))
         .pipe(gulp.dest(config.build_dir));
+});
+
+gulp.task('_index', ['src-app-copy'], function () {
+    del.sync([config.build_dir + '/_index.html']);
+
+    var js = globby.sync(['src/app/**/*.js']);
+    js.push('templates-zakaz-xd.js');
+
+    return gulp.src('src/index.html')
+        .pipe(plumber({
+            errorHandler: handleError
+        }))
+        .pipe(template({scripts: js}))
+        .pipe(concat('_index.html'))
+        .pipe(gulp.dest(config.build_dir));
+});
+
+// Rerun the task when a file changes
+gulp.task('watch', function() {
+    gulp.watch(paths.srcApp, ['_index', 'scripts']);
+    gulp.watch(paths.srcLess, ['less']);
 });
 
 var handleError = function (err) {

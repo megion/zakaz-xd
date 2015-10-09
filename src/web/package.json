@@ -21,6 +21,7 @@
     "gulp-util": "^2.2.19",
     "gulp-template": "~3.0.0",
     "jshint-stylish": "~0.3.0",
+    "globby": "~3.0.1",
 
     "through2": "^2.0.0"
   },
