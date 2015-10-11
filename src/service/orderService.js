@@ -1,5 +1,6 @@
 var mongodb = require('../lib/mongodb');
 var orderStatusService = require('../service/orderStatusService');
+var userService = require('../service/userService');
 
 function getCollection() {
 	return mongodb.getDb().collection("orders");
@@ -23,23 +24,48 @@ function enrichmentOrders(orders, callback) {
         if (err) {
             return callback(err);
         }
-        var statusesMap = {};
-        if (allStatuses) {
-            for (i=0; i<allStatuses.length; i++) {
-                var status = allStatuses[i];
-                statusesMap[status._id.toString()] = status;
-            }
-        }
 
-        // обогощение
-        for (i=0; i<orders.length; i++) {
-            var order = orders[i];
-            if (order.status_id) {
-                order.status = statusesMap[order.status_id.toString()]
+        userService.findAllUsers(function(err, allUsers) {
+            if (err) {
+                return callback(err);
             }
-        }
 
-        callback(null, orders);
+            var statusesMap = {};
+            if (allStatuses) {
+                for (var i=0; i<allStatuses.length; i++) {
+                    var status = allStatuses[i];
+                    statusesMap[status._id.toString()] = status;
+                }
+            }
+
+            var usersMap = {};
+            if (allUsers) {
+                for (var i=0; i<allUsers.length; i++) {
+                    var user = allUsers[i];
+                    usersMap[user._id.toString()] = user;
+                }
+            }
+
+            // обогощение
+            for (var i=0; i<orders.length; i++) {
+                var order = orders[i];
+                if (order.status_id) {
+                    order.status = statusesMap[order.status_id.toString()]
+                }
+                order.author = usersMap[order.author_id.toString()];
+                // найти точкеу доставки
+                for(var j=0; j<order.author.deliveryPoints; ++j) {
+                    var dp = order.author.deliveryPoints[j];
+                    if (order.author_id.toString()===dp._id.toString()) {
+                        order.authorDeliveryPoint = dp;
+                    }
+                }
+            }
+
+            callback(null, orders);
+        });
+
+
     });
 }
 

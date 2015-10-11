@@ -11,7 +11,7 @@ var ACCESSES = require('../utils/accesses').ACCESSES;
 var pagination = require('../utils/pagination');
 var ObjectID = require('mongodb').ObjectID;
 
-router.get('/all-orders', loadUser, checkAccess.getAuditor(ACCESSES.VIEW_ALL_ORDER), function(req, res, next) {
+router.get('/all-orders', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS), function(req, res, next) {
     var page = pagination.createMongodbPage(req);
     orderService.findAllOrders(page, function(err, result) {
             if (err) {
@@ -22,9 +22,9 @@ router.get('/all-orders', loadUser, checkAccess.getAuditor(ACCESSES.VIEW_ALL_ORD
     );
 });
 
-router.get('/user-orders', loadUser, checkAccess.getAuditor(ACCESSES.VIEW_ALL_ORDER | ACCESSES.VIEW_OWN_ORDERS), function(req, res, next) {
+router.get('/user-orders', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
     var page = pagination.createMongodbPage(req);
-    orderService.findAllOrdersByAuthorId(page, req.user._id,function(err, result) {
+    orderService.findAllOrdersByAuthorId(page, req.user._id, function(err, result) {
             if (err) {
                 return next(err);
             }
@@ -33,7 +33,7 @@ router.get('/user-orders', loadUser, checkAccess.getAuditor(ACCESSES.VIEW_ALL_OR
     );
 });
 
-router.get('/order-by-id', loadUser, checkAccess.getAuditor(ACCESSES.VIEW_ALL_ORDER), function(req, res, next) {
+router.get('/order-by-id', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS), function(req, res, next) {
     var orderId = new ObjectID(req.param('orderId'));
 
     orderService.findOneById(orderId, function(err, result) {
@@ -45,7 +45,7 @@ router.get('/order-by-id', loadUser, checkAccess.getAuditor(ACCESSES.VIEW_ALL_OR
     );
 });
 
-router.get('/user-order-by-id', loadUser, checkAccess.getAuditor(ACCESSES.VIEW_OWN_ORDERS), function(req, res, next) {
+router.get('/user-order-by-id', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
     var orderId = new ObjectID(req.param('orderId'));
 
     orderService.findOneByIdAndAuthorId(orderId, req.user._id, function(err, result) {
@@ -57,7 +57,7 @@ router.get('/user-order-by-id', loadUser, checkAccess.getAuditor(ACCESSES.VIEW_O
     );
 });
 
-router.get('/all-order-statuses', loadUser, checkAccess.getAuditor(ACCESSES.VIEW_OWN_ORDERS | ACCESSES.VIEW_ALL_ORDER), function(req, res, next) {
+router.get('/all-order-statuses', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
 
     orderStatusService.findAllOrderStatuses(function(err, result) {
             if (err) {
