@@ -2,6 +2,7 @@ var express = require('express');
 var http = require('http');
 var path = require('path');
 var favicon = require('static-favicon');
+var domain = require('domain');
 
 var config = require('./config');
 var mongodb = require('./lib/mongodb');
@@ -10,19 +11,36 @@ var HttpError = require('./error').HttpError;
 var UnknownError = require('./error').UnknownError;
 var AuthError = require('./error').AuthError;
 
+var serverDomain = domain.create();
 
-mongodb.openConnection(function(err, db) {
-	if (err) {
-		log.error(err);
-		return;
-	}
+var server;
 
-    var webApp = express();
-	http.createServer(webApp).listen(config.port, config.ipaddress, function() {
-        console.log('%s: Node server started on %s:%d ...',
-            Date(Date.now() ), config.ipaddress, config.port);
-	});
-	initWebApp(webApp);
+serverDomain.on('error', function(err) {
+    log.error(err.stack);
+
+    // программная ошибка поэтому для безопастности остановим сервер
+    if (server) {
+        server.close();
+    }
+    setTimeout(function(){
+        process.exit(1);
+    }, 1000).unref();
+});
+
+serverDomain.run(function() {
+    mongodb.openConnection(function(err, db) {
+        if (err) {
+            log.error(err);
+            return;
+        }
+
+        var webApp = express();
+        server = http.createServer(webApp).listen(config.port, config.ipaddress, function() {
+            console.log('%s: Node server started on %s:%d ...',
+                Date(Date.now() ), config.ipaddress, config.port);
+        });
+        initWebApp(webApp);
+    });
 });
 
 function initWebApp(app) {

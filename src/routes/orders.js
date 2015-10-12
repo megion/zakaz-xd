@@ -68,4 +68,33 @@ router.get('/all-order-statuses', loadUser, checkAccess.getAuditor(ACCESSES.MANA
     );
 });
 
+router.post('/create-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
+    var order = req.body.order;
+
+    if (!product.measureUnit) {
+        return next(new HttpError(400, "Поле единица измерения пустое"));
+    }
+
+    if (!product.title) {
+        return next(new HttpError(400, "Поле наименование пустое"));
+    }
+
+    product.measureUnit_id = new ObjectID(product.measureUnit._id);
+    delete product.measureUnit;
+
+    if (product.type) {
+        product.type_id = new ObjectID(product.type._id);
+        delete product.type;
+    }
+
+    product.createdDate = new Date();
+
+    productService.createProduct(product, function(err, newProduct) {
+        if (err)
+            return next(err);
+
+        res.send({});
+    });
+});
+
 module.exports = router;

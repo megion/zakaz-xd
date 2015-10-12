@@ -25,7 +25,7 @@ function enrichmentOrders(orders, callback) {
             return callback(err);
         }
 
-        userService.findAllUsers(function(err, allUsers) {
+        userService.findAllUsers(null, function(err, allUsers) {
             if (err) {
                 return callback(err);
             }
@@ -128,11 +128,22 @@ function findOneById(id, callback) {
     findOneOrderByFilter({_id: id}, callback);
 }
 
+function createOrder(item, callback) {
+    var coll = getCollection();
+    coll.insert(item, function(err, results){
+        if (err) {
+            return callback(err);
+        }
+        return callback(null, item);
+    });
+}
+
 exports.getCollection = getCollection;
 exports.findAllOrders = findAllOrders;
 exports.findAllOrdersByAuthorId = findAllOrdersByAuthorId;
 exports.findOneByIdAndAuthorId = findOneByIdAndAuthorId;
 exports.findOneById = findOneById;
+exports.createOrder = createOrder;
 
 
 

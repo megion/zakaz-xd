@@ -6,6 +6,7 @@ var roleService = require('./service/roleService');
 var measureUnitService = require('./service/measureUnitService');
 var productTypeService = require('./service/productTypeService');
 var orderStatusService = require('./service/orderStatusService');
+var orderService = require('./service/orderService');
 var userProductService = require('./service/userProductService');
 var userProductPriceService = require('./service/userProductPriceService');
 var Access = require('./models/access').Access;
@@ -366,6 +367,14 @@ function runChangelogs(callback) {
         new OrderStatus(ORDER_STATUSES.SHIPPED, 'Отгружен'),
         new OrderStatus(ORDER_STATUSES.CLOSED, 'Закрыт')
     ]));
+
+    changesets.push({
+        changeId: 22,
+        changeFn: function(changeCallback) {
+            var coll = orderService.getCollection();
+            coll.createIndex( { "code": 1 }, { unique: true }, changeCallback);
+        }
+    });
 
     changelog.executeAllChangesets(changesets, callback);
 }
