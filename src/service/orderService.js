@@ -1,19 +1,32 @@
 var mongodb = require('../lib/mongodb');
 var orderStatusService = require('../service/orderStatusService');
 var userService = require('../service/userService');
+var userProductService = require('../service/userProductService');
+var ORDER_STATUSES = require('./utils/orderStatuses').ORDER_STATUSES;
 
 function getCollection() {
 	return mongodb.getDb().collection("orders");
 }
 
 function createOrder(item, callback) {
-    var coll = getCollection();
-    coll.insert(item, function(err, results){
+    orderStatusService.findOrderStatusesByCodes([ORDER_STATUSES.CREATED], function(err, statues) {
         if (err) {
             return callback(err);
         }
-        return callback(null, item);
+
+        var createdStatus = statues[0];
+        item.status_id = createdStatus._id;
+        
+        var coll = getCollection();
+        coll.insert(item, function(err, results){
+            if (err) {
+                return callback(err);
+            }
+            return callback(null, item);
+        });
+
     });
+
 }
 
 /**
@@ -136,6 +149,105 @@ function createOrder(item, callback) {
         }
         return callback(null, item);
     });
+}
+
+/// order product
+
+function findOrderByIdAndProductId(orderId, productId, callback) {
+    var coll = getCollection();
+    coll.find({_id: orderId}, { authorProducts: { $elemMatch: { product_id: productId } } }).toArray(function(err, result) {
+        if (err) {
+            return callback(err);
+        }
+
+        return callback(null, result);
+    });
+}
+
+function removeOrderProduct(orderId, productId, callback) {
+    var coll = getCollection();
+
+    coll.update(
+        {_id : orderId},
+        { $pull: { authorProducts: { product_id: productId } } },
+        { multi: false },
+        function(err, res) {
+            if (err) {
+                return callback(err);
+            }
+
+            return callback(null, res);
+        }
+    );
+}
+
+function removeAllOrderProducts(orderId, callback) {
+    var coll = getCollection();
+
+    coll.update(
+        {_id : orderId},
+        { $pull: { authorProducts: {} } },
+        { multi: true },
+        function(err, res) {
+            if (err) {
+                return callback(err);
+            }
+
+            return callback(null, res);
+        }
+    );
+}
+
+function addOrderProduct(orderId, orderProduct, callback) {
+    var coll = getCollection();
+
+    // TODO: необходимо проверить принадлежит ли продукт автору заказа
+    findOneById(orderId, function(err, order){
+        if (err) {
+            return callback(err);
+        }
+
+        userProductService.findOneByProductIdAndUserId(orderProduct.product_id, order.author_id, function(err, userProduct) {
+            if (err) {
+                return callback(err);
+            }
+
+            if (!userProduct) {
+                return callback(new Error("Указанный продукт " + orderProduct.product_id.toString()
+                + " не принадлежит заказчику товара " + order.author_id));
+            }
+
+            coll.update(
+                { _id: orderId },
+                { $push: { authorProducts: orderProduct } },
+                function(err, result) {
+                    if (err) {
+                        return callback(err);
+                    }
+
+                    return callback(null, result);
+                }
+            );
+
+        });
+    });
+
+}
+
+function updateOrderProduct(orderId, productId, orderProduct, callback) {
+    var coll = getCollection();
+
+    coll.update(
+        { _id: orderId, authorProducts: {$elemMatch: {product_id: productId}} },
+        { $set: { "authorProducts.$.cost" : orderProduct.cost, "authorProducts.$.vat" : orderProduct.vat } },
+        function(err, result) {
+            if (err) {
+                return callback(err);
+            }
+
+            return callback(null, result);
+        }
+    );
 }
 
 exports.getCollection = getCollection;

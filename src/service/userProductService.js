@@ -153,6 +153,10 @@ function findUserProductsByProductId(page, productId, callback) {
     findAllUserProductsByFilter(page, {product_id: productId}, callback);
 }
 
+function findOneByProductIdAndUserId(page, productId, userId, callback) {
+    findOneUserProductByFilter(page, {product_id: productId, user_id: userId}, callback);
+}
+
 function findOneById(id, callback) {
     findOneUserProductByFilter({_id: id}, callback);
 }
@@ -177,4 +181,5 @@ exports.createUserProducts = createUserProducts;
 exports.editUserProduct = editUserProduct;
 exports.findUserProductsByProductId = findUserProductsByProductId;
 exports.findOneById = findOneById;
+exports.findOneByProductIdAndUserId = findOneByProductIdAndUserId;
 exports.deleteUserProduct = deleteUserProduct;

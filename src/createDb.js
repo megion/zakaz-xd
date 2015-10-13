@@ -372,7 +372,7 @@ function runChangelogs(callback) {
         changeId: 22,
         changeFn: function(changeCallback) {
             var coll = orderService.getCollection();
-            coll.createIndex( { "code": 1 }, { unique: true }, changeCallback);
+            coll.createIndex( { "number": 1 }, { unique: true }, changeCallback);
         }
     });
 

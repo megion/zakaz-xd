@@ -71,25 +71,19 @@ router.get('/all-order-statuses', loadUser, checkAccess.getAuditor(ACCESSES.MANA
 router.post('/create-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
     var order = req.body.order;
 
-    if (!product.measureUnit) {
-        return next(new HttpError(400, "Поле единица измерения пустое"));
+    if (!order.number) {
+        return next(new HttpError(400, "Поле номер пустое"));
     }
 
-    if (!product.title) {
-        return next(new HttpError(400, "Поле наименование пустое"));
+    if (!order.authorDeliveryPoint) {
+        return next(new HttpError(400, "Поле точка доставки пустое"));
     }
+    order.authorDeliveryPoint_id = new ObjectID(order.authorDeliveryPoint._id);
+    delete order.authorDeliveryPoint;
 
-    product.measureUnit_id = new ObjectID(product.measureUnit._id);
-    delete product.measureUnit;
+    order.createdDate = new Date();
 
-    if (product.type) {
-        product.type_id = new ObjectID(product.type._id);
-        delete product.type;
-    }
-
-    product.createdDate = new Date();
-
-    productService.createProduct(product, function(err, newProduct) {
+    orderService.createOrder(order, function(err, newProduct) {
         if (err)
             return next(err);
 
