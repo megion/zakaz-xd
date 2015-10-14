@@ -10,6 +10,7 @@ angular.module('zakaz-xd.main', [
     'zakaz-xd.orders.states',
     'zakaz-xd.products.states',
     'zakaz-xd.manage-users.states',
+    'zakaz-xd.user-profile.states',
     'zakaz-xd.demo.states'
 ])
     .config(['$stateProvider', '$urlRouterProvider', 'ACCESS',
@@ -30,29 +31,6 @@ angular.module('zakaz-xd.main', [
                             } else {
                                 return $q.when(true);
                             }
-                        }
-                    }
-                })
-                .state('user-profile', {
-                    url: '/profile',
-                    controller: 'UserProfileCtrl',
-                    templateUrl: 'app/main-pages/user-profile/user-profile.tpl.html',
-                    resolve: {
-                        user: function ($stateParams, AuthService) {
-                            return AuthService.getCurrentUser();
-                        }
-                    }
-                })
-                .state('user-profile-change-password', {
-                    url: '/profile/change-password',
-                    controller: 'UserProfileCtrl',
-                    templateUrl: 'app/main-pages/user-profile/user-profile-change-password.tpl.html',
-                    resolve: {
-                        user: function ($stateParams, AuthService) {
-                            return AuthService.getCurrentUser();
-                        },
-                        hasAccess: function ($stateParams, AuthService) {
-                            return AuthService.checkAccess(ACCESS.CHANGE_OWN_PASSWORD);
                         }
                     }
                 })

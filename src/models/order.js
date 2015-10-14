@@ -18,7 +18,7 @@
  количество отгруженное - запонятеся только при изменени стостояния на Отгружен
 
  */
-function Order(number, deliveryDate, author, authorDeliveryPoint, authorProducts) {
+function Order(number, deliveryDate, author, authorDeliveryPoint) {
     this.number = number;
     this.createdDate = new Date();
     this.deliveryDate = deliveryDate;
@@ -27,7 +27,7 @@ function Order(number, deliveryDate, author, authorDeliveryPoint, authorProducts
     this.author_id = author._id;
     this.status_id = null; // STATUS.CREATED
     this.comments = null;
-    this.authorProducts = authorProducts;
+    this.authorProducts = null;
 }
 
 exports.Order = Order;

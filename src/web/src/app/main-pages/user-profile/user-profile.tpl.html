@@ -16,6 +16,37 @@
                    data-ng-model="user.email" data-ng-pattern="/^[a-z0-9!#$%&'*+/=?^_`{|}~.-]+@[a-z0-9-]+(\.[a-z0-9-]+)*$/i">
         </div>
     </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Точки доставки</label>
+        <div class="col-sm-10">
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Наименование</th>
+                            <th>Адрес</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="deliveryPoint in user.deliveryPoints">
+                            <td><a data-ui-sref="user-profile-edit-delivery-point({deliveryPointId: deliveryPoint._id})">{{deliveryPoint.title}}</a></td>
+                            <td>{{deliveryPoint.address}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row" ng-if="!isCreate">
+                <div class="col-sm-6">
+                    <a data-ui-sref="user-profile-add-delivery-point">Добавить точку доставки</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
             <button type="submit" class="btn btn-primary">Сохранить</button>

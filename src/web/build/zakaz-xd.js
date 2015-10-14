@@ -1,5 +1,5 @@
 /*
- * Version: 1.0 - 2015-10-11T11:04:32.527Z
+ * Version: 1.0 - 2015-10-14T11:34:48.076Z
  */
 
 
@@ -15,6 +15,7 @@ angular.module('zakaz-xd.main', [
     'zakaz-xd.orders.states',
     'zakaz-xd.products.states',
     'zakaz-xd.manage-users.states',
+    'zakaz-xd.user-profile.states',
     'zakaz-xd.demo.states'
 ])
     .config(['$stateProvider', '$urlRouterProvider', 'ACCESS',
@@ -35,29 +36,6 @@ angular.module('zakaz-xd.main', [
                             } else {
                                 return $q.when(true);
                             }
-                        }
-                    }
-                })
-                .state('user-profile', {
-                    url: '/profile',
-                    controller: 'UserProfileCtrl',
-                    templateUrl: 'app/main-pages/user-profile/user-profile.tpl.html',
-                    resolve: {
-                        user: function ($stateParams, AuthService) {
-                            return AuthService.getCurrentUser();
-                        }
-                    }
-                })
-                .state('user-profile-change-password', {
-                    url: '/profile/change-password',
-                    controller: 'UserProfileCtrl',
-                    templateUrl: 'app/main-pages/user-profile/user-profile-change-password.tpl.html',
-                    resolve: {
-                        user: function ($stateParams, AuthService) {
-                            return AuthService.getCurrentUser();
-                        },
-                        hasAccess: function ($stateParams, AuthService) {
-                            return AuthService.checkAccess(ACCESS.CHANGE_OWN_PASSWORD);
                         }
                     }
                 })
@@ -707,6 +685,17 @@ angular.module('zakaz-xd.resources.users-resource', [
             },
             removeAllUserDeliveryPoints: function (userId) {
                 return $http.post(startUrl + '/remove-all-user-delivery-points', {userId: userId});
+            },
+
+            // current user delivery point
+            addCurrentUserDeliveryPoint: function (deliveryPoint) {
+                return $http.post(startUrl + '/add-current-user-delivery-point', {deliveryPoint: deliveryPoint});
+            },
+            updateCurrentUserDeliveryPoint: function (deliveryPoint) {
+                return $http.post(startUrl + '/update-current-user-delivery-point', {deliveryPoint: deliveryPoint});
+            },
+            removeCurrentUserDeliveryPoint: function (deliveryPointId) {
+                return $http.post(startUrl + '/remove-current-user-delivery-point', {deliveryPointId: deliveryPointId});
             }
 
         };
@@ -1256,6 +1245,81 @@ angular.module('zakaz-xd.user-products.states', [
         }
     ]);
 
+angular.module('zakaz-xd.user-profile.states', [
+    'ui.router',
+    'zakaz-xd.auth',
+    'zakaz-xd.dialogs',
+    'zakaz-xd.resources.users-resource'
+])
+    .config(['$stateProvider', '$urlRouterProvider', 'ACCESS',
+        function ($stateProvider, $urlRouterProvider, ACCESS) {
+
+            $stateProvider
+                .state('user-profile', {
+                    url: '/profile',
+                    controller: 'UserProfileCtrl',
+                    templateUrl: 'app/main-pages/user-profile/user-profile.tpl.html',
+                    resolve: {
+                        user: function ($stateParams, AuthService) {
+                            return AuthService.getCurrentUser();
+                        }
+                    }
+                })
+                .state('user-profile-change-password', {
+                    url: '/profile/change-password',
+                    controller: 'UserProfileCtrl',
+                    templateUrl: 'app/main-pages/user-profile/user-profile-change-password.tpl.html',
+                    resolve: {
+                        user: function ($stateParams, AuthService) {
+                            return AuthService.getCurrentUser();
+                        },
+                        hasAccess: function ($stateParams, AuthService) {
+                            return AuthService.checkAccess(ACCESS.CHANGE_OWN_PASSWORD);
+                        }
+                    }
+                })
+                .state('user-profile-add-delivery-point', {
+                    url: '/profile/add-delivery-point',
+                    controller: 'UserProfileDeliveryPointCtrl',
+                    templateUrl: 'app/main-pages/user-profile/delivery-point/delivery-point.tpl.html',
+                    resolve: {
+                        hasAccess: function ($stateParams, AuthService) {
+                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
+                        },
+                        deliveryPoint: function() {
+                            return {};
+                        },
+                        user: function ($stateParams, AuthService) {
+                            return AuthService.getCurrentUser();
+                        }
+                    }
+                })
+                .state('user-profile-edit-delivery-point', {
+                    url: '/profile/edit-delivery-point/:deliveryPointId',
+                    controller: 'UserProfileDeliveryPointCtrl',
+                    templateUrl: 'app/main-pages/user-profile/delivery-point/delivery-point.tpl.html',
+                    resolve: {
+                        hasAccess: function ($stateParams, AuthService) {
+                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
+                        },
+                        user: function ($stateParams, AuthService) {
+                            return AuthService.getCurrentUser();
+                        },
+                        deliveryPoint: function($stateParams, user) {
+                            // найдем точку достаки без запроса на сервер
+                            for (var i=0; i<user.deliveryPoints.length; i++) {
+                                var dp = user.deliveryPoints[i];
+                                if (dp._id === $stateParams.deliveryPointId) {
+                                    return dp;
+                                }
+                            }
+                            return null;
+                        }
+                    }
+                });
+        }
+    ]);
+
 /**
  * Просмотр редактирование информации пользователя
  */
@@ -1263,7 +1327,8 @@ angular
     .module('zakaz-xd.user-profile', [
         'zakaz-xd.dialogs',
         'zakaz-xd.resources.auth-resource',
-        'zakaz-xd.auth'
+        'zakaz-xd.auth',
+        'zakaz-xd.user-profile.states'
     ])
     .controller('UserProfileCtrl', ['$scope', '$stateParams', '$state', '$http', 'user', 'AuthResource',
         'ErrorDialog', 'InfoDialog', 'AuthService',
@@ -1952,6 +2017,70 @@ angular
             }
 
             refreshTable({page: $scope.pageConfig.page, itemsPerPage: $scope.pageConfig.itemsPerPage});
+        }
+    ])
+;
+
+/**
+ * Изменение\создание точки доставки пользователя
+ */
+angular
+    .module('zakaz-xd.user-profile.delivery-point', [
+        'zakaz-xd.dialogs',
+        'zakaz-xd.resources.users-resource',
+        'zakaz-xd.auth'
+    ])
+    .controller('UserProfileDeliveryPointCtrl', ['$scope', '$stateParams', '$state', 'UsersResource',
+        'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'user', 'deliveryPoint',
+        function ($scope, $stateParams, $state, UsersResource,
+                  ErrorDialog, InfoDialog, YesNoDialog, user, deliveryPoint) {
+            $scope.isCreate = !(deliveryPoint._id);
+            $scope.user = user;
+            $scope.deliveryPoint = deliveryPoint;
+
+            $scope.save = function(invalid) {
+                if (invalid) {
+                    return false;
+                }
+
+                if ($scope.isCreate) {
+                    UsersResource.addCurrentUserDeliveryPoint($scope.deliveryPoint).then(
+                        function (response) {
+                            InfoDialog.open("Точка доставки добавлена");
+                            $state.go("user-profile");
+                        },
+                        function (err) {
+                            ErrorDialog.open(err.data, true);
+                        }
+                    );
+                } else {
+                    UsersResource.updateCurrentUserDeliveryPoint($scope.deliveryPoint).then(
+                        function (response) {
+                            InfoDialog.open("Изменение точки доставки успешно");
+                            $state.go("user-profile", {id: $scope.user._id});
+                        },
+                        function (err) {
+                            ErrorDialog.open(err.data, true);
+                        }
+                    );
+                }
+            };
+
+            $scope.delete = function() {
+                YesNoDialog.open("Вы действительно хотите удалить точку доставки?").then(
+                    function() {
+                        UsersResource.removeCurrentUserDeliveryPoint($scope.deliveryPoint._id).then(
+                            function (response) {
+                                InfoDialog.open("Точка доставки удалена");
+                                $state.go("user-profile");
+                            },
+                            function (err) {
+                                ErrorDialog.open(err.data, true);
+                            }
+                        );
+                    }
+                );
+            };
         }
     ])
 ;

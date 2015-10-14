@@ -34,7 +34,21 @@ function findOrderStatusesByCodes(codes, callback) {
     });
 }
 
+function findOneByCode(code, callback) {
+    var coll = getCollection();
+    coll.findOne({code: code}, function(err, result) {
+        if (err) {
+            return callback(err);
+        }
+        if (!result) {
+            return callback(new Error("Статус заказа с кодом " + code + " не найден"));
+        }
+        return callback(null, result);
+    });
+}
+
 exports.getCollection = getCollection;
 exports.createOrderStatuses = createOrderStatuses;
 exports.findAllOrderStatuses = findAllOrderStatuses;
 exports.findOrderStatusesByCodes = findOrderStatusesByCodes;
+exports.findOneByCode = findOneByCode;

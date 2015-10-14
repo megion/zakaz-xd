@@ -82,12 +82,13 @@ router.post('/create-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_OR
     delete order.authorDeliveryPoint;
 
     order.createdDate = new Date();
+    order.author_id = req.user._id;
 
-    orderService.createOrder(order, function(err, newProduct) {
+    orderService.createOrder(order, function(err, newOrder) {
         if (err)
             return next(err);
 
-        res.send({});
+        res.send(order);
     });
 });
 

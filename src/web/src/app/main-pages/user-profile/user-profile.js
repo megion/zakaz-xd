@@ -5,7 +5,8 @@ angular
     .module('zakaz-xd.user-profile', [
         'zakaz-xd.dialogs',
         'zakaz-xd.resources.auth-resource',
-        'zakaz-xd.auth'
+        'zakaz-xd.auth',
+        'zakaz-xd.user-profile.states'
     ])
     .controller('UserProfileCtrl', ['$scope', '$stateParams', '$state', '$http', 'user', 'AuthResource',
         'ErrorDialog', 'InfoDialog', 'AuthService',

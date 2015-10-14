@@ -157,12 +157,34 @@ router.post('/add-user-delivery-point', loadUser, checkAccess.getAuditor(ACCESSE
     });
 });
 
+router.post('/add-current-user-delivery-point', loadUser, checkAccess.getAuditor(ACCESSES.EDIT_OWN_ORDER | ACCESSES.MANAGE_USERS), function(req, res, next) {
+    var deliveryPoint = req.body.deliveryPoint;
+    userService.addUserDeliveryPoint(req.user._id, deliveryPoint, function(err, result) {
+        if (err)
+            return next(err);
+
+        res.send(result);
+    });
+});
+
 router.post('/update-user-delivery-point', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USERS), function(req, res, next) {
     var userId = new ObjectID(req.body.userId);
     var deliveryPoint = req.body.deliveryPoint;
     var deliveryPointId = new ObjectID(deliveryPoint._id);
 
     userService.updateUserDeliveryPoint(userId, deliveryPointId, deliveryPoint, function(err, result) {
+        if (err)
+            return next(err);
+
+        res.send(result);
+    });
+});
+
+router.post('/update-current-user-delivery-point', loadUser, checkAccess.getAuditor(ACCESSES.EDIT_OWN_ORDER | ACCESSES.MANAGE_USERS), function(req, res, next) {
+    var deliveryPoint = req.body.deliveryPoint;
+    var deliveryPointId = new ObjectID(deliveryPoint._id);
+
+    userService.updateUserDeliveryPoint(req.user._id, deliveryPointId, deliveryPoint, function(err, result) {
         if (err)
             return next(err);
 
@@ -181,6 +203,18 @@ router.post('/remove-user-delivery-point', loadUser, checkAccess.getAuditor(ACCE
         res.send(result);
     });
 });
+
+router.post('/remove-current-user-delivery-point', loadUser, checkAccess.getAuditor(ACCESSES.EDIT_OWN_ORDER | ACCESSES.MANAGE_USERS), function(req, res, next) {
+    var deliveryPointId = new ObjectID(req.body.deliveryPointId);
+
+    userService.removeUserDeliveryPoint(req.user._id, deliveryPointId, function(err, result) {
+        if (err)
+            return next(err);
+
+        res.send(result);
+    });
+});
+
 
 router.post('/remove-all-user-delivery-points', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USERS), function(req, res, next) {
     var userId = new ObjectID(req.body.userId);

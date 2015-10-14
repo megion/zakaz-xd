@@ -9,14 +9,13 @@ function getCollection() {
 }
 
 function createOrder(item, callback) {
-    orderStatusService.findOrderStatusesByCodes([ORDER_STATUSES.CREATED], function(err, statues) {
+    orderStatusService.findOneByCode(ORDER_STATUSES.CREATED, function(err, status) {
         if (err) {
             return callback(err);
         }
 
-        var createdStatus = statues[0];
-        item.status_id = createdStatus._id;
-        
+        item.status_id = status._id;
+
         var coll = getCollection();
         coll.insert(item, function(err, results){
             if (err) {
