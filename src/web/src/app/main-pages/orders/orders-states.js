@@ -20,7 +20,7 @@ angular.module('zakaz-xd.orders.states', [
                             return AuthService.getCurrentUser();
                         },
                         hasAccess: function ($stateParams, AuthService) {
-                            return AuthService.checkAccess(ACCESS.VIEW_OWN_ORDERS);
+                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
                         }
                     }
                 })
@@ -34,7 +34,7 @@ angular.module('zakaz-xd.orders.states', [
                             return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
                         },
                         order: function($stateParams, OrdersResource){
-                            return OrdersResource.getOrderById($stateParams.id).then(
+                            return OrdersResource.getUserOrderById($stateParams.id).then(
                                 function(response) {
                                     return response.data;
                                 }
@@ -59,7 +59,7 @@ angular.module('zakaz-xd.orders.states', [
                     templateUrl: 'app/main-pages/orders/edit-order/edit-order.tpl.html',
                     resolve: {
                         hasAccess: function ($stateParams, AuthService) {
-                            return AuthService.checkAccess(ACCESS.CREATE_ORDER);
+                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
                         },
                         order: function() {
                             return {};

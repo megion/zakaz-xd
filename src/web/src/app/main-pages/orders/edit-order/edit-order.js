@@ -13,6 +13,7 @@ angular
                   ErrorDialog, InfoDialog, YesNoDialog, order, user) {
             $scope.isCreate = !(order._id);
             $scope.order = order;
+            $scope.user = user;
 
             $scope.save = function(invalid) {
                 console.log(invalid);

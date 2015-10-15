@@ -304,7 +304,7 @@ function addUserDeliveryPoint(userId, deliveryPoint, callback) {
                 return callback(err);
             }
 
-            return callback(null, result);
+            return callback(null, deliveryPoint);
         }
     );
 }
@@ -320,7 +320,7 @@ function updateUserDeliveryPoint(userId, deliveryPointId, deliveryPoint, callbac
                 return callback(err);
             }
 
-            return callback(null, result);
+            return callback(null, deliveryPoint);
         }
     );
 }

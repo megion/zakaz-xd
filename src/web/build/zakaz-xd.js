@@ -1,5 +1,5 @@
 /*
- * Version: 1.0 - 2015-10-14T11:34:48.076Z
+ * Version: 1.0 - 2015-10-15T14:57:25.186Z
  */
 
 
@@ -332,6 +332,7 @@ angular.module('zakaz-xd.auth', [
                     },
 
                     reloadCurrentUser: function() {
+                        currentUser = null;
                         return requestCurrentUser();
                     },
 
@@ -969,7 +970,7 @@ angular.module('zakaz-xd.orders.states', [
                             return AuthService.getCurrentUser();
                         },
                         hasAccess: function ($stateParams, AuthService) {
-                            return AuthService.checkAccess(ACCESS.VIEW_OWN_ORDERS);
+                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
                         }
                     }
                 })
@@ -983,7 +984,7 @@ angular.module('zakaz-xd.orders.states', [
                             return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
                         },
                         order: function($stateParams, OrdersResource){
-                            return OrdersResource.getOrderById($stateParams.id).then(
+                            return OrdersResource.getUserOrderById($stateParams.id).then(
                                 function(response) {
                                     return response.data;
                                 }
@@ -1008,7 +1009,7 @@ angular.module('zakaz-xd.orders.states', [
                     templateUrl: 'app/main-pages/orders/edit-order/edit-order.tpl.html',
                     resolve: {
                         hasAccess: function ($stateParams, AuthService) {
-                            return AuthService.checkAccess(ACCESS.CREATE_ORDER);
+                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
                         },
                         order: function() {
                             return {};
@@ -1328,7 +1329,8 @@ angular
         'zakaz-xd.dialogs',
         'zakaz-xd.resources.auth-resource',
         'zakaz-xd.auth',
-        'zakaz-xd.user-profile.states'
+        'zakaz-xd.user-profile.states',
+        'zakaz-xd.user-profile.delivery-point'
     ])
     .controller('UserProfileCtrl', ['$scope', '$stateParams', '$state', '$http', 'user', 'AuthResource',
         'ErrorDialog', 'InfoDialog', 'AuthService',
@@ -1617,6 +1619,7 @@ angular
                   ErrorDialog, InfoDialog, YesNoDialog, order, user) {
             $scope.isCreate = !(order._id);
             $scope.order = order;
+            $scope.user = user;
 
             $scope.save = function(invalid) {
                 console.log(invalid);
@@ -2031,9 +2034,9 @@ angular
         'zakaz-xd.auth'
     ])
     .controller('UserProfileDeliveryPointCtrl', ['$scope', '$stateParams', '$state', 'UsersResource',
-        'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'user', 'deliveryPoint',
+        'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'user', 'deliveryPoint', 'AuthService',
         function ($scope, $stateParams, $state, UsersResource,
-                  ErrorDialog, InfoDialog, YesNoDialog, user, deliveryPoint) {
+                  ErrorDialog, InfoDialog, YesNoDialog, user, deliveryPoint, AuthService) {
             $scope.isCreate = !(deliveryPoint._id);
             $scope.user = user;
             $scope.deliveryPoint = deliveryPoint;
@@ -2047,6 +2050,7 @@ angular
                     UsersResource.addCurrentUserDeliveryPoint($scope.deliveryPoint).then(
                         function (response) {
                             InfoDialog.open("Точка доставки добавлена");
+                            AuthService.reloadCurrentUser();
                             $state.go("user-profile");
                         },
                         function (err) {
@@ -2072,6 +2076,7 @@ angular
                         UsersResource.removeCurrentUserDeliveryPoint($scope.deliveryPoint._id).then(
                             function (response) {
                                 InfoDialog.open("Точка доставки удалена");
+                                AuthService.reloadCurrentUser();
                                 $state.go("user-profile");
                             },
                             function (err) {

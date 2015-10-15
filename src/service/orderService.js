@@ -2,7 +2,7 @@ var mongodb = require('../lib/mongodb');
 var orderStatusService = require('../service/orderStatusService');
 var userService = require('../service/userService');
 var userProductService = require('../service/userProductService');
-var ORDER_STATUSES = require('./utils/orderStatuses').ORDER_STATUSES;
+var ORDER_STATUSES = require('../utils/orderStatuses').ORDER_STATUSES;
 
 function getCollection() {
 	return mongodb.getDb().collection("orders");
@@ -63,9 +63,10 @@ function enrichmentOrders(orders, callback) {
                 var order = orders[i];
                 if (order.status_id) {
                     order.status = statusesMap[order.status_id.toString()]
+                    delete order.status_id;
                 }
                 order.author = usersMap[order.author_id.toString()];
-                // найти точкеу доставки
+                // найти точку доставки
                 for(var j=0; j<order.author.deliveryPoints; ++j) {
                     var dp = order.author.deliveryPoints[j];
                     if (order.author_id.toString()===dp._id.toString()) {
@@ -83,7 +84,14 @@ function enrichmentOrders(orders, callback) {
 
 function findAllOrdersByFilter(page, filter, callback) {
     var coll = getCollection();
-    coll.find(filter, {skip:page.skip, limit:page.limit, sort: {created_date: 1}}).toArray(function(err, orders) {
+    var conf = {
+        sort: {createdDate: -1}
+    };
+    if (page) {
+        conf.skip = page.skip;
+        conf.limit = page.limit;
+    }
+    coll.find(filter, conf).toArray(function(err, orders) {
         if (err) {
             return callback(err);
         }
@@ -138,16 +146,6 @@ function findOneByIdAndAuthorId(id, authorId, callback) {
 
 function findOneById(id, callback) {
     findOneOrderByFilter({_id: id}, callback);
-}
-
-function createOrder(item, callback) {
-    var coll = getCollection();
-    coll.insert(item, function(err, results){
-        if (err) {
-            return callback(err);
-        }
-        return callback(null, item);
-    });
 }
 
 /// order product

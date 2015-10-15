@@ -8,9 +8,9 @@ angular
         'zakaz-xd.auth'
     ])
     .controller('UserProfileDeliveryPointCtrl', ['$scope', '$stateParams', '$state', 'UsersResource',
-        'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'user', 'deliveryPoint',
+        'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'user', 'deliveryPoint', 'AuthService',
         function ($scope, $stateParams, $state, UsersResource,
-                  ErrorDialog, InfoDialog, YesNoDialog, user, deliveryPoint) {
+                  ErrorDialog, InfoDialog, YesNoDialog, user, deliveryPoint, AuthService) {
             $scope.isCreate = !(deliveryPoint._id);
             $scope.user = user;
             $scope.deliveryPoint = deliveryPoint;
@@ -24,6 +24,7 @@ angular
                     UsersResource.addCurrentUserDeliveryPoint($scope.deliveryPoint).then(
                         function (response) {
                             InfoDialog.open("Точка доставки добавлена");
+                            AuthService.reloadCurrentUser();
                             $state.go("user-profile");
                         },
                         function (err) {
@@ -49,6 +50,7 @@ angular
                         UsersResource.removeCurrentUserDeliveryPoint($scope.deliveryPoint._id).then(
                             function (response) {
                                 InfoDialog.open("Точка доставки удалена");
+                                AuthService.reloadCurrentUser();
                                 $state.go("user-profile");
                             },
                             function (err) {
