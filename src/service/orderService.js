@@ -25,7 +25,31 @@ function createOrder(item, callback) {
         });
 
     });
+}
 
+function editOrder(id, item, callback) {
+    var coll = getCollection();
+
+    // статус не должен менятся при изменении. Статусы меняются отдельными операцями.
+    if (item.status_id) {
+        delete item.status_id;
+    }
+    if (item.status) {
+        delete item.status;
+    }
+
+    coll.updateOne(
+        {_id : id},
+        {$set: item},
+        {upsert:false, w: 1, multi: false},
+        function(err, upResult) {
+            if (err) {
+                return callback(err);
+            }
+
+            return callback(null, item);
+        }
+    );
 }
 
 /**
@@ -62,20 +86,60 @@ function enrichmentOrders(orders, callback) {
             for (var i=0; i<orders.length; i++) {
                 var order = orders[i];
                 if (order.status_id) {
-                    order.status = statusesMap[order.status_id.toString()]
+                    order.status = statusesMap[order.status_id.toString()];
                     delete order.status_id;
                 }
                 order.author = usersMap[order.author_id.toString()];
-                // найти точку доставки
-                for(var j=0; j<order.author.deliveryPoints; ++j) {
+                delete order.author_id;
+            }
+
+            callback(null, orders);
+        });
+
+
+    });
+}
+
+function enrichmentOneOrder(order, callback) {
+    orderStatusService.findAllOrderStatuses(function(err, allStatuses) {
+        if (err) {
+            return callback(err);
+        }
+
+        userService.findById(order.author_id, function(err, author) {
+            if (err) {
+                return callback(err);
+            }
+
+            var statusesMap = {};
+            if (allStatuses) {
+                for (var i=0; i<allStatuses.length; i++) {
+                    var status = allStatuses[i];
+                    statusesMap[status._id.toString()] = status;
+                }
+            }
+
+            order.author = author;
+            delete order.author_id;
+
+            if (order.status_id) {
+                order.status = statusesMap[order.status_id.toString()]
+                delete order.status_id;
+            }
+
+            // найти точку доставки
+            if (order.authorDeliveryPoint_id && order.author.deliveryPoints) {
+                for(var j=0; j<order.author.deliveryPoints.length; ++j) {
                     var dp = order.author.deliveryPoints[j];
-                    if (order.author_id.toString()===dp._id.toString()) {
+                    if (order.authorDeliveryPoint_id.toString()===dp._id.toString()) {
                         order.authorDeliveryPoint = dp;
+                        delete order.authorDeliveryPoint_id;
+                        break;
                     }
                 }
             }
 
-            callback(null, orders);
+            callback(null, order);
         });
 
 
@@ -130,12 +194,12 @@ function findOneOrderByFilter(filter, callback) {
             callback(null, null);
         }
 
-        enrichmentOrders([order], function(err, eOrders) {
+        enrichmentOneOrder(order, function(err, eOrder) {
             if (err) {
                 return callback(err);
             }
 
-            callback(null, eOrders[0]);
+            callback(null, eOrder);
         });
     });
 }
@@ -253,6 +317,7 @@ exports.findAllOrdersByAuthorId = findAllOrdersByAuthorId;
 exports.findOneByIdAndAuthorId = findOneByIdAndAuthorId;
 exports.findOneById = findOneById;
 exports.createOrder = createOrder;
+exports.editOrder = editOrder;
 
 
 

@@ -58,7 +58,6 @@ router.get('/user-order-by-id', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE
 });
 
 router.get('/all-order-statuses', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
-
     orderStatusService.findAllOrderStatuses(function(err, result) {
             if (err) {
                 return next(err);
@@ -89,6 +88,35 @@ router.post('/create-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_OR
             return next(err);
 
         res.send(order);
+    });
+});
+
+router.post('/edit-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
+    var order = req.body.order;
+
+    var id = new ObjectID(order._id);
+    delete order._id;
+    delete order.createdDate;
+    delete order.author;
+    if (order.author) {
+        delete order.author;
+    }
+
+    if (!order.number) {
+        return next(new HttpError(400, "Поле номер пустое"));
+    }
+
+    if (!order.authorDeliveryPoint) {
+        return next(new HttpError(400, "Поле точка доставки пустое"));
+    }
+    order.authorDeliveryPoint_id = new ObjectID(order.authorDeliveryPoint._id);
+    delete order.authorDeliveryPoint;
+
+    orderService.editOrder(id, order, function(err, _order) {
+        if (err)
+            return next(err);
+
+        res.send(_order);
     });
 });
 
