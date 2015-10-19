@@ -1,5 +1,5 @@
 /*
- * Version: 1.0 - 2015-10-15T14:57:25.186Z
+ * Version: 1.0 - 2015-10-19T16:14:13.283Z
  */
 
 
@@ -537,8 +537,14 @@ angular.module('zakaz-xd.resources.orders-resource', [
             editOrder: function (order) {
                 return $http.post(startUrl + '/edit-order', {order: order});
             },
+            editCurrentUserOrder: function (order) {
+                return $http.post(startUrl + '/edit-user-order', {order: order});
+            },
             deleteOrder: function (orderId) {
-                return $http.post(startUrl + '/delete-order', {orderId: orderId});
+                return $http.post(startUrl + '/delete-order', {id: orderId});
+            },
+            deleteCurrentUserOrder: function (orderId) {
+                return $http.post(startUrl + '/delete-user-order', {id: orderId});
             },
             getAllOrders: function (page) {
                 return $http.get(startUrl + '/all-orders', {params: page});
@@ -1638,7 +1644,7 @@ angular
                         }
                     );
                 } else {
-                    OrdersResource.editOrder($scope.order).then(
+                    OrdersResource.editCurrentUserOrder($scope.order).then(
                         function (response) {
                             InfoDialog.open("Ваш заказ успешно изменен");
                             $state.go("orders-list");
@@ -1653,7 +1659,7 @@ angular
             $scope.deleteOrder = function() {
                 YesNoDialog.open("Вы действительно хотите удалить заказ?").then(
                     function() {
-                        OrdersResource.deleteOrder($scope.order._id).then(
+                        OrdersResource.deleteCurrentUserOrder($scope.order._id).then(
                             function (response) {
                                 InfoDialog.open("Заказ удален");
                                 $state.go("orders-list");

@@ -91,10 +91,7 @@ router.post('/create-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_OR
     });
 });
 
-router.post('/edit-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
-    var order = req.body.order;
-
-    var id = new ObjectID(order._id);
+function editOrder(id, order, req, res, next) {
     delete order._id;
     delete order.createdDate;
     delete order.author;
@@ -117,6 +114,63 @@ router.post('/edit-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDE
             return next(err);
 
         res.send(_order);
+    });
+}
+
+function checkCurrentUserIsOrderAuthor(orderId, req, res, next, successCallback) {
+    orderService.findOneById(orderId, function(err, dbOrder) {
+            if (err) {
+                return next(err);
+            }
+            if (!dbOrder) {
+                return next(new HttpError(400, "Заказ не найден ID " + orderId));
+            }
+            if (dbOrder.author._id.toString() !== req.user._id.toString()) {
+                return next(new HttpError(400, "Вы не имеете прав изменять не принадлежащий вам заказ"));
+            }
+
+            successCallback();
+        }
+    );
+}
+
+router.post('/edit-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS), function(req, res, next) {
+    var order = req.body.order;
+    var id = new ObjectID(order._id);
+    editOrder(id, order, req, res, next);
+});
+
+router.post('/edit-user-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
+    var order = req.body.order;
+    var id = new ObjectID(order._id);
+
+    // TODO: check author
+    checkCurrentUserIsOrderAuthor(id, req, res, next, function() {
+        editOrder(id, order, req, res, next);
+    });
+});
+
+router.post('/delete-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS), function(req, res, next) {
+    var id = new ObjectID(req.param('id'));
+    orderService.deleteOrder(id, function(err, result) {
+        if (err)
+            return next(err);
+
+        res.send(result);
+    });
+});
+
+router.post('/delete-user-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
+    var id = new ObjectID(req.param('id'));
+
+    // TODO: check author
+    checkCurrentUserIsOrderAuthor(id, req, res, next, function() {
+        orderService.deleteOrder(id, function(err, result) {
+            if (err)
+                return next(err);
+
+            res.send(result);
+        });
     });
 });
 

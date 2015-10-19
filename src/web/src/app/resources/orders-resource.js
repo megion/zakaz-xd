@@ -10,8 +10,14 @@ angular.module('zakaz-xd.resources.orders-resource', [
             editOrder: function (order) {
                 return $http.post(startUrl + '/edit-order', {order: order});
             },
+            editCurrentUserOrder: function (order) {
+                return $http.post(startUrl + '/edit-user-order', {order: order});
+            },
             deleteOrder: function (orderId) {
-                return $http.post(startUrl + '/delete-order', {orderId: orderId});
+                return $http.post(startUrl + '/delete-order', {id: orderId});
+            },
+            deleteCurrentUserOrder: function (orderId) {
+                return $http.post(startUrl + '/delete-user-order', {id: orderId});
             },
             getAllOrders: function (page) {
                 return $http.get(startUrl + '/all-orders', {params: page});

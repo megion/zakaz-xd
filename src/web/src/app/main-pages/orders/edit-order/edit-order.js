@@ -32,7 +32,7 @@ angular
                         }
                     );
                 } else {
-                    OrdersResource.editOrder($scope.order).then(
+                    OrdersResource.editCurrentUserOrder($scope.order).then(
                         function (response) {
                             InfoDialog.open("Ваш заказ успешно изменен");
                             $state.go("orders-list");
@@ -47,7 +47,7 @@ angular
             $scope.deleteOrder = function() {
                 YesNoDialog.open("Вы действительно хотите удалить заказ?").then(
                     function() {
-                        OrdersResource.deleteOrder($scope.order._id).then(
+                        OrdersResource.deleteCurrentUserOrder($scope.order._id).then(
                             function (response) {
                                 InfoDialog.open("Заказ удален");
                                 $state.go("orders-list");

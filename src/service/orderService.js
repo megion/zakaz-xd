@@ -27,6 +27,21 @@ function createOrder(item, callback) {
     });
 }
 
+function deleteOrder(id, callback) {
+    var coll = getCollection();
+
+    coll.deleteOne(
+        {_id : id},
+        function(err, res) {
+            if (err) {
+                return callback(err);
+            }
+
+            return callback(null, res);
+        }
+    );
+}
+
 function editOrder(id, item, callback) {
     var coll = getCollection();
 
@@ -110,6 +125,9 @@ function enrichmentOneOrder(order, callback) {
             if (err) {
                 return callback(err);
             }
+            if (!author) {
+                return callback(new Error("Автор не найден author id " + order.author_id));
+            }
 
             var statusesMap = {};
             if (allStatuses) {
@@ -123,7 +141,7 @@ function enrichmentOneOrder(order, callback) {
             delete order.author_id;
 
             if (order.status_id) {
-                order.status = statusesMap[order.status_id.toString()]
+                order.status = statusesMap[order.status_id.toString()];
                 delete order.status_id;
             }
 
@@ -191,7 +209,7 @@ function findOneOrderByFilter(filter, callback) {
         }
 
         if (!order) {
-            callback(null, null);
+            return callback(null, null);
         }
 
         enrichmentOneOrder(order, function(err, eOrder) {
@@ -199,7 +217,7 @@ function findOneOrderByFilter(filter, callback) {
                 return callback(err);
             }
 
-            callback(null, eOrder);
+            return callback(null, eOrder);
         });
     });
 }
@@ -317,7 +335,14 @@ exports.findAllOrdersByAuthorId = findAllOrdersByAuthorId;
 exports.findOneByIdAndAuthorId = findOneByIdAndAuthorId;
 exports.findOneById = findOneById;
 exports.createOrder = createOrder;
+exports.deleteOrder = deleteOrder;
 exports.editOrder = editOrder;
+
+// order product
+exports.removeOrderProduct = removeOrderProduct;
+exports.removeAllOrderProducts = removeAllOrderProducts;
+exports.addOrderProduct = addOrderProduct;
+exports.updateOrderProduct = updateOrderProduct;
 
 
 

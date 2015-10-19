@@ -79,6 +79,7 @@ function initWebApp(app) {
 
 		if (err instanceof HttpError) {
             log.error(err.message);
+            //log.error(err.stack);
 
             res.status(err.status);
             res.json({message: err.message, status: err.status, stack: err.stack});
