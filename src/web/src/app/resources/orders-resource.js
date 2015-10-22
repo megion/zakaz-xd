@@ -33,6 +33,14 @@ angular.module('zakaz-xd.resources.orders-resource', [
             },
             getAllOrderStatuses: function () {
                 return $http.get(startUrl + '/all-order-statuses');
+            },
+
+            // order product
+            addOrderProduct: function (orderId, orderProduct) {
+                return $http.post(startUrl + '/add-order-product', {orderId: orderId, orderProduct: orderProduct});
+            },
+            addCurrentUserOrderProduct: function (orderId, orderProduct) {
+                return $http.post(startUrl + '/add-user-order-product', {orderId: orderId, orderProduct: orderProduct});
             }
         };
     }]);

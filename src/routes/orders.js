@@ -174,4 +174,40 @@ router.post('/delete-user-order', loadUser, checkAccess.getAuditor(ACCESSES.MANA
     });
 });
 
+// ++++++++++++++++++ order product
+
+function addOrderProduct(orderId, orderProduct, req, res, next) {
+    if (!orderProduct.product) {
+        return next(new HttpError(400, "Поле продукт пустое"));
+    }
+
+    orderProduct.product_id = new ObjectID(orderProduct.product._id);
+    delete orderProduct.product;
+
+    orderProduct.createdDate = new Date();
+
+    orderService.addOrderProduct(orderId, orderProduct, function(err, results) {
+        if (err)
+            return next(err);
+
+        res.send(results);
+    });
+}
+
+router.post('/add-order-product', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS), function(req, res, next) {
+    var orderProduct = req.body.orderProduct;
+    var orderId = req.body.orderId;
+
+    addOrderProduct(orderId, orderProduct, req, res, next);
+});
+
+router.post('/add-user-order-product', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
+    var orderProduct = req.body.orderProduct;
+    var orderId = req.body.orderId;
+    // TODO: check author
+    checkCurrentUserIsOrderAuthor(orderId, req, res, next, function() {
+        addOrderProduct(orderId, orderProduct, req, res, next);
+    });
+});
+
 module.exports = router;

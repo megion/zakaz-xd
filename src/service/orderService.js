@@ -227,7 +227,15 @@ function findOneByIdAndAuthorId(id, authorId, callback) {
 }
 
 function findOneById(id, callback) {
-    findOneOrderByFilter({_id: id}, callback);
+    findOneOrderByFilter({_id: id}, function(err, order) {
+        if (err) {
+            return callback(err);
+        }
+        if (!order) {
+            return callback(new Error("Заказ не найден " + id));
+        }
+        return callback(null, order);
+    });
 }
 
 /// order product
@@ -277,6 +285,18 @@ function removeAllOrderProducts(orderId, callback) {
     );
 }
 
+/**
+ quantity	количество заказаное
+ delivQuantity	количество отгруженое
+ unit	единица измерения (шт, кг)
+ price	цена за единицу с НДС
+ vat	НДС за единицу
+ summVAT	сумма НДС
+ summ	стоимость
+ * @param orderId
+ * @param orderProduct
+ * @param callback
+ */
 function addOrderProduct(orderId, orderProduct, callback) {
     var coll = getCollection();
 
@@ -284,6 +304,17 @@ function addOrderProduct(orderId, orderProduct, callback) {
     findOneById(orderId, function(err, order){
         if (err) {
             return callback(err);
+        }
+
+        // TODO: проверка на уникальность продукта в коллеции
+        if (order.authorProducts) {
+            for (var i=0; i<order.authorProducts.length; ++i) {
+                var p = order.authorProducts[i];
+                if (p.product_id.toString() === orderProduct.product_id.toString) {
+                    return callback(new Error("Указанный продукт " + orderProduct.product_id.toString()
+                    + " уже содержится в заказе " + orderId));
+                }
+            }
         }
 
         userProductService.findOneByProductIdAndUserId(orderProduct.product_id, order.author_id, function(err, userProduct) {
@@ -304,7 +335,7 @@ function addOrderProduct(orderId, orderProduct, callback) {
                         return callback(err);
                     }
 
-                    return callback(null, result);
+                    return callback(null, order);
                 }
             );
 

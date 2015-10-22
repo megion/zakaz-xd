@@ -42,7 +42,6 @@ router.post('/create-user-product-price', loadUser, checkAccess.getAuditor(ACCES
     delete userProductPrice.userProduct;
 
     userProductPrice.createdDate = new Date();
-    console.log("userProductPrice:", userProductPrice);
     if (userProductPrice.priceDate) {
         userProductPrice.priceDate = new Date(userProductPrice.priceDate);
     }
