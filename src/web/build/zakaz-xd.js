@@ -1,5 +1,5 @@
 /*
- * Version: 1.0 - 2015-10-22T15:28:16.866Z
+ * Version: 1.0 - 2015-10-23T15:42:18.726Z
  */
 
 
@@ -560,6 +560,14 @@ angular.module('zakaz-xd.resources.orders-resource', [
             },
             getAllOrderStatuses: function () {
                 return $http.get(startUrl + '/all-order-statuses');
+            },
+
+            // order product
+            addOrderProduct: function (orderId, orderProduct) {
+                return $http.post(startUrl + '/add-order-product', {orderId: orderId, orderProduct: orderProduct});
+            },
+            addCurrentUserOrderProduct: function (orderId, orderProduct) {
+                return $http.post(startUrl + '/add-user-order-product', {orderId: orderId, orderProduct: orderProduct});
             }
         };
     }]);
@@ -1496,39 +1504,14 @@ angular.module('zakaz-xd.manage-users.states', [
         }
     ]);
 
-angular.module('zakaz-xd.dialogs.', [
-    'ui.bootstrap'
-])
-
-    .factory('ErrorDialog', ['$q', '$modal', '$sce', function ($q, $modal) {
-        return {
-            open: function (error, printStack) {
-                //$scope.errorMsg = $sce.trustAsHtml(err.data);
-                var modalInstance = $modal.open({
-                    animation: true,
-                    backdrop: 'static',
-                    size: 'lg',
-                    templateUrl: 'app/dialogs/error-dialog.tpl.html',
-                    resolve: {
-                    },
-                    controller: function ($scope, $modalInstance) {
-                        $scope.error = error;
-                        $scope.printStack = printStack;
-                        $scope.close = function () {
-                            $modalInstance.close();
-                        };
-                    }
-                });
-            }
-        };
-    }]);
 angular.module('zakaz-xd.orders.states', [
     'ui.router',
     'zakaz-xd.auth',
     'zakaz-xd.dialogs',
     'zakaz-xd.resources.orders-resource',
     'zakaz-xd.orders.orders-list',
-    'zakaz-xd.orders.edit-order'
+    'zakaz-xd.orders.edit-order',
+    'zakaz-xd.orders.edit-order-product'
 ])
     .config(['$stateProvider', '$urlRouterProvider', 'ACCESS',
         function ($stateProvider, $urlRouterProvider, ACCESS) {
@@ -1599,6 +1582,33 @@ angular.module('zakaz-xd.orders.states', [
                             return AuthService.getCurrentUser();
                         }
 
+                    }
+                })
+                // добавление продукта к заказу
+                .state('add-order-product', {
+                    url: '/order/add-product/:orderId',
+                    controller: 'EditOrderProductCtrl',
+                    templateUrl: 'app/main-pages/orders/edit-order-product/edit-order-product.tpl.html',
+                    resolve: {
+                        hasAccess: function ($stateParams, AuthService) {
+                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER | ACCESS.MANAGE_ORDERS);
+                        },
+                        user: function ($stateParams, AuthService) {
+                            return AuthService.getCurrentUser();
+                        },
+                        isOrderManager: function ($stateParams, AuthService) {
+                            return AuthService.hasAccess(ACCESS.MANAGE_ORDERS);
+                        },
+                        order: function($stateParams, OrdersResource){
+                            return OrdersResource.getUserOrderById($stateParams.id).then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
+                        },
+                        orderProduct: function() {
+                            return {};
+                        }
                     }
                 });
         }
@@ -2238,6 +2248,73 @@ angular
                         );
                     }
                 );
+            };
+        }
+    ])
+;
+
+/**
+ * Изменение\создание привязки продукта к заказу
+ */
+angular
+    .module('zakaz-xd.orders.edit-order-product', [
+        'zakaz-xd.dialogs',
+        'zakaz-xd.resources.orders-resource',
+        'zakaz-xd.auth',
+        'ui.select',
+        'ngSanitize'
+    ])
+    .controller('EditOrderProductCtrl', ['$scope', '$stateParams', '$state',
+        'OrdersResource', 'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'order', 'orderProduct', 'isOrderManager',
+        function ($scope, $stateParams, $state,
+                  OrdersResource, ErrorDialog, InfoDialog, YesNoDialog, order, orderProduct, isOrderManager) {
+            $scope.isCreate = !(orderProduct.product);
+            $scope.orderProduct = orderProduct;
+            $scope.order = order;
+
+            $scope.save = function(invalid) {
+                if (invalid) {
+                    return false;
+                }
+
+                if ($scope.isCreate) {
+                    var addResource = isOrderManager?OrdersResource.addOrderProduct:OrdersResource.addCurrentUserOrderProduct;
+                    addResource($scope.order._id, $scope.orderProduct).then(
+                        function (response) {
+                            InfoDialog.open("Продукт добавлен в заказ");
+                            $state.go("edit-order", {id: $scope.order._id});
+                        },
+                        function (err) {
+                            ErrorDialog.open(err.data);
+                        }
+                    );
+                } else {
+                    //OrdersResource.editUserProductPrice($scope.userProductPrice).then(
+                    //    function (response) {
+                    //        InfoDialog.open("Изменение цены для связи пользователь-товар успешно");
+                    //        $state.go("edit-user-product", {userProductId: $scope.userProductPrice.userProduct._id});
+                    //    },
+                    //    function (err) {
+                    //        ErrorDialog.open(err.data);
+                    //    }
+                    //);
+                }
+            };
+
+            $scope.delete = function() {
+                //YesNoDialog.open("Вы действительно хотите удалить цену на связь пользователь-товар?").then(
+                //    function() {
+                //        UserProductPricesResource.deleteUserProductPrice($scope.userProductPrice._id).then(
+                //            function (response) {
+                //                InfoDialog.open("Цена на связь пользователь-товар удалена");
+                //                $state.go("edit-user-product", {userProductId: $scope.userProductPrice.userProduct._id});
+                //            },
+                //            function (err) {
+                //                ErrorDialog.open(err.data, true);
+                //            }
+                //        );
+                //    }
+                //);
             };
         }
     ])

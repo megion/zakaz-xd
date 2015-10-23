@@ -118,12 +118,13 @@ gulp.task('scripts', ['compile-templates'], function() {
         .pipe(plumber({
             errorHandler: handleError
         }))
-        .pipe(concat('zakaz-xd.js'))
-        //.pipe(header('(function () { \n"use strict";\n'))
-        //.pipe(footer('\n}());'))
         .pipe(jshint())
         .pipe(jshint.reporter('jshint-stylish'))
         .pipe(jshint.reporter('fail'))
+        .pipe(concat('zakaz-xd.js'))
+        //.pipe(header('(function () { \n"use strict";\n'))
+        //.pipe(footer('\n}());'))
+
         .pipe(header(config.banner, {
             timestamp: (new Date()).toISOString()
         }))

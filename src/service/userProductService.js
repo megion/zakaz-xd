@@ -153,6 +153,13 @@ function findUserProductsByProductId(page, productId, callback) {
     findAllUserProductsByFilter(page, {product_id: productId}, callback);
 }
 
+/**
+ * список продуктов указанного пользователя
+ */
+function findUserProductsByUserId(page, userId, callback) {
+    findAllUserProductsByFilter(page, {user_id: userId}, callback);
+}
+
 function findOneByProductIdAndUserId(page, productId, userId, callback) {
     findOneUserProductByFilter(page, {product_id: productId, user_id: userId}, callback);
 }
@@ -180,6 +187,7 @@ exports.getCollection = getCollection;
 exports.createUserProducts = createUserProducts;
 exports.editUserProduct = editUserProduct;
 exports.findUserProductsByProductId = findUserProductsByProductId;
+exports.findUserProductsByUserId = findUserProductsByUserId;
 exports.findOneById = findOneById;
 exports.findOneByProductIdAndUserId = findOneByProductIdAndUserId;
 exports.deleteUserProduct = deleteUserProduct;

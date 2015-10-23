@@ -56,8 +56,10 @@
                 </div>
             </div>
             <div class="row" ng-if="!isCreate">
-                <div class="col-sm-6">
-                    <a ng-click="authorProductDialog()">Добавить продукт к заказу</a>
+                <div class="col-sm-4">
+                    <ul class="nav nav-pills pull-right" ng-if="!isCreate">
+                        <li><a data-ui-sref="add-order-product({orderId: order._id})">Добавить продукт к заказу</a></li>
+                    </ul>
                 </div>
             </div>
         </div>

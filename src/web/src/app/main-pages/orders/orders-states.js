@@ -4,7 +4,8 @@ angular.module('zakaz-xd.orders.states', [
     'zakaz-xd.dialogs',
     'zakaz-xd.resources.orders-resource',
     'zakaz-xd.orders.orders-list',
-    'zakaz-xd.orders.edit-order'
+    'zakaz-xd.orders.edit-order',
+    'zakaz-xd.orders.edit-order-product'
 ])
     .config(['$stateProvider', '$urlRouterProvider', 'ACCESS',
         function ($stateProvider, $urlRouterProvider, ACCESS) {
@@ -75,6 +76,33 @@ angular.module('zakaz-xd.orders.states', [
                             return AuthService.getCurrentUser();
                         }
 
+                    }
+                })
+                // добавление продукта к заказу
+                .state('add-order-product', {
+                    url: '/order/add-product/:orderId',
+                    controller: 'EditOrderProductCtrl',
+                    templateUrl: 'app/main-pages/orders/edit-order-product/edit-order-product.tpl.html',
+                    resolve: {
+                        hasAccess: function ($stateParams, AuthService) {
+                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER | ACCESS.MANAGE_ORDERS);
+                        },
+                        user: function ($stateParams, AuthService) {
+                            return AuthService.getCurrentUser();
+                        },
+                        isOrderManager: function ($stateParams, AuthService) {
+                            return AuthService.hasAccess(ACCESS.MANAGE_ORDERS);
+                        },
+                        order: function($stateParams, OrdersResource){
+                            return OrdersResource.getUserOrderById($stateParams.id).then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
+                        },
+                        orderProduct: function() {
+                            return {};
+                        }
                     }
                 });
         }
