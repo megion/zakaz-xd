@@ -11,7 +11,7 @@
 
     <!-- Пользовательский продукт -->
     <div class="form-group required" ng-class="{'has-error': changeProductForm.$submitted && changeProductForm.measureUnit.$error.required}">
-        <label class="col-sm-2 control-label">Единица измерения</label>
+        <label class="col-sm-2 control-label">Продукт</label>
         <div class="col-sm-10">
             <ui-select ng-model="product.measureUnit" theme="bootstrap" name="measureUnit" required>
                 <ui-select-match placeholder="Единица измерения" allow-clear="true">{{$select.selected.title}}</ui-select-match>
