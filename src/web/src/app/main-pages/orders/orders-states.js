@@ -3,6 +3,7 @@ angular.module('zakaz-xd.orders.states', [
     'zakaz-xd.auth',
     'zakaz-xd.dialogs',
     'zakaz-xd.resources.orders-resource',
+    'zakaz-xd.resources.user-products-resource',
     'zakaz-xd.orders.orders-list',
     'zakaz-xd.orders.edit-order',
     'zakaz-xd.orders.edit-order-product'
@@ -12,8 +13,8 @@ angular.module('zakaz-xd.orders.states', [
 
             $stateProvider
                 // заказы текущего пользователя
-                .state('orders-list', {
-                    url: '/orders-list',
+                .state('user-orders-list', {
+                    url: '/user-orders-list',
                     controller: 'OrdersListCtrl',
                     templateUrl: 'app/main-pages/orders/orders-list/orders-list.tpl.html',
                     resolve: {
@@ -26,8 +27,8 @@ angular.module('zakaz-xd.orders.states', [
                     }
                 })
                 // редактирование своего заказа
-                .state('edit-order', {
-                    url: '/order/edit/:id',
+                .state('edit-user-order', {
+                    url: '/user-order/edit/:id',
                     controller: 'EditOrderCtrl',
                     templateUrl: 'app/main-pages/orders/edit-order/edit-order.tpl.html',
                     resolve: {
@@ -54,8 +55,8 @@ angular.module('zakaz-xd.orders.states', [
                     }
                 })
                 // создание своего заказа
-                .state('create-order', {
-                    url: '/order/create',
+                .state('create-user-order', {
+                    url: '/user-order/create',
                     controller: 'EditOrderCtrl',
                     templateUrl: 'app/main-pages/orders/edit-order/edit-order.tpl.html',
                     resolve: {
@@ -79,22 +80,22 @@ angular.module('zakaz-xd.orders.states', [
                     }
                 })
                 // добавление продукта к заказу
-                .state('add-order-product', {
-                    url: '/order/add-product/:orderId',
+                .state('add-user-order-product', {
+                    url: '/user-order/add-product/:orderId',
                     controller: 'EditOrderProductCtrl',
                     templateUrl: 'app/main-pages/orders/edit-order-product/edit-order-product.tpl.html',
                     resolve: {
                         hasAccess: function ($stateParams, AuthService) {
-                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER | ACCESS.MANAGE_ORDERS);
+                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
                         },
                         user: function ($stateParams, AuthService) {
                             return AuthService.getCurrentUser();
                         },
                         isOrderManager: function ($stateParams, AuthService) {
-                            return AuthService.hasAccess(ACCESS.MANAGE_ORDERS);
+                            return false;
                         },
                         order: function($stateParams, OrdersResource){
-                            return OrdersResource.getUserOrderById($stateParams.id).then(
+                            return OrdersResource.getUserOrderById($stateParams.orderId).then(
                                 function(response) {
                                     return response.data;
                                 }
@@ -102,8 +103,60 @@ angular.module('zakaz-xd.orders.states', [
                         },
                         orderProduct: function() {
                             return {};
+                        },
+                        userProducts: function($stateParams, UserProductsResource) {
+                            return UserProductsResource.getProductUsersByCurrentUser().then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
+                        }
+                    }
+                })
+                // изменение продукта заказа
+                .state('edit-user-order-product', {
+                    url: '/user-order/edit-product/:orderId/:productId',
+                    controller: 'EditOrderProductCtrl',
+                    templateUrl: 'app/main-pages/orders/edit-order-product/edit-order-product.tpl.html',
+                    resolve: {
+                        hasAccess: function ($stateParams, AuthService) {
+                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
+                        },
+                        user: function ($stateParams, AuthService) {
+                            return AuthService.getCurrentUser();
+                        },
+                        isOrderManager: function ($stateParams, AuthService) {
+                            return false;
+                        },
+                        order: function($stateParams, OrdersResource){
+                            return OrdersResource.getUserOrderById($stateParams.orderId).then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
+                        },
+                        orderProduct: function($stateParams, order) {
+                            if (!order.authorProducts) {
+                                return null;
+                            }
+                            // найдем без запроса на сервер
+                            for (var i=0; i<order.authorProducts.length; i++) {
+                                var ap = order.authorProducts[i];
+                                if (ap.product._id === $stateParams.productId) {
+                                    return ap;
+                                }
+                            }
+                            return null;
+                        },
+                        userProducts: function($stateParams, UserProductsResource) {
+                            return UserProductsResource.getProductUsersByCurrentUser().then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
                         }
                     }
                 });
+
         }
     ]);

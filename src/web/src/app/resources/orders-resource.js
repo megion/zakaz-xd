@@ -41,6 +41,12 @@ angular.module('zakaz-xd.resources.orders-resource', [
             },
             addCurrentUserOrderProduct: function (orderId, orderProduct) {
                 return $http.post(startUrl + '/add-user-order-product', {orderId: orderId, orderProduct: orderProduct});
+            },
+            removeAllOrderProducts: function (orderId) {
+                return $http.post(startUrl + '/remove-all-order-products', {orderId: orderId});
+            },
+            removeAllCurrentUserOrderProducts: function (orderId) {
+                return $http.post(startUrl + '/remove-all-current-user-order-products', {orderId: orderId});
             }
         };
     }]);

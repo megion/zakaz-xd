@@ -1,5 +1,5 @@
 /*
- * Version: 1.0 - 2015-10-25T10:58:06.215Z
+ * Version: 1.0 - 2015-10-29T15:37:01.707Z
  */
 
 
@@ -93,88 +93,6 @@ angular.module('zakaz-xd.main', [
         }
     ]);
 
-angular.module('zakaz-xd.dialogs', [
-    'ui.bootstrap'
-])
-
-    .factory('ErrorDialog', ['$q', '$modal', '$sce', function ($q, $modal) {
-        return {
-            open: function (error, printStack) {
-                //$scope.errorMsg = $sce.trustAsHtml(err.data);
-                var modalInstance = $modal.open({
-                    animation: true,
-                    backdrop: 'static',
-                    size: 'lg',
-                    templateUrl: 'app/dialogs/error-dialog.tpl.html',
-                    resolve: {
-                    },
-                    controller: function ($scope, $modalInstance) {
-                        $scope.error = error;
-                        $scope.printStack = printStack;
-                        $scope.close = function () {
-                            $modalInstance.close();
-                        };
-                    }
-                });
-            }
-        };
-    }])
-    .factory('InfoDialog', ['$q', '$modal', '$sce', function ($q, $modal, $sce) {
-        return {
-            open: function (message, title) {
-                var modalInstance = $modal.open({
-                    animation: true,
-                    backdrop: 'static',
-                    size: 'lg',
-                    templateUrl: 'app/dialogs/info-dialog.tpl.html',
-                    resolve: {
-                    },
-                    controller: function ($scope, $modalInstance) {
-                        $scope.message = $sce.trustAsHtml(message);
-                        $scope.title = title;
-                        $scope.close = function () {
-                            $modalInstance.close();
-                        };
-                    }
-                });
-            }
-        };
-    }])
-    .factory('YesNoDialog', ['$q', '$modal', '$sce', function ($q, $modal, $sce) {
-        return {
-            open: function (message, title) {
-                var modalInstance = $modal.open({
-                    animation: true,
-                    backdrop: 'static',
-                    size: 'lg',
-                    templateUrl: 'app/dialogs/yes-no-dialog.tpl.html',
-                    resolve: {
-                    },
-                    controller: function ($scope, $modalInstance) {
-                        $scope.message = $sce.trustAsHtml(message);
-                        $scope.title = title;
-                        $scope.close = function () {
-                            $scope.$dismiss("NO");
-                        };
-                        $scope.yes = function () {
-                            $scope.$close("YES");
-                        };
-                        $scope.no = function () {
-                            $scope.$dismiss("NO");
-                        };
-                    }
-                });
-                return modalInstance.result;
-            }
-        };
-    }])
-    .factory('ErrorHandler', ['ErrorDialog', function (ErrorDialog) {
-        return {
-            handle: function (err) {
-                ErrorDialog.open(err.data, true);
-            }
-        };
-    }]);
 angular
     .module('zakaz-xd.auth.access', [])
 
@@ -476,6 +394,88 @@ angular.module('zakaz-xd.auth', [
 
         ];
     });
+angular.module('zakaz-xd.dialogs', [
+    'ui.bootstrap'
+])
+
+    .factory('ErrorDialog', ['$q', '$modal', '$sce', function ($q, $modal) {
+        return {
+            open: function (error, printStack) {
+                //$scope.errorMsg = $sce.trustAsHtml(err.data);
+                var modalInstance = $modal.open({
+                    animation: true,
+                    backdrop: 'static',
+                    size: 'lg',
+                    templateUrl: 'app/dialogs/error-dialog.tpl.html',
+                    resolve: {
+                    },
+                    controller: function ($scope, $modalInstance) {
+                        $scope.error = error;
+                        $scope.printStack = printStack;
+                        $scope.close = function () {
+                            $modalInstance.close();
+                        };
+                    }
+                });
+            }
+        };
+    }])
+    .factory('InfoDialog', ['$q', '$modal', '$sce', function ($q, $modal, $sce) {
+        return {
+            open: function (message, title) {
+                var modalInstance = $modal.open({
+                    animation: true,
+                    backdrop: 'static',
+                    size: 'lg',
+                    templateUrl: 'app/dialogs/info-dialog.tpl.html',
+                    resolve: {
+                    },
+                    controller: function ($scope, $modalInstance) {
+                        $scope.message = $sce.trustAsHtml(message);
+                        $scope.title = title;
+                        $scope.close = function () {
+                            $modalInstance.close();
+                        };
+                    }
+                });
+            }
+        };
+    }])
+    .factory('YesNoDialog', ['$q', '$modal', '$sce', function ($q, $modal, $sce) {
+        return {
+            open: function (message, title) {
+                var modalInstance = $modal.open({
+                    animation: true,
+                    backdrop: 'static',
+                    size: 'lg',
+                    templateUrl: 'app/dialogs/yes-no-dialog.tpl.html',
+                    resolve: {
+                    },
+                    controller: function ($scope, $modalInstance) {
+                        $scope.message = $sce.trustAsHtml(message);
+                        $scope.title = title;
+                        $scope.close = function () {
+                            $scope.$dismiss("NO");
+                        };
+                        $scope.yes = function () {
+                            $scope.$close("YES");
+                        };
+                        $scope.no = function () {
+                            $scope.$dismiss("NO");
+                        };
+                    }
+                });
+                return modalInstance.result;
+            }
+        };
+    }])
+    .factory('ErrorHandler', ['ErrorDialog', function (ErrorDialog) {
+        return {
+            handle: function (err) {
+                ErrorDialog.open(err.data, true);
+            }
+        };
+    }]);
 /**
  * Custom Error object for user access errors
  */
@@ -568,6 +568,12 @@ angular.module('zakaz-xd.resources.orders-resource', [
             },
             addCurrentUserOrderProduct: function (orderId, orderProduct) {
                 return $http.post(startUrl + '/add-user-order-product', {orderId: orderId, orderProduct: orderProduct});
+            },
+            removeAllOrderProducts: function (orderId) {
+                return $http.post(startUrl + '/remove-all-order-products', {orderId: orderId});
+            },
+            removeAllCurrentUserOrderProducts: function (orderId) {
+                return $http.post(startUrl + '/remove-all-current-user-order-products', {orderId: orderId});
             }
         };
     }]);
@@ -642,6 +648,9 @@ angular.module('zakaz-xd.resources.user-products-resource', [
         return {
             getProductUsersByProductId: function (productId, page) {
                 return $http.get(startUrl + '/product-users-by-product-id', {params: {id: productId, page: page.page, itemsPerPage: page.itemsPerPage}});
+            },
+            getProductUsersByCurrentUser: function () {
+                return $http.get(startUrl + '/product-users-by-current-user', {params: {}});
             },
             createUserProduct: function (newUserProduct) {
                 return $http.post(startUrl + '/create-user-product', {userProduct: newUserProduct});
@@ -1504,6 +1513,169 @@ angular.module('zakaz-xd.manage-users.states', [
         }
     ]);
 
+angular.module('zakaz-xd.orders.states', [
+    'ui.router',
+    'zakaz-xd.auth',
+    'zakaz-xd.dialogs',
+    'zakaz-xd.resources.orders-resource',
+    'zakaz-xd.resources.user-products-resource',
+    'zakaz-xd.orders.orders-list',
+    'zakaz-xd.orders.edit-order',
+    'zakaz-xd.orders.edit-order-product'
+])
+    .config(['$stateProvider', '$urlRouterProvider', 'ACCESS',
+        function ($stateProvider, $urlRouterProvider, ACCESS) {
+
+            $stateProvider
+                // заказы текущего пользователя
+                .state('user-orders-list', {
+                    url: '/user-orders-list',
+                    controller: 'OrdersListCtrl',
+                    templateUrl: 'app/main-pages/orders/orders-list/orders-list.tpl.html',
+                    resolve: {
+                        user: function ($stateParams, AuthService) {
+                            return AuthService.getCurrentUser();
+                        },
+                        hasAccess: function ($stateParams, AuthService) {
+                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
+                        }
+                    }
+                })
+                // редактирование своего заказа
+                .state('edit-user-order', {
+                    url: '/user-order/edit/:id',
+                    controller: 'EditOrderCtrl',
+                    templateUrl: 'app/main-pages/orders/edit-order/edit-order.tpl.html',
+                    resolve: {
+                        hasAccess: function ($stateParams, AuthService) {
+                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
+                        },
+                        order: function($stateParams, OrdersResource){
+                            return OrdersResource.getUserOrderById($stateParams.id).then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
+                        },
+                        allOrderStatuses: function($stateParams, OrdersResource){
+                            return OrdersResource.getAllOrderStatuses().then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
+                        },
+                        user: function ($stateParams, AuthService) {
+                            return AuthService.getCurrentUser();
+                        }
+                    }
+                })
+                // создание своего заказа
+                .state('create-user-order', {
+                    url: '/user-order/create',
+                    controller: 'EditOrderCtrl',
+                    templateUrl: 'app/main-pages/orders/edit-order/edit-order.tpl.html',
+                    resolve: {
+                        hasAccess: function ($stateParams, AuthService) {
+                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
+                        },
+                        order: function() {
+                            return {};
+                        },
+                        allOrderStatuses: function($stateParams, OrdersResource){
+                            return OrdersResource.getAllOrderStatuses().then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
+                        },
+                        user: function ($stateParams, AuthService) {
+                            return AuthService.getCurrentUser();
+                        }
+
+                    }
+                })
+                // добавление продукта к заказу
+                .state('add-user-order-product', {
+                    url: '/user-order/add-product/:orderId',
+                    controller: 'EditOrderProductCtrl',
+                    templateUrl: 'app/main-pages/orders/edit-order-product/edit-order-product.tpl.html',
+                    resolve: {
+                        hasAccess: function ($stateParams, AuthService) {
+                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
+                        },
+                        user: function ($stateParams, AuthService) {
+                            return AuthService.getCurrentUser();
+                        },
+                        isOrderManager: function ($stateParams, AuthService) {
+                            return false;
+                        },
+                        order: function($stateParams, OrdersResource){
+                            return OrdersResource.getUserOrderById($stateParams.orderId).then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
+                        },
+                        orderProduct: function() {
+                            return {};
+                        },
+                        userProducts: function($stateParams, UserProductsResource) {
+                            return UserProductsResource.getProductUsersByCurrentUser().then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
+                        }
+                    }
+                })
+                // изменение продукта заказа
+                .state('edit-user-order-product', {
+                    url: '/user-order/edit-product/:orderId/:productId',
+                    controller: 'EditOrderProductCtrl',
+                    templateUrl: 'app/main-pages/orders/edit-order-product/edit-order-product.tpl.html',
+                    resolve: {
+                        hasAccess: function ($stateParams, AuthService) {
+                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
+                        },
+                        user: function ($stateParams, AuthService) {
+                            return AuthService.getCurrentUser();
+                        },
+                        isOrderManager: function ($stateParams, AuthService) {
+                            return false;
+                        },
+                        order: function($stateParams, OrdersResource){
+                            return OrdersResource.getUserOrderById($stateParams.orderId).then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
+                        },
+                        orderProduct: function($stateParams, order) {
+                            if (!order.authorProducts) {
+                                return null;
+                            }
+                            // найдем без запроса на сервер
+                            for (var i=0; i<order.authorProducts.length; i++) {
+                                var ap = order.authorProducts[i];
+                                if (ap.product._id === $stateParams.productId) {
+                                    return ap;
+                                }
+                            }
+                            return null;
+                        },
+                        userProducts: function($stateParams, UserProductsResource) {
+                            return UserProductsResource.getProductUsersByCurrentUser().then(
+                                function(response) {
+                                    return response.data;
+                                }
+                            );
+                        }
+                    }
+                });
+
+        }
+    ]);
+
 angular.module('zakaz-xd.products.states', [
     'ui.router',
     'zakaz-xd.auth',
@@ -1860,116 +2032,6 @@ angular
     ])
 ;
 
-angular.module('zakaz-xd.orders.states', [
-    'ui.router',
-    'zakaz-xd.auth',
-    'zakaz-xd.dialogs',
-    'zakaz-xd.resources.orders-resource',
-    'zakaz-xd.orders.orders-list',
-    'zakaz-xd.orders.edit-order',
-    'zakaz-xd.orders.edit-order-product'
-])
-    .config(['$stateProvider', '$urlRouterProvider', 'ACCESS',
-        function ($stateProvider, $urlRouterProvider, ACCESS) {
-
-            $stateProvider
-                // заказы текущего пользователя
-                .state('orders-list', {
-                    url: '/orders-list',
-                    controller: 'OrdersListCtrl',
-                    templateUrl: 'app/main-pages/orders/orders-list/orders-list.tpl.html',
-                    resolve: {
-                        user: function ($stateParams, AuthService) {
-                            return AuthService.getCurrentUser();
-                        },
-                        hasAccess: function ($stateParams, AuthService) {
-                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
-                        }
-                    }
-                })
-                // редактирование своего заказа
-                .state('edit-order', {
-                    url: '/order/edit/:id',
-                    controller: 'EditOrderCtrl',
-                    templateUrl: 'app/main-pages/orders/edit-order/edit-order.tpl.html',
-                    resolve: {
-                        hasAccess: function ($stateParams, AuthService) {
-                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
-                        },
-                        order: function($stateParams, OrdersResource){
-                            return OrdersResource.getUserOrderById($stateParams.id).then(
-                                function(response) {
-                                    return response.data;
-                                }
-                            );
-                        },
-                        allOrderStatuses: function($stateParams, OrdersResource){
-                            return OrdersResource.getAllOrderStatuses().then(
-                                function(response) {
-                                    return response.data;
-                                }
-                            );
-                        },
-                        user: function ($stateParams, AuthService) {
-                            return AuthService.getCurrentUser();
-                        }
-                    }
-                })
-                // создание своего заказа
-                .state('create-order', {
-                    url: '/order/create',
-                    controller: 'EditOrderCtrl',
-                    templateUrl: 'app/main-pages/orders/edit-order/edit-order.tpl.html',
-                    resolve: {
-                        hasAccess: function ($stateParams, AuthService) {
-                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
-                        },
-                        order: function() {
-                            return {};
-                        },
-                        allOrderStatuses: function($stateParams, OrdersResource){
-                            return OrdersResource.getAllOrderStatuses().then(
-                                function(response) {
-                                    return response.data;
-                                }
-                            );
-                        },
-                        user: function ($stateParams, AuthService) {
-                            return AuthService.getCurrentUser();
-                        }
-
-                    }
-                })
-                // добавление продукта к заказу
-                .state('add-order-product', {
-                    url: '/order/add-product/:orderId',
-                    controller: 'EditOrderProductCtrl',
-                    templateUrl: 'app/main-pages/orders/edit-order-product/edit-order-product.tpl.html',
-                    resolve: {
-                        hasAccess: function ($stateParams, AuthService) {
-                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER | ACCESS.MANAGE_ORDERS);
-                        },
-                        user: function ($stateParams, AuthService) {
-                            return AuthService.getCurrentUser();
-                        },
-                        isOrderManager: function ($stateParams, AuthService) {
-                            return AuthService.hasAccess(ACCESS.MANAGE_ORDERS);
-                        },
-                        order: function($stateParams, OrdersResource){
-                            return OrdersResource.getUserOrderById($stateParams.id).then(
-                                function(response) {
-                                    return response.data;
-                                }
-                            );
-                        },
-                        orderProduct: function() {
-                            return {};
-                        }
-                    }
-                });
-        }
-    ]);
-
 angular
     .module('zakaz-xd.auth.login-form', [
         'zakaz-xd.auth',
@@ -2184,6 +2246,204 @@ angular
             }
 
             refreshUsersTable({page: $scope.pageConfig.page, itemsPerPage: $scope.pageConfig.itemsPerPage});
+        }
+    ])
+;
+
+/**
+ * Изменение\создание заказа
+ */
+angular
+    .module('zakaz-xd.orders.edit-order', [
+        'zakaz-xd.dialogs',
+        'zakaz-xd.resources.orders-resource',
+        'zakaz-xd.auth'
+    ])
+    .controller('EditOrderCtrl', ['$scope', '$stateParams', '$state', 'OrdersResource',
+        'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'order', 'user',
+        function ($scope, $stateParams, $state, OrdersResource,
+                  ErrorDialog, InfoDialog, YesNoDialog, order, user) {
+            $scope.isCreate = !(order._id);
+            $scope.order = order;
+            $scope.user = user;
+
+            $scope.save = function(invalid) {
+                console.log(invalid);
+                if (invalid) {
+                    return false;
+                }
+
+                if ($scope.isCreate) {
+                    OrdersResource.createOrder($scope.order).then(
+                        function (response) {
+                            InfoDialog.open("Ваш заказ успешно создан");
+                            $state.go("orders-list");
+                        },
+                        function (err) {
+                            ErrorDialog.open(err.data, true);
+                        }
+                    );
+                } else {
+                    OrdersResource.editCurrentUserOrder($scope.order).then(
+                        function (response) {
+                            InfoDialog.open("Ваш заказ успешно изменен");
+                            $state.go("orders-list");
+                        },
+                        function (err) {
+                            ErrorDialog.open(err.data, true);
+                        }
+                    );
+                }
+            };
+
+            $scope.removeAllUserDeliveryPoints = function() {
+                YesNoDialog.open("Вы действительно хотите удалить все продукты у заказа?").then(
+                    function() {
+                        OrdersResource.removeAll($scope.order._id).then(
+                            function (response) {
+                                InfoDialog.open("Все продукты заказа удалены");
+                                $state.reload();
+                            },
+                            function (err) {
+                                ErrorDialog.open(err.data, true);
+                            }
+                        );
+                    }
+                );
+            };
+
+            $scope.deleteOrder = function() {
+                YesNoDialog.open("Вы действительно хотите удалить заказ?").then(
+                    function() {
+                        OrdersResource.deleteCurrentUserOrder($scope.order._id).then(
+                            function (response) {
+                                InfoDialog.open("Заказ удален");
+                                $state.go("orders-list");
+                            },
+                            function (err) {
+                                ErrorDialog.open(err.data, true);
+                            }
+                        );
+                    }
+                );
+            };
+        }
+    ])
+;
+
+/**
+ * Изменение\создание привязки продукта к заказу
+ */
+angular
+    .module('zakaz-xd.orders.edit-order-product', [
+        'zakaz-xd.dialogs',
+        'zakaz-xd.resources.orders-resource',
+        'zakaz-xd.auth',
+        'ui.select',
+        'ngSanitize'
+    ])
+    .controller('EditOrderProductCtrl', ['$scope', '$stateParams', '$state',
+        'OrdersResource', 'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'order', 'orderProduct', 'userProducts',
+        'isOrderManager',
+        function ($scope, $stateParams, $state,
+                  OrdersResource, ErrorDialog, InfoDialog, YesNoDialog, order, orderProduct, userProducts,
+                  isOrderManager) {
+            $scope.isCreate = !(orderProduct.product);
+            $scope.orderProduct = orderProduct;
+            $scope.order = order;
+            //$scope.userProducts = userProducts;
+
+            console.log("order", order);
+
+
+            $scope.products = [];
+            angular.forEach(userProducts, function(value) {
+                this.push(value.product);
+            }, $scope.products);
+            console.log("$scope.products", $scope.products);
+
+            $scope.save = function(invalid) {
+                if (invalid) {
+                    return false;
+                }
+
+                if ($scope.isCreate) {
+                    var addResource = isOrderManager?OrdersResource.addOrderProduct:OrdersResource.addCurrentUserOrderProduct;
+                    addResource($scope.order._id, $scope.orderProduct).then(
+                        function (response) {
+                            InfoDialog.open("Продукт добавлен в заказ");
+                            $state.go("edit-order", {id: $scope.order._id});
+                        },
+                        function (err) {
+                            ErrorDialog.open(err.data);
+                        }
+                    );
+                } else {
+                    //OrdersResource.editUserProductPrice($scope.userProductPrice).then(
+                    //    function (response) {
+                    //        InfoDialog.open("Изменение цены для связи пользователь-товар успешно");
+                    //        $state.go("edit-user-product", {userProductId: $scope.userProductPrice.userProduct._id});
+                    //    },
+                    //    function (err) {
+                    //        ErrorDialog.open(err.data);
+                    //    }
+                    //);
+                }
+            };
+
+            $scope.delete = function() {
+                //YesNoDialog.open("Вы действительно хотите удалить цену на связь пользователь-товар?").then(
+                //    function() {
+                //        UserProductPricesResource.deleteUserProductPrice($scope.userProductPrice._id).then(
+                //            function (response) {
+                //                InfoDialog.open("Цена на связь пользователь-товар удалена");
+                //                $state.go("edit-user-product", {userProductId: $scope.userProductPrice.userProduct._id});
+                //            },
+                //            function (err) {
+                //                ErrorDialog.open(err.data, true);
+                //            }
+                //        );
+                //    }
+                //);
+            };
+        }
+    ])
+;
+
+angular
+    .module('zakaz-xd.orders.orders-list', [
+        'zakaz-xd.dialogs',
+        'zakaz-xd.directives.pagination',
+        'zakaz-xd.resources.orders-resource',
+        'zakaz-xd.auth'
+    ])
+    .controller('OrdersListCtrl', ['$scope', '$stateParams', '$state', 'OrdersResource',
+        'ErrorDialog', 'InfoDialog', 'user',
+        function ($scope, $stateParams, $state, OrdersResource, ErrorDialog, InfoDialog, user) {
+            $scope.user = user;
+
+            $scope.orderList = [];
+            $scope.pageConfig = {
+                page: 1,
+                itemsPerPage: 10,
+                pageChanged: function(page, itemsPerPage)  {
+                    refreshOrdersTable({page: page, itemsPerPage: itemsPerPage});
+                }
+            };
+
+            function refreshOrdersTable(page) {
+                OrdersResource.getAllUserOrders(page).then(
+                    function(response) {
+                        $scope.orderList = response.data.items;
+                        $scope.pageConfig.count = response.data.count;
+                    },
+                    function(err) {
+                        ErrorDialog.open(err.data);
+                    }
+                );
+            }
+
+            refreshOrdersTable({page: $scope.pageConfig.page, itemsPerPage: $scope.pageConfig.itemsPerPage});
         }
     ])
 ;
@@ -2572,171 +2832,51 @@ angular
 ;
 
 /**
- * Изменение\создание заказа
+ * Изменение\создание пользователя
  */
 angular
-    .module('zakaz-xd.orders.edit-order', [
+    .module('zakaz-xd.manage-users.edit-user.change-password', [
         'zakaz-xd.dialogs',
-        'zakaz-xd.resources.orders-resource',
+        'zakaz-xd.resources.users-resource',
+        'zakaz-xd.resources.roles-resource',
         'zakaz-xd.auth'
     ])
-    .controller('EditOrderCtrl', ['$scope', '$stateParams', '$state', 'OrdersResource',
-        'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'order', 'user',
-        function ($scope, $stateParams, $state, OrdersResource,
-                  ErrorDialog, InfoDialog, YesNoDialog, order, user) {
-            $scope.isCreate = !(order._id);
-            $scope.order = order;
-            $scope.user = user;
-
-            $scope.save = function(invalid) {
-                console.log(invalid);
-                if (invalid) {
-                    return false;
-                }
-
-                if ($scope.isCreate) {
-                    OrdersResource.createOrder($scope.order).then(
-                        function (response) {
-                            InfoDialog.open("Ваш заказ успешно создан");
-                            $state.go("orders-list");
-                        },
-                        function (err) {
-                            ErrorDialog.open(err.data, true);
-                        }
-                    );
-                } else {
-                    OrdersResource.editCurrentUserOrder($scope.order).then(
-                        function (response) {
-                            InfoDialog.open("Ваш заказ успешно изменен");
-                            $state.go("orders-list");
-                        },
-                        function (err) {
-                            ErrorDialog.open(err.data, true);
-                        }
-                    );
-                }
-            };
-
-            $scope.deleteOrder = function() {
-                YesNoDialog.open("Вы действительно хотите удалить заказ?").then(
-                    function() {
-                        OrdersResource.deleteCurrentUserOrder($scope.order._id).then(
-                            function (response) {
-                                InfoDialog.open("Заказ удален");
-                                $state.go("orders-list");
-                            },
-                            function (err) {
-                                ErrorDialog.open(err.data, true);
-                            }
-                        );
-                    }
-                );
-            };
-        }
-    ])
-;
-
-/**
- * Изменение\создание привязки продукта к заказу
- */
-angular
-    .module('zakaz-xd.orders.edit-order-product', [
-        'zakaz-xd.dialogs',
-        'zakaz-xd.resources.orders-resource',
-        'zakaz-xd.auth',
-        'ui.select',
-        'ngSanitize'
-    ])
-    .controller('EditOrderProductCtrl', ['$scope', '$stateParams', '$state',
-        'OrdersResource', 'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'order', 'orderProduct', 'isOrderManager',
-        function ($scope, $stateParams, $state,
-                  OrdersResource, ErrorDialog, InfoDialog, YesNoDialog, order, orderProduct, isOrderManager) {
-            $scope.isCreate = !(orderProduct.product);
-            $scope.orderProduct = orderProduct;
-            $scope.order = order;
-
-            $scope.save = function(invalid) {
-                if (invalid) {
-                    return false;
-                }
-
-                if ($scope.isCreate) {
-                    var addResource = isOrderManager?OrdersResource.addOrderProduct:OrdersResource.addCurrentUserOrderProduct;
-                    addResource($scope.order._id, $scope.orderProduct).then(
-                        function (response) {
-                            InfoDialog.open("Продукт добавлен в заказ");
-                            $state.go("edit-order", {id: $scope.order._id});
-                        },
-                        function (err) {
-                            ErrorDialog.open(err.data);
-                        }
-                    );
-                } else {
-                    //OrdersResource.editUserProductPrice($scope.userProductPrice).then(
-                    //    function (response) {
-                    //        InfoDialog.open("Изменение цены для связи пользователь-товар успешно");
-                    //        $state.go("edit-user-product", {userProductId: $scope.userProductPrice.userProduct._id});
-                    //    },
-                    //    function (err) {
-                    //        ErrorDialog.open(err.data);
-                    //    }
-                    //);
-                }
-            };
-
-            $scope.delete = function() {
-                //YesNoDialog.open("Вы действительно хотите удалить цену на связь пользователь-товар?").then(
-                //    function() {
-                //        UserProductPricesResource.deleteUserProductPrice($scope.userProductPrice._id).then(
-                //            function (response) {
-                //                InfoDialog.open("Цена на связь пользователь-товар удалена");
-                //                $state.go("edit-user-product", {userProductId: $scope.userProductPrice.userProduct._id});
-                //            },
-                //            function (err) {
-                //                ErrorDialog.open(err.data, true);
-                //            }
-                //        );
-                //    }
-                //);
-            };
-        }
-    ])
-;
-
-angular
-    .module('zakaz-xd.orders.orders-list', [
-        'zakaz-xd.dialogs',
-        'zakaz-xd.directives.pagination',
-        'zakaz-xd.resources.orders-resource',
-        'zakaz-xd.auth'
-    ])
-    .controller('OrdersListCtrl', ['$scope', '$stateParams', '$state', 'OrdersResource',
+    .controller('EditUserChangePasswordCtrl', ['$scope', '$stateParams', '$state', 'UsersResource',
         'ErrorDialog', 'InfoDialog', 'user',
-        function ($scope, $stateParams, $state, OrdersResource, ErrorDialog, InfoDialog, user) {
+        function ($scope, $stateParams, $state, UsersResource,
+                  ErrorDialog, InfoDialog, user) {
             $scope.user = user;
 
-            $scope.orderList = [];
-            $scope.pageConfig = {
-                page: 1,
-                itemsPerPage: 10,
-                pageChanged: function(page, itemsPerPage)  {
-                    refreshOrdersTable({page: page, itemsPerPage: itemsPerPage});
-                }
+            $scope.data = {
+                newPassword: null,
+                repeatNewPassword: null
             };
 
-            function refreshOrdersTable(page) {
-                OrdersResource.getAllUserOrders(page).then(
-                    function(response) {
-                        $scope.orderList = response.data.items;
-                        $scope.pageConfig.count = response.data.count;
+            $scope.changePassword  = function(invalid) {
+                if (invalid) {
+                    return false;
+                }
+
+                if ($scope.data.newPassword !== $scope.data.repeatNewPassword) {
+                    return ErrorDialog.open({message: 'Пароли не совпадают'});
+                }
+
+                var passData = {
+                    userId: $scope.user._id,
+                    newPassword: $scope.data.newPassword,
+                    repeatNewPassword: $scope.data.repeatNewPassword
+                };
+
+                UsersResource.changePassword(passData).then(
+                    function (response) {
+                        InfoDialog.open('Пароль пользователя успешно изменен', 'Изменение пароля');
+                        $state.go("users-list");
                     },
-                    function(err) {
-                        ErrorDialog.open(err.data);
+                    function (err) {
+                        ErrorDialog.open(err, true);
                     }
                 );
-            }
-
-            refreshOrdersTable({page: $scope.pageConfig.page, itemsPerPage: $scope.pageConfig.itemsPerPage});
+            };
         }
     ])
 ;
@@ -2798,56 +2938,6 @@ angular
                                 ErrorDialog.open(err.data, true);
                             }
                         );
-                    }
-                );
-            };
-        }
-    ])
-;
-
-/**
- * Изменение\создание пользователя
- */
-angular
-    .module('zakaz-xd.manage-users.edit-user.change-password', [
-        'zakaz-xd.dialogs',
-        'zakaz-xd.resources.users-resource',
-        'zakaz-xd.resources.roles-resource',
-        'zakaz-xd.auth'
-    ])
-    .controller('EditUserChangePasswordCtrl', ['$scope', '$stateParams', '$state', 'UsersResource',
-        'ErrorDialog', 'InfoDialog', 'user',
-        function ($scope, $stateParams, $state, UsersResource,
-                  ErrorDialog, InfoDialog, user) {
-            $scope.user = user;
-
-            $scope.data = {
-                newPassword: null,
-                repeatNewPassword: null
-            };
-
-            $scope.changePassword  = function(invalid) {
-                if (invalid) {
-                    return false;
-                }
-
-                if ($scope.data.newPassword !== $scope.data.repeatNewPassword) {
-                    return ErrorDialog.open({message: 'Пароли не совпадают'});
-                }
-
-                var passData = {
-                    userId: $scope.user._id,
-                    newPassword: $scope.data.newPassword,
-                    repeatNewPassword: $scope.data.repeatNewPassword
-                };
-
-                UsersResource.changePassword(passData).then(
-                    function (response) {
-                        InfoDialog.open('Пароль пользователя успешно изменен', 'Изменение пароля');
-                        $state.go("users-list");
-                    },
-                    function (err) {
-                        ErrorDialog.open(err, true);
                     }
                 );
             };

@@ -31,7 +31,7 @@
         </div>
     </div>
 
-    <div class="form-group">
+    <div class="form-group" ng-if="!isCreate">
         <label class="col-sm-2 control-label">Продукты</label>
         <div class="col-sm-10">
 
@@ -47,7 +47,7 @@
                         </thead>
                         <tbody>
                         <tr ng-repeat="ap in order.authorProducts">
-                            <td><a ng-click="authorProductDialog(ap)">{{product.title}}</a></td>
+                            <td><a ui-sref="edit-order-product({orderId: order._id, productId: ap.product._id})">{{ap.product.title}}</a></td>
                             <td>{{ap.cost}}</td>
                             <td>{{ap.vt}}</td>
                         </tr>
@@ -55,11 +55,12 @@
                     </table>
                 </div>
             </div>
-            <div class="row" ng-if="!isCreate">
-                <div class="col-sm-4">
-                    <ul class="nav nav-pills pull-right" ng-if="!isCreate">
-                        <li><a data-ui-sref="add-order-product({orderId: order._id})">Добавить продукт к заказу</a></li>
-                    </ul>
+            <div class="row">
+                <div class="col-sm-6">
+                    <a data-ui-sref="add-order-product({orderId: order._id})">Добавить продукт к заказу</a>
+                </div>
+                <div class="col-sm-6 text-right">
+                    <button type='button' data-ng-click="removeAllOrderProduct()" class="btn btn-danger">Удалить все продукты у заказа</button>
                 </div>
             </div>
         </div>

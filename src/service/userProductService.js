@@ -160,8 +160,8 @@ function findUserProductsByUserId(page, userId, callback) {
     findAllUserProductsByFilter(page, {user_id: userId}, callback);
 }
 
-function findOneByProductIdAndUserId(page, productId, userId, callback) {
-    findOneUserProductByFilter(page, {product_id: productId, user_id: userId}, callback);
+function findOneByProductIdAndUserId(productId, userId, callback) {
+    findOneUserProductByFilter({product_id: productId, user_id: userId}, callback);
 }
 
 function findOneById(id, callback) {

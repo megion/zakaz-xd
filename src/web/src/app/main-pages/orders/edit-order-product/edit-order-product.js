@@ -10,12 +10,24 @@ angular
         'ngSanitize'
     ])
     .controller('EditOrderProductCtrl', ['$scope', '$stateParams', '$state',
-        'OrdersResource', 'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'order', 'orderProduct', 'isOrderManager',
+        'OrdersResource', 'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'order', 'orderProduct', 'userProducts',
+        'isOrderManager',
         function ($scope, $stateParams, $state,
-                  OrdersResource, ErrorDialog, InfoDialog, YesNoDialog, order, orderProduct, isOrderManager) {
+                  OrdersResource, ErrorDialog, InfoDialog, YesNoDialog, order, orderProduct, userProducts,
+                  isOrderManager) {
             $scope.isCreate = !(orderProduct.product);
             $scope.orderProduct = orderProduct;
             $scope.order = order;
+            //$scope.userProducts = userProducts;
+
+            console.log("order", order);
+
+
+            $scope.products = [];
+            angular.forEach(userProducts, function(value) {
+                this.push(value.product);
+            }, $scope.products);
+            console.log("$scope.products", $scope.products);
 
             $scope.save = function(invalid) {
                 if (invalid) {

@@ -2,6 +2,7 @@ var mongodb = require('../lib/mongodb');
 var orderStatusService = require('../service/orderStatusService');
 var userService = require('../service/userService');
 var userProductService = require('../service/userProductService');
+var productService = require('../service/productService');
 var ORDER_STATUSES = require('../utils/orderStatuses').ORDER_STATUSES;
 
 function getCollection() {
@@ -116,51 +117,78 @@ function enrichmentOrders(orders, callback) {
 }
 
 function enrichmentOneOrder(order, callback) {
-    orderStatusService.findAllOrderStatuses(function(err, allStatuses) {
+    productService.findAllProducts(null, function(err, allProducts) {
         if (err) {
             return callback(err);
         }
 
-        userService.findById(order.author_id, function(err, author) {
+        orderStatusService.findAllOrderStatuses(function(err, allStatuses) {
             if (err) {
                 return callback(err);
             }
-            if (!author) {
-                return callback(new Error("Автор не найден author id " + order.author_id));
-            }
 
-            var statusesMap = {};
-            if (allStatuses) {
-                for (var i=0; i<allStatuses.length; i++) {
-                    var status = allStatuses[i];
-                    statusesMap[status._id.toString()] = status;
+            userService.findById(order.author_id, function(err, author) {
+                if (err) {
+                    return callback(err);
                 }
-            }
 
-            order.author = author;
-            delete order.author_id;
+                if (!author) {
+                    return callback(new Error("Автор не найден author id " + order.author_id));
+                }
 
-            if (order.status_id) {
-                order.status = statusesMap[order.status_id.toString()];
-                delete order.status_id;
-            }
-
-            // найти точку доставки
-            if (order.authorDeliveryPoint_id && order.author.deliveryPoints) {
-                for(var j=0; j<order.author.deliveryPoints.length; ++j) {
-                    var dp = order.author.deliveryPoints[j];
-                    if (order.authorDeliveryPoint_id.toString()===dp._id.toString()) {
-                        order.authorDeliveryPoint = dp;
-                        delete order.authorDeliveryPoint_id;
-                        break;
+                var statusesMap = {};
+                if (allStatuses) {
+                    for (var i=0; i<allStatuses.length; i++) {
+                        var status = allStatuses[i];
+                        statusesMap[status._id.toString()] = status;
                     }
                 }
-            }
 
-            callback(null, order);
+                var productsMap = {};
+                if (allProducts) {
+                    for (var i=0; i<allProducts.length; i++) {
+                        var product = allProducts[i];
+                        productsMap[product._id.toString()] = product;
+                    }
+                }
+
+                order.author = author;
+                delete order.author_id;
+
+                if (order.status_id) {
+                    order.status = statusesMap[order.status_id.toString()];
+                    delete order.status_id;
+                }
+
+                // найти точку доставки
+                if (order.authorDeliveryPoint_id && order.author.deliveryPoints) {
+                    for(var j=0; j<order.author.deliveryPoints.length; ++j) {
+                        var dp = order.author.deliveryPoints[j];
+                        if (order.authorDeliveryPoint_id.toString()===dp._id.toString()) {
+                            order.authorDeliveryPoint = dp;
+                            delete order.authorDeliveryPoint_id;
+                            break;
+                        }
+                    }
+                }
+
+                // продукты заказа
+                if (order.authorProducts) {
+                    for(var j=0; j<order.authorProducts.length; ++j) {
+                        var ap = order.authorProducts[j];
+                        var ep = productsMap[ap.product_id.toString()];
+                        if (ep) {
+                            ap.product = ep;
+                            delete ap.product_id;
+                        }
+                    }
+                }
+
+                callback(null, order);
+            });
+
+
         });
-
-
     });
 }
 
@@ -317,14 +345,14 @@ function addOrderProduct(orderId, orderProduct, callback) {
             }
         }
 
-        userProductService.findOneByProductIdAndUserId(orderProduct.product_id, order.author_id, function(err, userProduct) {
+        userProductService.findOneByProductIdAndUserId(orderProduct.product_id, order.author._id, function(err, userProduct) {
             if (err) {
                 return callback(err);
             }
 
             if (!userProduct) {
-                return callback(new Error("Указанный продукт " + orderProduct.product_id.toString()
-                + " не принадлежит заказчику товара " + order.author_id));
+                return callback(new Error("Указанный продукт " + orderProduct.product_id
+                + " не принадлежит заказчику товара " + order.author._id));
             }
 
             coll.update(

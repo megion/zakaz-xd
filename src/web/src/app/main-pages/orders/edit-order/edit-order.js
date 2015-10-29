@@ -44,6 +44,22 @@ angular
                 }
             };
 
+            $scope.removeAllUserDeliveryPoints = function() {
+                YesNoDialog.open("Вы действительно хотите удалить все продукты у заказа?").then(
+                    function() {
+                        OrdersResource.removeAll($scope.order._id).then(
+                            function (response) {
+                                InfoDialog.open("Все продукты заказа удалены");
+                                $state.reload();
+                            },
+                            function (err) {
+                                ErrorDialog.open(err.data, true);
+                            }
+                        );
+                    }
+                );
+            };
+
             $scope.deleteOrder = function() {
                 YesNoDialog.open("Вы действительно хотите удалить заказ?").then(
                     function() {
