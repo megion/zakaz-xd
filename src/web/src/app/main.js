@@ -47,7 +47,7 @@ angular.module('zakaz-xd.main', [
                     templateUrl: 'app/main-pages/auth/not-authenticated/not-authenticated.tpl.html'
                 });
 
-            $urlRouterProvider.otherwise("/orders-list");
+            $urlRouterProvider.otherwise("/user-orders-list");
         }
     ])
     .controller('ZakazXdCtrl', ['$rootScope', '$scope', '$location', 'AuthService',

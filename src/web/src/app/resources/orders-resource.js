@@ -10,14 +10,8 @@ angular.module('zakaz-xd.resources.orders-resource', [
             editOrder: function (order) {
                 return $http.post(startUrl + '/edit-order', {order: order});
             },
-            editCurrentUserOrder: function (order) {
-                return $http.post(startUrl + '/edit-user-order', {order: order});
-            },
             deleteOrder: function (orderId) {
                 return $http.post(startUrl + '/delete-order', {id: orderId});
-            },
-            deleteCurrentUserOrder: function (orderId) {
-                return $http.post(startUrl + '/delete-user-order', {id: orderId});
             },
             getAllOrders: function (page) {
                 return $http.get(startUrl + '/all-orders', {params: page});
@@ -28,9 +22,6 @@ angular.module('zakaz-xd.resources.orders-resource', [
             getOrderById: function (orderId) {
                 return $http.get(startUrl + '/order-by-id', {params: {orderId: orderId}});
             },
-            getUserOrderById: function (orderId) {
-                return $http.get(startUrl + '/user-order-by-id', {params: {orderId: orderId}});
-            },
             getAllOrderStatuses: function () {
                 return $http.get(startUrl + '/all-order-statuses');
             },
@@ -39,14 +30,8 @@ angular.module('zakaz-xd.resources.orders-resource', [
             addOrderProduct: function (orderId, orderProduct) {
                 return $http.post(startUrl + '/add-order-product', {orderId: orderId, orderProduct: orderProduct});
             },
-            addCurrentUserOrderProduct: function (orderId, orderProduct) {
-                return $http.post(startUrl + '/add-user-order-product', {orderId: orderId, orderProduct: orderProduct});
-            },
             removeAllOrderProducts: function (orderId) {
                 return $http.post(startUrl + '/remove-all-order-products', {orderId: orderId});
-            },
-            removeAllCurrentUserOrderProducts: function (orderId) {
-                return $http.post(startUrl + '/remove-all-current-user-order-products', {orderId: orderId});
             }
         };
     }]);

@@ -37,7 +37,7 @@ router.get('/user-orders', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDE
 router.get('/order-by-id', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
     var orderId = new ObjectID(req.param('orderId'));
 
-    if (userService.isAuthorize(ACCESSES.MANAGE_ORDERS)) {
+    if (userService.isAuthorize(req.user, ACCESSES.MANAGE_ORDERS)) {
         orderService.findOneById(orderId, function(err, result) {
                 if (err) {
                     return next(err);
@@ -137,7 +137,7 @@ router.post('/edit-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDE
     var order = req.body.order;
     var id = new ObjectID(order._id);
 
-    if (userService.isAuthorize(ACCESSES.MANAGE_ORDERS)) {
+    if (userService.isAuthorize(req.user, ACCESSES.MANAGE_ORDERS)) {
         editOrder(id, order, req, res, next);
     } else {
         // TODO: check author
@@ -150,7 +150,7 @@ router.post('/edit-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDE
 router.post('/delete-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
     var id = new ObjectID(req.param('id'));
 
-    if (userService.isAuthorize(ACCESSES.MANAGE_ORDERS)) {
+    if (userService.isAuthorize(req.user, ACCESSES.MANAGE_ORDERS)) {
         orderService.deleteOrder(id, function(err, result) {
             if (err)
                 return next(err);
@@ -190,44 +190,41 @@ function addOrderProduct(orderId, orderProduct, req, res, next) {
     });
 }
 
-router.post('/add-order-product', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS), function(req, res, next) {
+router.post('/add-order-product', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
     var orderProduct = req.body.orderProduct;
     var orderId = new ObjectID(req.body.orderId);
 
-    addOrderProduct(orderId, orderProduct, req, res, next);
-});
-
-router.post('/add-user-order-product', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
-    var orderProduct = req.body.orderProduct;
-    var orderId = new ObjectID(req.body.orderId);
-
-    // TODO: check author
-    checkCurrentUserIsOrderAuthor(orderId, req, res, next, function() {
+    if (userService.isAuthorize(req.user, ACCESSES.MANAGE_ORDERS)) {
         addOrderProduct(orderId, orderProduct, req, res, next);
-    });
+    } else {
+        // TODO: check author
+        checkCurrentUserIsOrderAuthor(orderId, req, res, next, function() {
+            addOrderProduct(orderId, orderProduct, req, res, next);
+        });
+    }
 });
 
-router.post('/remove-all-current-user-order-products', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
+router.post('/remove-all-order-products', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
     var orderId = new ObjectID(req.body.orderId);
 
-    checkCurrentUserIsOrderAuthor(orderId, req, res, next, function() {
+    if (userService.isAuthorize(req.user, ACCESSES.MANAGE_ORDERS)) {
         orderService.removeAllOrderProducts(orderId, function(err, results) {
             if (err)
                 return next(err);
 
             res.send(results);
         });
-    });
-});
+    } else {
+        // TODO: check author
+        checkCurrentUserIsOrderAuthor(orderId, req, res, next, function() {
+            orderService.removeAllOrderProducts(orderId, function(err, results) {
+                if (err)
+                    return next(err);
 
-router.post('/remove-all-order-products', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS), function(req, res, next) {
-    var orderId = new ObjectID(req.body.orderId);
-    orderService.removeAllOrderProducts(orderId, function(err, results) {
-        if (err)
-            return next(err);
-
-        res.send(results);
-    });
+                res.send(results);
+            });
+        });
+    }
 });
 
 module.exports = router;

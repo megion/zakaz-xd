@@ -19,7 +19,7 @@ angular
                 AuthService.login($scope.credentials.username, $scope.credentials.password).then(
                     function() {
                         $scope.errorMsg = null;
-                        $state.go('orders-list');
+                        $state.go('user-orders-list');
                     },
                     function(err) {
                         ErrorDialog.open(err.data);

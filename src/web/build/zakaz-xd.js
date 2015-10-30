@@ -1,5 +1,5 @@
 /*
- * Version: 1.0 - 2015-10-29T15:37:01.707Z
+ * Version: 1.0 - 2015-10-30T09:21:18.897Z
  */
 
 
@@ -52,7 +52,7 @@ angular.module('zakaz-xd.main', [
                     templateUrl: 'app/main-pages/auth/not-authenticated/not-authenticated.tpl.html'
                 });
 
-            $urlRouterProvider.otherwise("/orders-list");
+            $urlRouterProvider.otherwise("/user-orders-list");
         }
     ])
     .controller('ZakazXdCtrl', ['$rootScope', '$scope', '$location', 'AuthService',
@@ -537,14 +537,8 @@ angular.module('zakaz-xd.resources.orders-resource', [
             editOrder: function (order) {
                 return $http.post(startUrl + '/edit-order', {order: order});
             },
-            editCurrentUserOrder: function (order) {
-                return $http.post(startUrl + '/edit-user-order', {order: order});
-            },
             deleteOrder: function (orderId) {
                 return $http.post(startUrl + '/delete-order', {id: orderId});
-            },
-            deleteCurrentUserOrder: function (orderId) {
-                return $http.post(startUrl + '/delete-user-order', {id: orderId});
             },
             getAllOrders: function (page) {
                 return $http.get(startUrl + '/all-orders', {params: page});
@@ -555,9 +549,6 @@ angular.module('zakaz-xd.resources.orders-resource', [
             getOrderById: function (orderId) {
                 return $http.get(startUrl + '/order-by-id', {params: {orderId: orderId}});
             },
-            getUserOrderById: function (orderId) {
-                return $http.get(startUrl + '/user-order-by-id', {params: {orderId: orderId}});
-            },
             getAllOrderStatuses: function () {
                 return $http.get(startUrl + '/all-order-statuses');
             },
@@ -566,14 +557,8 @@ angular.module('zakaz-xd.resources.orders-resource', [
             addOrderProduct: function (orderId, orderProduct) {
                 return $http.post(startUrl + '/add-order-product', {orderId: orderId, orderProduct: orderProduct});
             },
-            addCurrentUserOrderProduct: function (orderId, orderProduct) {
-                return $http.post(startUrl + '/add-user-order-product', {orderId: orderId, orderProduct: orderProduct});
-            },
             removeAllOrderProducts: function (orderId) {
                 return $http.post(startUrl + '/remove-all-order-products', {orderId: orderId});
-            },
-            removeAllCurrentUserOrderProducts: function (orderId) {
-                return $http.post(startUrl + '/remove-all-current-user-order-products', {orderId: orderId});
             }
         };
     }]);
@@ -1541,17 +1526,17 @@ angular.module('zakaz-xd.orders.states', [
                         }
                     }
                 })
-                // редактирование своего заказа
-                .state('edit-user-order', {
-                    url: '/user-order/edit/:id',
+                // редактирование заказа
+                .state('edit-order', {
+                    url: '/order/edit/:id',
                     controller: 'EditOrderCtrl',
                     templateUrl: 'app/main-pages/orders/edit-order/edit-order.tpl.html',
                     resolve: {
                         hasAccess: function ($stateParams, AuthService) {
-                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
+                            return AuthService.checkAccess(ACCESS.MANAGE_ORDERS | ACCESS.EDIT_OWN_ORDER);
                         },
                         order: function($stateParams, OrdersResource){
-                            return OrdersResource.getUserOrderById($stateParams.id).then(
+                            return OrdersResource.getOrderById($stateParams.id).then(
                                 function(response) {
                                     return response.data;
                                 }
@@ -1570,13 +1555,13 @@ angular.module('zakaz-xd.orders.states', [
                     }
                 })
                 // создание своего заказа
-                .state('create-user-order', {
-                    url: '/user-order/create',
+                .state('create-order', {
+                    url: '/order/create',
                     controller: 'EditOrderCtrl',
                     templateUrl: 'app/main-pages/orders/edit-order/edit-order.tpl.html',
                     resolve: {
                         hasAccess: function ($stateParams, AuthService) {
-                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
+                            return AuthService.checkAccess(ACCESS.MANAGE_ORDERS | ACCESS.EDIT_OWN_ORDER);
                         },
                         order: function() {
                             return {};
@@ -1595,22 +1580,19 @@ angular.module('zakaz-xd.orders.states', [
                     }
                 })
                 // добавление продукта к заказу
-                .state('add-user-order-product', {
-                    url: '/user-order/add-product/:orderId',
+                .state('add-order-product', {
+                    url: '/order/add-product/:orderId',
                     controller: 'EditOrderProductCtrl',
                     templateUrl: 'app/main-pages/orders/edit-order-product/edit-order-product.tpl.html',
                     resolve: {
                         hasAccess: function ($stateParams, AuthService) {
-                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
+                            return AuthService.checkAccess(ACCESS.MANAGE_ORDERS | ACCESS.EDIT_OWN_ORDER);
                         },
                         user: function ($stateParams, AuthService) {
                             return AuthService.getCurrentUser();
                         },
-                        isOrderManager: function ($stateParams, AuthService) {
-                            return false;
-                        },
                         order: function($stateParams, OrdersResource){
-                            return OrdersResource.getUserOrderById($stateParams.orderId).then(
+                            return OrdersResource.getOrderById($stateParams.orderId).then(
                                 function(response) {
                                     return response.data;
                                 }
@@ -1629,22 +1611,19 @@ angular.module('zakaz-xd.orders.states', [
                     }
                 })
                 // изменение продукта заказа
-                .state('edit-user-order-product', {
-                    url: '/user-order/edit-product/:orderId/:productId',
+                .state('edit-order-product', {
+                    url: '/order/edit-product/:orderId/:productId',
                     controller: 'EditOrderProductCtrl',
                     templateUrl: 'app/main-pages/orders/edit-order-product/edit-order-product.tpl.html',
                     resolve: {
                         hasAccess: function ($stateParams, AuthService) {
-                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
+                            return AuthService.checkAccess(ACCESS.MANAGE_ORDERS | ACCESS.EDIT_OWN_ORDER);
                         },
                         user: function ($stateParams, AuthService) {
                             return AuthService.getCurrentUser();
                         },
-                        isOrderManager: function ($stateParams, AuthService) {
-                            return false;
-                        },
                         order: function($stateParams, OrdersResource){
-                            return OrdersResource.getUserOrderById($stateParams.orderId).then(
+                            return OrdersResource.getOrderById($stateParams.orderId).then(
                                 function(response) {
                                     return response.data;
                                 }
@@ -2053,7 +2032,7 @@ angular
                 AuthService.login($scope.credentials.username, $scope.credentials.password).then(
                     function() {
                         $scope.errorMsg = null;
-                        $state.go('orders-list');
+                        $state.go('user-orders-list');
                     },
                     function(err) {
                         ErrorDialog.open(err.data);
@@ -2268,7 +2247,6 @@ angular
             $scope.user = user;
 
             $scope.save = function(invalid) {
-                console.log(invalid);
                 if (invalid) {
                     return false;
                 }
@@ -2277,17 +2255,17 @@ angular
                     OrdersResource.createOrder($scope.order).then(
                         function (response) {
                             InfoDialog.open("Ваш заказ успешно создан");
-                            $state.go("orders-list");
+                            $state.go("user-orders-list");
                         },
                         function (err) {
                             ErrorDialog.open(err.data, true);
                         }
                     );
                 } else {
-                    OrdersResource.editCurrentUserOrder($scope.order).then(
+                    OrdersResource.editOrder($scope.order).then(
                         function (response) {
-                            InfoDialog.open("Ваш заказ успешно изменен");
-                            $state.go("orders-list");
+                            InfoDialog.open("Заказ успешно изменен");
+                            $state.go("user-orders-list");
                         },
                         function (err) {
                             ErrorDialog.open(err.data, true);
@@ -2296,10 +2274,10 @@ angular
                 }
             };
 
-            $scope.removeAllUserDeliveryPoints = function() {
+            $scope.removeAllOrderProducts = function() {
                 YesNoDialog.open("Вы действительно хотите удалить все продукты у заказа?").then(
                     function() {
-                        OrdersResource.removeAll($scope.order._id).then(
+                        OrdersResource.removeAllOrderProducts($scope.order._id).then(
                             function (response) {
                                 InfoDialog.open("Все продукты заказа удалены");
                                 $state.reload();
@@ -2315,10 +2293,10 @@ angular
             $scope.deleteOrder = function() {
                 YesNoDialog.open("Вы действительно хотите удалить заказ?").then(
                     function() {
-                        OrdersResource.deleteCurrentUserOrder($scope.order._id).then(
+                        OrdersResource.deleteOrder($scope.order._id).then(
                             function (response) {
                                 InfoDialog.open("Заказ удален");
-                                $state.go("orders-list");
+                                $state.go("user-orders-list");
                             },
                             function (err) {
                                 ErrorDialog.open(err.data, true);
@@ -2344,14 +2322,11 @@ angular
     ])
     .controller('EditOrderProductCtrl', ['$scope', '$stateParams', '$state',
         'OrdersResource', 'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'order', 'orderProduct', 'userProducts',
-        'isOrderManager',
         function ($scope, $stateParams, $state,
-                  OrdersResource, ErrorDialog, InfoDialog, YesNoDialog, order, orderProduct, userProducts,
-                  isOrderManager) {
+                  OrdersResource, ErrorDialog, InfoDialog, YesNoDialog, order, orderProduct, userProducts) {
             $scope.isCreate = !(orderProduct.product);
             $scope.orderProduct = orderProduct;
             $scope.order = order;
-            //$scope.userProducts = userProducts;
 
             console.log("order", order);
 
@@ -2360,7 +2335,6 @@ angular
             angular.forEach(userProducts, function(value) {
                 this.push(value.product);
             }, $scope.products);
-            console.log("$scope.products", $scope.products);
 
             $scope.save = function(invalid) {
                 if (invalid) {
@@ -2368,8 +2342,7 @@ angular
                 }
 
                 if ($scope.isCreate) {
-                    var addResource = isOrderManager?OrdersResource.addOrderProduct:OrdersResource.addCurrentUserOrderProduct;
-                    addResource($scope.order._id, $scope.orderProduct).then(
+                    OrdersResource.addOrderProduct($scope.order._id, $scope.orderProduct).then(
                         function (response) {
                             InfoDialog.open("Продукт добавлен в заказ");
                             $state.go("edit-order", {id: $scope.order._id});

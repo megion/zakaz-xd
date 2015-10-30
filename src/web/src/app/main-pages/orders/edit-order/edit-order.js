@@ -16,7 +16,6 @@ angular
             $scope.user = user;
 
             $scope.save = function(invalid) {
-                console.log(invalid);
                 if (invalid) {
                     return false;
                 }
@@ -25,17 +24,17 @@ angular
                     OrdersResource.createOrder($scope.order).then(
                         function (response) {
                             InfoDialog.open("Ваш заказ успешно создан");
-                            $state.go("orders-list");
+                            $state.go("user-orders-list");
                         },
                         function (err) {
                             ErrorDialog.open(err.data, true);
                         }
                     );
                 } else {
-                    OrdersResource.editCurrentUserOrder($scope.order).then(
+                    OrdersResource.editOrder($scope.order).then(
                         function (response) {
-                            InfoDialog.open("Ваш заказ успешно изменен");
-                            $state.go("orders-list");
+                            InfoDialog.open("Заказ успешно изменен");
+                            $state.go("user-orders-list");
                         },
                         function (err) {
                             ErrorDialog.open(err.data, true);
@@ -44,10 +43,10 @@ angular
                 }
             };
 
-            $scope.removeAllUserDeliveryPoints = function() {
+            $scope.removeAllOrderProducts = function() {
                 YesNoDialog.open("Вы действительно хотите удалить все продукты у заказа?").then(
                     function() {
-                        OrdersResource.removeAll($scope.order._id).then(
+                        OrdersResource.removeAllOrderProducts($scope.order._id).then(
                             function (response) {
                                 InfoDialog.open("Все продукты заказа удалены");
                                 $state.reload();
@@ -63,10 +62,10 @@ angular
             $scope.deleteOrder = function() {
                 YesNoDialog.open("Вы действительно хотите удалить заказ?").then(
                     function() {
-                        OrdersResource.deleteCurrentUserOrder($scope.order._id).then(
+                        OrdersResource.deleteOrder($scope.order._id).then(
                             function (response) {
                                 InfoDialog.open("Заказ удален");
-                                $state.go("orders-list");
+                                $state.go("user-orders-list");
                             },
                             function (err) {
                                 ErrorDialog.open(err.data, true);

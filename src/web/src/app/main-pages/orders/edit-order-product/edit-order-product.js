@@ -11,14 +11,11 @@ angular
     ])
     .controller('EditOrderProductCtrl', ['$scope', '$stateParams', '$state',
         'OrdersResource', 'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'order', 'orderProduct', 'userProducts',
-        'isOrderManager',
         function ($scope, $stateParams, $state,
-                  OrdersResource, ErrorDialog, InfoDialog, YesNoDialog, order, orderProduct, userProducts,
-                  isOrderManager) {
+                  OrdersResource, ErrorDialog, InfoDialog, YesNoDialog, order, orderProduct, userProducts) {
             $scope.isCreate = !(orderProduct.product);
             $scope.orderProduct = orderProduct;
             $scope.order = order;
-            //$scope.userProducts = userProducts;
 
             console.log("order", order);
 
@@ -27,7 +24,6 @@ angular
             angular.forEach(userProducts, function(value) {
                 this.push(value.product);
             }, $scope.products);
-            console.log("$scope.products", $scope.products);
 
             $scope.save = function(invalid) {
                 if (invalid) {
@@ -35,8 +31,7 @@ angular
                 }
 
                 if ($scope.isCreate) {
-                    var addResource = isOrderManager?OrdersResource.addOrderProduct:OrdersResource.addCurrentUserOrderProduct;
-                    addResource($scope.order._id, $scope.orderProduct).then(
+                    OrdersResource.addOrderProduct($scope.order._id, $scope.orderProduct).then(
                         function (response) {
                             InfoDialog.open("Продукт добавлен в заказ");
                             $state.go("edit-order", {id: $scope.order._id});

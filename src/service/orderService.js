@@ -315,12 +315,11 @@ function removeAllOrderProducts(orderId, callback) {
 
 /**
  quantity	количество заказаное
- delivQuantity	количество отгруженое
- unit	единица измерения (шт, кг)
+ deliveryQuantity	количество отгруженое
  price	цена за единицу с НДС
  vat	НДС за единицу
- summVAT	сумма НДС
- summ	стоимость
+ sumVat	сумма НДС
+ sum	стоимость
  * @param orderId
  * @param orderProduct
  * @param callback

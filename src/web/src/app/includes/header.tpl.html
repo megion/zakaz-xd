@@ -10,7 +10,7 @@
 
     <nav class="collapse navbar-collapse" role="navigation">
         <ul class="nav navbar-nav navbar-right">
-            <li ng-show="isLogin() && AuthService.hasAccessByCodes('VIEW_OWN_ORDERS')"><a data-ui-sref="orders-list">Заказы</a></li>
+            <li ng-show="isLogin() && AuthService.hasAccessByCodes('VIEW_OWN_ORDERS')"><a data-ui-sref="user-orders-list">Заказы</a></li>
 
 
             <li data-ng-show="isLogin() && AuthService.hasAccessByCodes('MANAGE_USERS,MANAGE_ORDERS,MANAGE_PRODUCTS')" class="dropdown">

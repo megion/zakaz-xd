@@ -26,17 +26,17 @@ angular.module('zakaz-xd.orders.states', [
                         }
                     }
                 })
-                // редактирование своего заказа
-                .state('edit-user-order', {
-                    url: '/user-order/edit/:id',
+                // редактирование заказа
+                .state('edit-order', {
+                    url: '/order/edit/:id',
                     controller: 'EditOrderCtrl',
                     templateUrl: 'app/main-pages/orders/edit-order/edit-order.tpl.html',
                     resolve: {
                         hasAccess: function ($stateParams, AuthService) {
-                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
+                            return AuthService.checkAccess(ACCESS.MANAGE_ORDERS | ACCESS.EDIT_OWN_ORDER);
                         },
                         order: function($stateParams, OrdersResource){
-                            return OrdersResource.getUserOrderById($stateParams.id).then(
+                            return OrdersResource.getOrderById($stateParams.id).then(
                                 function(response) {
                                     return response.data;
                                 }
@@ -55,13 +55,13 @@ angular.module('zakaz-xd.orders.states', [
                     }
                 })
                 // создание своего заказа
-                .state('create-user-order', {
-                    url: '/user-order/create',
+                .state('create-order', {
+                    url: '/order/create',
                     controller: 'EditOrderCtrl',
                     templateUrl: 'app/main-pages/orders/edit-order/edit-order.tpl.html',
                     resolve: {
                         hasAccess: function ($stateParams, AuthService) {
-                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
+                            return AuthService.checkAccess(ACCESS.MANAGE_ORDERS | ACCESS.EDIT_OWN_ORDER);
                         },
                         order: function() {
                             return {};
@@ -80,22 +80,19 @@ angular.module('zakaz-xd.orders.states', [
                     }
                 })
                 // добавление продукта к заказу
-                .state('add-user-order-product', {
-                    url: '/user-order/add-product/:orderId',
+                .state('add-order-product', {
+                    url: '/order/add-product/:orderId',
                     controller: 'EditOrderProductCtrl',
                     templateUrl: 'app/main-pages/orders/edit-order-product/edit-order-product.tpl.html',
                     resolve: {
                         hasAccess: function ($stateParams, AuthService) {
-                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
+                            return AuthService.checkAccess(ACCESS.MANAGE_ORDERS | ACCESS.EDIT_OWN_ORDER);
                         },
                         user: function ($stateParams, AuthService) {
                             return AuthService.getCurrentUser();
                         },
-                        isOrderManager: function ($stateParams, AuthService) {
-                            return false;
-                        },
                         order: function($stateParams, OrdersResource){
-                            return OrdersResource.getUserOrderById($stateParams.orderId).then(
+                            return OrdersResource.getOrderById($stateParams.orderId).then(
                                 function(response) {
                                     return response.data;
                                 }
@@ -114,22 +111,19 @@ angular.module('zakaz-xd.orders.states', [
                     }
                 })
                 // изменение продукта заказа
-                .state('edit-user-order-product', {
-                    url: '/user-order/edit-product/:orderId/:productId',
+                .state('edit-order-product', {
+                    url: '/order/edit-product/:orderId/:productId',
                     controller: 'EditOrderProductCtrl',
                     templateUrl: 'app/main-pages/orders/edit-order-product/edit-order-product.tpl.html',
                     resolve: {
                         hasAccess: function ($stateParams, AuthService) {
-                            return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
+                            return AuthService.checkAccess(ACCESS.MANAGE_ORDERS | ACCESS.EDIT_OWN_ORDER);
                         },
                         user: function ($stateParams, AuthService) {
                             return AuthService.getCurrentUser();
                         },
-                        isOrderManager: function ($stateParams, AuthService) {
-                            return false;
-                        },
                         order: function($stateParams, OrdersResource){
-                            return OrdersResource.getUserOrderById($stateParams.orderId).then(
+                            return OrdersResource.getOrderById($stateParams.orderId).then(
                                 function(response) {
                                     return response.data;
                                 }
