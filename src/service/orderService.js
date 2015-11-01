@@ -268,9 +268,9 @@ function findOneById(id, callback) {
 
 /// order product
 
-function findOrderByIdAndProductId(orderId, productId, callback) {
+function findOrderByIdAndOrderProductId(orderId, orderProductId, callback) {
     var coll = getCollection();
-    coll.find({_id: orderId}, { authorProducts: { $elemMatch: { product_id: productId } } }).toArray(function(err, result) {
+    coll.find({_id: orderId}, { authorProducts: { $elemMatch: { _id: orderProductId } } }).toArray(function(err, result) {
         if (err) {
             return callback(err);
         }
@@ -279,12 +279,12 @@ function findOrderByIdAndProductId(orderId, productId, callback) {
     });
 }
 
-function removeOrderProduct(orderId, productId, callback) {
+function removeOrderProduct(orderId, orderProductId, callback) {
     var coll = getCollection();
 
     coll.update(
         {_id : orderId},
-        { $pull: { authorProducts: { product_id: productId } } },
+        { $pull: { authorProducts: { _id: orderProductId } } },
         { multi: false },
         function(err, res) {
             if (err) {
@@ -316,10 +316,12 @@ function removeAllOrderProducts(orderId, callback) {
 /**
  quantity	количество заказаное
  deliveryQuantity	количество отгруженое
+
  price	цена за единицу с НДС
  vat	НДС за единицу
- sumVat	сумма НДС
+
  sum	стоимость
+ sumVat	сумма НДС
  * @param orderId
  * @param orderProduct
  * @param callback
@@ -334,15 +336,16 @@ function addOrderProduct(orderId, orderProduct, callback) {
         }
 
         // TODO: проверка на уникальность продукта в коллеции
-        if (order.authorProducts) {
-            for (var i=0; i<order.authorProducts.length; ++i) {
-                var p = order.authorProducts[i];
-                if (p.product_id.toString() === orderProduct.product_id.toString) {
-                    return callback(new Error("Указанный продукт " + orderProduct.product_id.toString()
-                    + " уже содержится в заказе " + orderId));
-                }
-            }
-        }
+        //if (order.authorProducts) {
+        //    for (var i=0; i<order.authorProducts.length; ++i) {
+        //        var p = order.authorProducts[i];
+        //        // p.product my be null when product was removed
+        //        if (p.product && p.product._id.toString() === orderProduct.product_id.toString()) {
+        //            return callback(new Error("Указанный продукт " + orderProduct.product_id.toString()
+        //            + " уже содержится в заказе " + orderId));
+        //        }
+        //    }
+        //}
 
         userProductService.findOneByProductIdAndUserId(orderProduct.product_id, order.author._id, function(err, userProduct) {
             if (err) {
@@ -353,6 +356,8 @@ function addOrderProduct(orderId, orderProduct, callback) {
                 return callback(new Error("Указанный продукт " + orderProduct.product_id
                 + " не принадлежит заказчику товара " + order.author._id));
             }
+
+            orderProduct._id = new ObjectID(); // generate id
 
             coll.update(
                 { _id: orderId },
@@ -371,12 +376,30 @@ function addOrderProduct(orderId, orderProduct, callback) {
 
 }
 
-function updateOrderProduct(orderId, productId, orderProduct, callback) {
+function updateOrderProduct(orderId, orderProductId, orderProduct, callback) {
     var coll = getCollection();
 
+    /*
+     quantity	количество заказаное
+     deliveryQuantity	количество отгруженое
+
+     price	цена за единицу с НДС
+     vat	НДС за единицу
+
+     sum	стоимость
+     sumVat	сумма НДС
+     */
     coll.update(
-        { _id: orderId, authorProducts: {$elemMatch: {product_id: productId}} },
-        { $set: { "authorProducts.$.cost" : orderProduct.cost, "authorProducts.$.vat" : orderProduct.vat } },
+        { _id: orderId, authorProducts: {$elemMatch: {_id: orderProductId}} },
+        { $set: {
+            "authorProducts.$.product_id" : orderProduct.product_id,
+            "authorProducts.$.quantity" : orderProduct.quantity,
+            "authorProducts.$.deliveryQuantity" : orderProduct.deliveryQuantity,
+            "authorProducts.$.price" : orderProduct.price,
+            "authorProducts.$.vat" : orderProduct.vat,
+            "authorProducts.$.sum" : orderProduct.sum,
+            "authorProducts.$.sumVat" : orderProduct.sumVat
+        }},
         function(err, result) {
             if (err) {
                 return callback(err);

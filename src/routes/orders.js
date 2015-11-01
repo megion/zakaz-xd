@@ -190,6 +190,24 @@ function addOrderProduct(orderId, orderProduct, req, res, next) {
     });
 }
 
+function updateOrderProduct(orderId, orderProduct, req, res, next) {
+    if (!orderProduct.product) {
+        return next(new HttpError(400, "Поле продукт пустое"));
+    }
+
+    orderProduct.product_id = new ObjectID(orderProduct.product._id);
+    delete orderProduct.product;
+
+    var orderProductId = new ObjectID(orderProduct._id);
+
+    orderService.updateOrderProduct(orderId, orderProductId, orderProduct, function(err, results) {
+        if (err)
+            return next(err);
+
+        res.send(results);
+    });
+}
+
 router.post('/add-order-product', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
     var orderProduct = req.body.orderProduct;
     var orderId = new ObjectID(req.body.orderId);
@@ -200,6 +218,20 @@ router.post('/add-order-product', loadUser, checkAccess.getAuditor(ACCESSES.MANA
         // TODO: check author
         checkCurrentUserIsOrderAuthor(orderId, req, res, next, function() {
             addOrderProduct(orderId, orderProduct, req, res, next);
+        });
+    }
+});
+
+router.post('/update-order-product', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
+    var orderProduct = req.body.orderProduct;
+    var orderId = new ObjectID(req.body.orderId);
+
+    if (userService.isAuthorize(req.user, ACCESSES.MANAGE_ORDERS)) {
+        updateOrderProduct(orderId, orderProduct, req, res, next);
+    } else {
+        // TODO: check author
+        checkCurrentUserIsOrderAuthor(orderId, req, res, next, function() {
+            updateOrderProduct(orderId, orderProduct, req, res, next);
         });
     }
 });

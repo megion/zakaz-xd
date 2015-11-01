@@ -40,16 +40,30 @@
                     <table class="table table-bordered">
                         <thead>
                         <tr>
-                            <th>Наименование</th>
-                            <th>Цена</th>
-                            <th>НДС</th>
+                            <th>Наименование продукта</th>
+
+                            <th>Количество заказаное</th>
+                            <th>Количество отгруженое</th>
+
+                            <th>Цена за единицу с НДС</th>
+                            <th>НДС за единицу</th>
+
+                            <th>Стоимость</th>
+                            <th>Сумма НДС</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr ng-repeat="ap in order.authorProducts">
                             <td><a ui-sref="edit-order-product({orderId: order._id, productId: ap.product._id})">{{ap.product.title}}</a></td>
-                            <td>{{ap.cost}}</td>
-                            <td>{{ap.vt}}</td>
+
+                            <td>{{ap.quantity}}</td>
+                            <td>{{ap.deliveryQuantity}}</td>
+
+                            <td>{{ap.price}}</td>
+                            <td>{{ap.vat}}</td>
+
+                            <td>{{ap.sum}}</td>
+                            <td>{{ap.sumVat}}</td>
                         </tr>
                         </tbody>
                     </table>

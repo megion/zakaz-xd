@@ -30,6 +30,9 @@ angular.module('zakaz-xd.resources.orders-resource', [
             addOrderProduct: function (orderId, orderProduct) {
                 return $http.post(startUrl + '/add-order-product', {orderId: orderId, orderProduct: orderProduct});
             },
+            updateOrderProduct: function (orderId, orderProduct) {
+                return $http.post(startUrl + '/update-order-product', {orderId: orderId, orderProduct: orderProduct});
+            },
             removeAllOrderProducts: function (orderId) {
                 return $http.post(startUrl + '/remove-all-order-products', {orderId: orderId});
             }
