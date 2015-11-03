@@ -41,32 +41,32 @@ angular
                         }
                     );
                 } else {
-                    //OrdersResource.editUserProductPrice($scope.userProductPrice).then(
-                    //    function (response) {
-                    //        InfoDialog.open("Изменение цены для связи пользователь-товар успешно");
-                    //        $state.go("edit-user-product", {userProductId: $scope.userProductPrice.userProduct._id});
-                    //    },
-                    //    function (err) {
-                    //        ErrorDialog.open(err.data);
-                    //    }
-                    //);
+                    OrdersResource.updateOrderProduct($scope.order._id, $scope.orderProduct).then(
+                        function (response) {
+                            InfoDialog.open("Продукт заказа изменен");
+                            $state.go("edit-order", {id: $scope.order._id});
+                        },
+                        function (err) {
+                            ErrorDialog.open(err.data);
+                        }
+                    );
                 }
             };
 
             $scope.delete = function() {
-                //YesNoDialog.open("Вы действительно хотите удалить цену на связь пользователь-товар?").then(
-                //    function() {
-                //        UserProductPricesResource.deleteUserProductPrice($scope.userProductPrice._id).then(
-                //            function (response) {
-                //                InfoDialog.open("Цена на связь пользователь-товар удалена");
-                //                $state.go("edit-user-product", {userProductId: $scope.userProductPrice.userProduct._id});
-                //            },
-                //            function (err) {
-                //                ErrorDialog.open(err.data, true);
-                //            }
-                //        );
-                //    }
-                //);
+                YesNoDialog.open("Вы действительно хотите удалить товар из заказа?").then(
+                    function() {
+                        OrdersResource.removeOrderProduct($scope.order._id, $scope.orderProduct._id).then(
+                            function (response) {
+                                InfoDialog.open("Продукт заказа удален");
+                                $state.go("edit-order", {id: $scope.order._id});
+                            },
+                            function (err) {
+                                ErrorDialog.open(err.data);
+                            }
+                        );
+                    }
+                );
             };
         }
     ])

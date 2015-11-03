@@ -198,6 +198,10 @@ function updateOrderProduct(orderId, orderProduct, req, res, next) {
     orderProduct.product_id = new ObjectID(orderProduct.product._id);
     delete orderProduct.product;
 
+    if (!orderProduct._id) {
+        return next(new HttpError(400, "Поле _id не найдено"));
+    }
+
     var orderProductId = new ObjectID(orderProduct._id);
 
     orderService.updateOrderProduct(orderId, orderProductId, orderProduct, function(err, results) {
@@ -222,8 +226,39 @@ router.post('/add-order-product', loadUser, checkAccess.getAuditor(ACCESSES.MANA
     }
 });
 
+router.post('/remove-order-product', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
+    if (!req.body.orderProductId) {
+        return next(new HttpError(400, "Parameter orderProductId not found"));
+    }
+
+    var orderProductId = new ObjectID(req.body.orderProductId);
+    var orderId = new ObjectID(req.body.orderId);
+
+    if (userService.isAuthorize(req.user, ACCESSES.MANAGE_ORDERS)) {
+        orderService.removeOrderProduct(orderId, orderProductId, function(err, results) {
+            if (err)
+                return next(err);
+
+            res.send(results);
+        });
+    } else {
+        // TODO: check author
+        checkCurrentUserIsOrderAuthor(orderId, req, res, next, function() {
+            orderService.removeOrderProduct(orderId, orderProductId, function(err, results) {
+                if (err)
+                    return next(err);
+
+                res.send(results);
+            });
+        });
+    }
+});
+
 router.post('/update-order-product', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
     var orderProduct = req.body.orderProduct;
+    if (!orderProduct) {
+        return next(new HttpError(400, "Parameter orderProduct not found"));
+    }
     var orderId = new ObjectID(req.body.orderId);
 
     if (userService.isAuthorize(req.user, ACCESSES.MANAGE_ORDERS)) {

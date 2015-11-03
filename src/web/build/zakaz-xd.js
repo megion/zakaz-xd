@@ -1,5 +1,5 @@
 /*
- * Version: 1.0 - 2015-10-30T20:25:49.335Z
+ * Version: 1.0 - 2015-11-03T16:19:21.290Z
  */
 
 
@@ -556,6 +556,12 @@ angular.module('zakaz-xd.resources.orders-resource', [
             // order product
             addOrderProduct: function (orderId, orderProduct) {
                 return $http.post(startUrl + '/add-order-product', {orderId: orderId, orderProduct: orderProduct});
+            },
+            updateOrderProduct: function (orderId, orderProduct) {
+                return $http.post(startUrl + '/update-order-product', {orderId: orderId, orderProduct: orderProduct});
+            },
+            removeOrderProduct: function (orderId, orderProductId) {
+                return $http.post(startUrl + '/remove-order-product', {orderId: orderId, orderProductId: orderProductId});
             },
             removeAllOrderProducts: function (orderId) {
                 return $http.post(startUrl + '/remove-all-order-products', {orderId: orderId});
@@ -2352,32 +2358,32 @@ angular
                         }
                     );
                 } else {
-                    //OrdersResource.editUserProductPrice($scope.userProductPrice).then(
-                    //    function (response) {
-                    //        InfoDialog.open("Изменение цены для связи пользователь-товар успешно");
-                    //        $state.go("edit-user-product", {userProductId: $scope.userProductPrice.userProduct._id});
-                    //    },
-                    //    function (err) {
-                    //        ErrorDialog.open(err.data);
-                    //    }
-                    //);
+                    OrdersResource.updateOrderProduct($scope.order._id, $scope.orderProduct).then(
+                        function (response) {
+                            InfoDialog.open("Продукт заказа изменен");
+                            $state.go("edit-order", {id: $scope.order._id});
+                        },
+                        function (err) {
+                            ErrorDialog.open(err.data);
+                        }
+                    );
                 }
             };
 
             $scope.delete = function() {
-                //YesNoDialog.open("Вы действительно хотите удалить цену на связь пользователь-товар?").then(
-                //    function() {
-                //        UserProductPricesResource.deleteUserProductPrice($scope.userProductPrice._id).then(
-                //            function (response) {
-                //                InfoDialog.open("Цена на связь пользователь-товар удалена");
-                //                $state.go("edit-user-product", {userProductId: $scope.userProductPrice.userProduct._id});
-                //            },
-                //            function (err) {
-                //                ErrorDialog.open(err.data, true);
-                //            }
-                //        );
-                //    }
-                //);
+                YesNoDialog.open("Вы действительно хотите удалить товар из заказа?").then(
+                    function() {
+                        OrdersResource.removeOrderProduct($scope.order._id, $scope.orderProduct._id).then(
+                            function (response) {
+                                InfoDialog.open("Продукт заказа удален");
+                                $state.go("edit-order", {id: $scope.order._id});
+                            },
+                            function (err) {
+                                ErrorDialog.open(err.data);
+                            }
+                        );
+                    }
+                );
             };
         }
     ])

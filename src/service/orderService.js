@@ -4,6 +4,7 @@ var userService = require('../service/userService');
 var userProductService = require('../service/userProductService');
 var productService = require('../service/productService');
 var ORDER_STATUSES = require('../utils/orderStatuses').ORDER_STATUSES;
+var ObjectID = require('mongodb').ObjectID;
 
 function getCollection() {
 	return mongodb.getDb().collection("orders");
@@ -173,6 +174,7 @@ function enrichmentOneOrder(order, callback) {
                 }
 
                 // продукты заказа
+                console.log("order:", order);
                 if (order.authorProducts) {
                     for(var j=0; j<order.authorProducts.length; ++j) {
                         var ap = order.authorProducts[j];
@@ -266,7 +268,7 @@ function findOneById(id, callback) {
     });
 }
 
-/// order product
+/// -------------------- order product -------------------------------------------------
 
 function findOrderByIdAndOrderProductId(orderId, orderProductId, callback) {
     var coll = getCollection();
@@ -334,18 +336,6 @@ function addOrderProduct(orderId, orderProduct, callback) {
         if (err) {
             return callback(err);
         }
-
-        // TODO: проверка на уникальность продукта в коллеции
-        //if (order.authorProducts) {
-        //    for (var i=0; i<order.authorProducts.length; ++i) {
-        //        var p = order.authorProducts[i];
-        //        // p.product my be null when product was removed
-        //        if (p.product && p.product._id.toString() === orderProduct.product_id.toString()) {
-        //            return callback(new Error("Указанный продукт " + orderProduct.product_id.toString()
-        //            + " уже содержится в заказе " + orderId));
-        //        }
-        //    }
-        //}
 
         userProductService.findOneByProductIdAndUserId(orderProduct.product_id, order.author._id, function(err, userProduct) {
             if (err) {
