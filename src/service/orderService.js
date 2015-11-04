@@ -174,7 +174,6 @@ function enrichmentOneOrder(order, callback) {
                 }
 
                 // продукты заказа
-                console.log("order:", order);
                 if (order.authorProducts) {
                     for(var j=0; j<order.authorProducts.length; ++j) {
                         var ap = order.authorProducts[j];

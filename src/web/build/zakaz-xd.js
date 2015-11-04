@@ -1,5 +1,5 @@
 /*
- * Version: 1.0 - 2015-11-03T16:19:21.290Z
+ * Version: 1.0 - 2015-11-04T21:16:27.812Z
  */
 
 
@@ -2245,9 +2245,10 @@ angular
         'zakaz-xd.auth'
     ])
     .controller('EditOrderCtrl', ['$scope', '$stateParams', '$state', 'OrdersResource',
-        'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'order', 'user',
+        'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'order', 'user', 'AuthService',
         function ($scope, $stateParams, $state, OrdersResource,
-                  ErrorDialog, InfoDialog, YesNoDialog, order, user) {
+                  ErrorDialog, InfoDialog, YesNoDialog, order, user, AuthService) {
+            $scope.AuthService = AuthService;
             $scope.isCreate = !(order._id);
             $scope.order = order;
             $scope.user = user;
@@ -2328,8 +2329,11 @@ angular
     ])
     .controller('EditOrderProductCtrl', ['$scope', '$stateParams', '$state',
         'OrdersResource', 'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'order', 'orderProduct', 'userProducts',
+        'AuthService',
         function ($scope, $stateParams, $state,
-                  OrdersResource, ErrorDialog, InfoDialog, YesNoDialog, order, orderProduct, userProducts) {
+                  OrdersResource, ErrorDialog, InfoDialog, YesNoDialog, order, orderProduct, userProducts,
+                  AuthService) {
+            $scope.AuthService = AuthService;
             $scope.isCreate = !(orderProduct.product);
             $scope.orderProduct = orderProduct;
             $scope.order = order;

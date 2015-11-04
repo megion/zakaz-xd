@@ -3,7 +3,7 @@
 <form class="form-horizontal" ng-submit="save(changeForm.$invalid)" name="changeForm" novalidate>
 
     <div class="form-group">
-        <label class="col-sm-2 control-label">Заказ</label>
+        <label class="col-sm-2 control-label">Заказ номер</label>
         <div class="col-sm-10">
             <p class="form-control-static">{{order.number}}</p>
         </div>
@@ -31,7 +31,7 @@
         <!--deliveryQuantity	количество отгруженое-->
         <label class="col-sm-3 control-label">Количество отгруженое</label>
         <div class="col-sm-3">
-            <input type="text" class="form-control" name="deliveryQuantity" data-ng-model="orderProduct.deliveryQuantity">
+            <input ng-disabled="!AuthService.hasAccessByCodes('MANAGE_ORDERS')" type="text" class="form-control" name="deliveryQuantity" data-ng-model="orderProduct.deliveryQuantity">
         </div>
     </div>
 
@@ -39,13 +39,13 @@
         <!--price	цена за единицу с НДС-->
         <label class="col-sm-3 control-label">Цена за единицу с НДС</label>
         <div class="col-sm-3">
-            <input type="text" class="form-control" name="price" data-ng-model="orderProduct.price">
+            <input ng-disabled="!AuthService.hasAccessByCodes('MANAGE_ORDERS')" type="text" class="form-control" name="price" data-ng-model="orderProduct.price">
         </div>
 
         <!--vat	НДС за единицу-->
         <label class="col-sm-3 control-label">НДС за единицу</label>
         <div class="col-sm-3">
-            <input type="text" class="form-control" name="vat" data-ng-model="orderProduct.vat">
+            <input ng-disabled="!AuthService.hasAccessByCodes('MANAGE_ORDERS')" type="text" class="form-control" name="vat" data-ng-model="orderProduct.vat">
         </div>
     </div>
 
@@ -53,13 +53,13 @@
         <!--sum	стоимость-->
         <label class="col-sm-3 control-label">Стоимость</label>
         <div class="col-sm-3">
-            <input type="text" class="form-control" name="sum" data-ng-model="orderProduct.sum">
+            <input ng-disabled="!AuthService.hasAccessByCodes('MANAGE_ORDERS')" type="text" class="form-control" name="sum" data-ng-model="orderProduct.sum">
         </div>
 
         <!--sumVat	сумма НДС-->
         <label class="col-sm-3 control-label">Сумма НДС</label>
         <div class="col-sm-3">
-            <input type="text" class="form-control" name="sumVat" data-ng-model="orderProduct.sumVat">
+            <input ng-disabled="!AuthService.hasAccessByCodes('MANAGE_ORDERS')" type="text" class="form-control" name="sumVat" data-ng-model="orderProduct.sumVat">
         </div>
     </div>
 

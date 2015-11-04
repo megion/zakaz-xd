@@ -11,8 +11,11 @@ angular
     ])
     .controller('EditOrderProductCtrl', ['$scope', '$stateParams', '$state',
         'OrdersResource', 'ErrorDialog', 'InfoDialog', 'YesNoDialog', 'order', 'orderProduct', 'userProducts',
+        'AuthService',
         function ($scope, $stateParams, $state,
-                  OrdersResource, ErrorDialog, InfoDialog, YesNoDialog, order, orderProduct, userProducts) {
+                  OrdersResource, ErrorDialog, InfoDialog, YesNoDialog, order, orderProduct, userProducts,
+                  AuthService) {
+            $scope.AuthService = AuthService;
             $scope.isCreate = !(orderProduct.product);
             $scope.orderProduct = orderProduct;
             $scope.order = order;
