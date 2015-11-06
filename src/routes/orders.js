@@ -355,4 +355,77 @@ router.post('/remove-all-order-products', loadUser, checkAccess.getAuditor(ACCES
     }
 });
 
+// ++++++++++++++++++ order comment
+
+function updateOrderComment(orderId, orderComment, req, res, next) {
+    if (!orderComment._id) {
+        return next(new HttpError(400, "Поле _id не найдено"));
+    }
+
+    var orderCommentId = new ObjectID(orderComment._id);
+
+    orderService.updateOrderComment(orderId, orderCommentId, orderComment, function(err, results) {
+        if (err)
+            return next(err);
+
+        res.send(results);
+    });
+}
+
+router.post('/add-order-comment', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
+    var orderComment = req.body.comment;
+    var orderId = new ObjectID(req.body.orderId);
+
+    orderComment.createdDate = new Date();
+    orderComment.author_id = req.user._id;
+
+    orderService.addOrderComment(orderId, orderComment, function(err, results) {
+        if (err)
+            return next(err);
+
+        res.send(results);
+    });
+});
+
+router.post('/remove-order-comment', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
+    var orderCommentId = new ObjectID(req.body.orderCommentId);
+    var orderId = new ObjectID(req.body.orderId);
+
+    if (userService.isAuthorize(req.user, ACCESSES.MANAGE_ORDERS)) {
+        orderService.removeOrderComment(orderId, orderCommentId, function(err, results) {
+            if (err)
+                return next(err);
+
+            res.send(results);
+        });
+    } else {
+        // TODO: check author
+        checkCurrentUserIsOrderAuthor(orderId, req, res, next, function() {
+            orderService.removeOrderComment(orderId, orderCommentId, function(err, results) {
+                if (err)
+                    return next(err);
+
+                res.send(results);
+            });
+        });
+    }
+});
+
+router.post('/update-order-comment', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
+    var orderComment = req.body.orderComment;
+    if (!orderComment) {
+        return next(new HttpError(400, "Parameter orderComment not found"));
+    }
+    var orderId = new ObjectID(req.body.orderId);
+
+    if (userService.isAuthorize(req.user, ACCESSES.MANAGE_ORDERS)) {
+        updateOrderComment(orderId, orderComment, req, res, next);
+    } else {
+        // TODO: check author
+        checkCurrentUserIsOrderAuthor(orderId, req, res, next, function() {
+            updateOrderComment(orderId, orderComment, req, res, next);
+        });
+    }
+});
+
 module.exports = router;

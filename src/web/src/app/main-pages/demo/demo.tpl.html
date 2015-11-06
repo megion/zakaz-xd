@@ -1,14 +1,28 @@
 <h4>Demo</h4>
 
+<style>
+</style>
+
 <form class="form-horizontal" name="demoForm" novalidate>
 
     <div class="form-group">
         <label class="col-sm-2 control-label">lowercase</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" name="lowercase1" data-ng-model="models.lowercase1"
+            <input type="text" class="form-control" data-ng-model="models.lowercase" lowercase>
+            {{models.lowercase}}
+        </div>
+    </div>
 
-                   my-ui-mask="{{mask}}">
-            {{models.lowercase1}}
+    <div class="form-group">
+        <label class="col-sm-2 control-label">date</label>
+        <div class="col-sm-10">
+            <input type="text" data-ng-model="models.lowercase1"
+                   my-ui-mask="{{mask}}" placeholder="{{placeholder}}">
+            -
+            <input type="text" data-ng-model="models.lowercase2"
+                   my-ui-mask="{{mask}}" placeholder="{{placeholder}}">
+            {{models.lowercase1}} -
+            {{models.lowercase2}}
         </div>
     </div>
 

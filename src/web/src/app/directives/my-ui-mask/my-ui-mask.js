@@ -120,7 +120,7 @@ angular.module('zakaz-xd.directives.my.ui.mask', [])
                         linkOptions = options;
                     }
 
-                    iAttrs.$observe('hcsUiMask', initialize);
+                    iAttrs.$observe('myUiMask', initialize);
                     iAttrs.$observe('placeholder', initPlaceholder);
                     var modelViewValue = false;
                     iAttrs.$observe('modelViewValue', function(val) {

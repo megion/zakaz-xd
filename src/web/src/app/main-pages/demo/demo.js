@@ -9,9 +9,10 @@ angular
         function ($scope, $stateParams, $state) {
 
             $scope.mask = '99.99.9999';
-            $scope.placeholder = '__.__.____';
+            $scope.placeholder = 'ДД.ММ.ГГГГ';
 
             $scope.models = {
+                lowercase: 'my test str',
                 lowercase1: ''
             };
 

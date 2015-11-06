@@ -1,5 +1,5 @@
 /*
- * Version: 1.0 - 2015-11-06T11:53:23.599Z
+ * Version: 1.0 - 2015-11-06T14:46:17.610Z
  */
 
 
@@ -900,7 +900,7 @@ angular.module('zakaz-xd.directives.my.ui.mask', [])
                         linkOptions = options;
                     }
 
-                    iAttrs.$observe('hcsUiMask', initialize);
+                    iAttrs.$observe('myUiMask', initialize);
                     iAttrs.$observe('placeholder', initPlaceholder);
                     var modelViewValue = false;
                     iAttrs.$observe('modelViewValue', function(val) {
@@ -1372,9 +1372,10 @@ angular
         function ($scope, $stateParams, $state) {
 
             $scope.mask = '99.99.9999';
-            $scope.placeholder = '__.__.____';
+            $scope.placeholder = 'ДД.ММ.ГГГГ';
 
             $scope.models = {
+                lowercase: 'my test str',
                 lowercase1: ''
             };
 

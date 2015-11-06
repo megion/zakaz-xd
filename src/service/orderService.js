@@ -460,13 +460,13 @@ function addOrderComment(orderId, comment, callback) {
 
 }
 
-function updateOrderComment(orderId, commentId, text, callback) {
+function updateOrderComment(orderId, commentId, orderComment, callback) {
     var coll = getCollection();
 
     coll.update(
         { _id: orderId, authorProducts: {$elemMatch: {_id: commentId}} },
         { $set: {
-            "authorProducts.$.text" : text
+            "authorProducts.$.text" : orderComment.text
         }},
         function(err, result) {
             if (err) {
@@ -489,13 +489,13 @@ exports.editOrder = editOrder;
 exports.changeOrderStatus = changeOrderStatus;
 
 // order product
-exports.removeOrderComment = removeOrderComment;
+exports.removeOrderProduct = removeOrderProduct;
 exports.removeAllOrderProducts = removeAllOrderProducts;
 exports.addOrderProduct = addOrderProduct;
 exports.updateOrderProduct = updateOrderProduct;
 
 // order comment
-exports.removeOrderProduct = removeOrderProduct;
+exports.removeOrderComment = removeOrderComment;
 exports.addOrderComment = addOrderComment;
 exports.updateOrderComment = updateOrderComment;
 
