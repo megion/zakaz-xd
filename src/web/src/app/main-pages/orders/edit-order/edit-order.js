@@ -75,6 +75,67 @@ angular
                     }
                 );
             };
+
+            $scope.activate = function() {
+                YesNoDialog.open("Вы действительно хотите активировать заказ?").then(
+                    function() {
+                        OrdersResource.activateOrder($scope.order._id).then(
+                            function (response) {
+                                InfoDialog.open("Заказ активирован");
+                                $state.go("user-orders-list");
+                            },
+                            function (err) {
+                                ErrorDialog.open(err.data, true);
+                            }
+                        );
+                    }
+                );
+            };
+            $scope.approve = function() {
+                YesNoDialog.open("Вы действительно хотите подтвердить заказ?").then(
+                    function() {
+                        OrdersResource.approveOrder($scope.order._id).then(
+                            function (response) {
+                                InfoDialog.open("Заказ подтвержден");
+                                $state.go("user-orders-list");
+                            },
+                            function (err) {
+                                ErrorDialog.open(err.data, true);
+                            }
+                        );
+                    }
+                );
+            };
+            $scope.ship = function() {
+                YesNoDialog.open("Вы действительно хотите перевести заказ в отгруженные?").then(
+                    function() {
+                        OrdersResource.shipOrder($scope.order._id).then(
+                            function (response) {
+                                InfoDialog.open("Заказ переведен в отгруженные");
+                                $state.go("user-orders-list");
+                            },
+                            function (err) {
+                                ErrorDialog.open(err.data, true);
+                            }
+                        );
+                    }
+                );
+            };
+            $scope.close = function() {
+                YesNoDialog.open("Вы действительно хотите закрыть заказ?").then(
+                    function() {
+                        OrdersResource.closeOrder($scope.order._id).then(
+                            function (response) {
+                                InfoDialog.open("Заказ закрыт");
+                                $state.go("user-orders-list");
+                            },
+                            function (err) {
+                                ErrorDialog.open(err.data, true);
+                            }
+                        );
+                    }
+                );
+            };
         }
     ])
 ;

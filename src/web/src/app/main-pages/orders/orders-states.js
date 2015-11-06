@@ -5,6 +5,7 @@ angular.module('zakaz-xd.orders.states', [
     'zakaz-xd.resources.orders-resource',
     'zakaz-xd.resources.user-products-resource',
     'zakaz-xd.orders.orders-list',
+    'zakaz-xd.orders.all-orders-list',
     'zakaz-xd.orders.edit-order',
     'zakaz-xd.orders.edit-order-product'
 ])
@@ -23,6 +24,20 @@ angular.module('zakaz-xd.orders.states', [
                         },
                         hasAccess: function ($stateParams, AuthService) {
                             return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
+                        }
+                    }
+                })
+                // заказы текущего пользователя
+                .state('all-orders', {
+                    url: '/all-orders',
+                    controller: 'AllOrdersListCtrl',
+                    templateUrl: 'app/main-pages/orders/all-orders-list/all-orders-list.tpl.html',
+                    resolve: {
+                        user: function ($stateParams, AuthService) {
+                            return AuthService.getCurrentUser();
+                        },
+                        hasAccess: function ($stateParams, AuthService) {
+                            return AuthService.checkAccess(ACCESS.MANAGE_ORDERS);
                         }
                     }
                 })

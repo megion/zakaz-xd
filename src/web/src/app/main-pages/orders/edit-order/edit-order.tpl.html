@@ -94,12 +94,12 @@
     </div>
 
     <!--Создан, Активен, Подтвержден, Отгружен, Закрыт.-->
-    <div class="form-group">
+    <div class="form-group" ng-if="!isCreate">
         <div class="col-sm-12">
-            <button type='button' data-ng-click="activate()" class="btn btn-info">Активировать</button>
-            <button type='button' data-ng-click="confirm()" class="btn btn-success" ng-disabled="!AuthService.hasAccessByCodes('MANAGE_ORDERS')">Потвердить</button>
-            <button type='button' data-ng-click="ship()" class="btn btn-warning" ng-disabled="!AuthService.hasAccessByCodes('MANAGE_ORDERS')">Перевести в отгружен</button>
-            <button type='button' data-ng-click="close()" class="btn btn-danger" ng-disabled="!AuthService.hasAccessByCodes('MANAGE_ORDERS')">Закрыть</button>
+            <button type='button' data-ng-click="activate()" class="btn btn-info" ng-disabled="order.status.code!=='CREATED'">Активировать</button>
+            <button type='button' data-ng-click="approve()" class="btn btn-success" ng-disabled="!(order.status.code==='ACTIVE' && AuthService.hasAccessByCodes('MANAGE_ORDERS'))">Подтвердить</button>
+            <button type='button' data-ng-click="ship()" class="btn btn-warning" ng-disabled="!(order.status.code==='APPROVED' && AuthService.hasAccessByCodes('MANAGE_ORDERS'))">Перевести в отгружен</button>
+            <button type='button' data-ng-click="close()" class="btn btn-danger" ng-disabled="order.status.code==='CLOSED' || !AuthService.hasAccessByCodes('MANAGE_ORDERS')">Закрыть</button>
         </div>
     </div>
 

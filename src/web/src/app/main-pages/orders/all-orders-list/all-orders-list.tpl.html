@@ -1,0 +1,35 @@
+<div class="row">
+    <div class="col-sm-6">
+        <h4>Список всех заказов</h4>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <z-pagination config="pageConfig" page="pageConfig.page"></z-pagination>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Номер</th>
+                <th>Автор</th>
+                <th>Наименование</th>
+                <th>Дата создания</th>
+                <th>Статус</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr data-ng-repeat="order in orderList">
+                <td><a ui-sref="edit-order({id: order._id})">{{order.number}}</a></td>
+                <td>{{order.author.username}}</td>
+                <td>{{order.title}}</td>
+                <td>{{order.createdDate | date:'dd.MM.yyyy HH:mm:ss'}}</td>
+                <td>{{order.status.title}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

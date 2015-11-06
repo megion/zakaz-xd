@@ -38,6 +38,20 @@ angular.module('zakaz-xd.resources.orders-resource', [
             },
             removeAllOrderProducts: function (orderId) {
                 return $http.post(startUrl + '/remove-all-order-products', {orderId: orderId});
+            },
+
+            // change statuses
+            activateOrder: function (orderId) {
+                return $http.post(startUrl + '/activate-order', {orderId: orderId});
+            },
+            approveOrder: function (orderId) {
+                return $http.post(startUrl + '/approve-order', {orderId: orderId});
+            },
+            shipOrder: function (orderId) {
+                return $http.post(startUrl + '/ship-order', {orderId: orderId});
+            },
+            closeOrder: function (orderId) {
+                return $http.post(startUrl + '/close-order', {orderId: orderId});
             }
         };
     }]);

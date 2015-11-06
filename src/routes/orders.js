@@ -9,6 +9,7 @@ var log = require('../lib/log')(module);
 var checkAccess = require('../middleware/checkAccess');
 var loadUser = require('../middleware/loadUser');
 var ACCESSES = require('../utils/accesses').ACCESSES;
+var ORDER_STATUSES = require('../utils/orderStatuses').ORDER_STATUSES;
 var pagination = require('../utils/pagination');
 var ObjectID = require('mongodb').ObjectID;
 
@@ -46,13 +47,15 @@ router.get('/order-by-id', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDE
             }
         );
     } else {
-        orderService.findOneByIdAndAuthorId(orderId, req.user._id, function(err, result) {
-                if (err) {
-                    return next(err);
+        checkCurrentUserIsOrderAuthor(orderId, req, res, next, function() {
+            orderService.findOneById(orderId, function(err, result) {
+                    if (err) {
+                        return next(err);
+                    }
+                    res.json(result);
                 }
-                res.json(result);
-            }
-        );
+            );
+        });
     }
 });
 
@@ -116,6 +119,36 @@ function editOrder(id, order, req, res, next) {
     });
 }
 
+function changeStatus(id, newCode, currentCheckedCode, req, res, next) {
+
+    if (currentCheckedCode) {
+        orderService.findOneById(id, function(err, result) {
+            if (err) {
+                return next(err);
+            }
+
+            if (result.status.code !== currentCheckedCode) {
+                return next(new HttpError(400, "Перевести заказ в состояние " + newCode
+                + " возможно только если заказ в сотоянии " + currentCheckedCode));
+            }
+
+            orderService.changeOrderStatus(id, newCode, function(err, status) {
+                if (err)
+                    return next(err);
+
+                res.send(status);
+            });
+        });
+    } else {
+        orderService.changeOrderStatus(id, newCode, function(err, status) {
+            if (err)
+                return next(err);
+
+            res.send(status);
+        });
+    }
+}
+
 function checkCurrentUserIsOrderAuthor(orderId, req, res, next, successCallback) {
     orderService.findOneById(orderId, function(err, dbOrder) {
             if (err) {
@@ -168,6 +201,34 @@ router.post('/delete-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_OR
             });
         });
     }
+});
+
+// +++++++++++++++ change order statuses
+router.post('/activate-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
+    var id = new ObjectID(req.body.orderId);
+
+    if (userService.isAuthorize(req.user, ACCESSES.MANAGE_ORDERS)) {
+        changeStatus(id, ORDER_STATUSES.ACTIVE, ORDER_STATUSES.CREATED, req, res, next);
+    } else {
+        // TODO: check author
+        checkCurrentUserIsOrderAuthor(id, req, res, next, function() {
+            changeStatus(id, ORDER_STATUSES.ACTIVE, ORDER_STATUSES.CREATED, req, res, next);
+        });
+    }
+});
+
+router.post('/approve-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS), function(req, res, next) {
+    var id = new ObjectID(req.body.orderId);
+    changeStatus(id, ORDER_STATUSES.APPROVED, ORDER_STATUSES.ACTIVE, req, res, next);
+});
+router.post('/ship-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS), function(req, res, next) {
+    var id = new ObjectID(req.body.orderId);
+    changeStatus(id, ORDER_STATUSES.SHIPPED, ORDER_STATUSES.APPROVED, req, res, next);
+});
+router.post('/close-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS), function(req, res, next) {
+    var id = new ObjectID(req.body.orderId);
+    // закрыть заказ можно из любого статуса
+    changeStatus(id, ORDER_STATUSES.CLOSED, null, req, res, next);
 });
 
 // ++++++++++++++++++ order product

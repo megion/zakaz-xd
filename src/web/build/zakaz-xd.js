@@ -1,5 +1,5 @@
 /*
- * Version: 1.0 - 2015-11-04T21:16:27.812Z
+ * Version: 1.0 - 2015-11-06T11:53:23.599Z
  */
 
 
@@ -565,6 +565,20 @@ angular.module('zakaz-xd.resources.orders-resource', [
             },
             removeAllOrderProducts: function (orderId) {
                 return $http.post(startUrl + '/remove-all-order-products', {orderId: orderId});
+            },
+
+            // change statuses
+            activateOrder: function (orderId) {
+                return $http.post(startUrl + '/activate-order', {orderId: orderId});
+            },
+            approveOrder: function (orderId) {
+                return $http.post(startUrl + '/approve-order', {orderId: orderId});
+            },
+            shipOrder: function (orderId) {
+                return $http.post(startUrl + '/ship-order', {orderId: orderId});
+            },
+            closeOrder: function (orderId) {
+                return $http.post(startUrl + '/close-order', {orderId: orderId});
             }
         };
     }]);
@@ -1511,6 +1525,7 @@ angular.module('zakaz-xd.orders.states', [
     'zakaz-xd.resources.orders-resource',
     'zakaz-xd.resources.user-products-resource',
     'zakaz-xd.orders.orders-list',
+    'zakaz-xd.orders.all-orders-list',
     'zakaz-xd.orders.edit-order',
     'zakaz-xd.orders.edit-order-product'
 ])
@@ -1529,6 +1544,20 @@ angular.module('zakaz-xd.orders.states', [
                         },
                         hasAccess: function ($stateParams, AuthService) {
                             return AuthService.checkAccess(ACCESS.EDIT_OWN_ORDER);
+                        }
+                    }
+                })
+                // заказы текущего пользователя
+                .state('all-orders', {
+                    url: '/all-orders',
+                    controller: 'AllOrdersListCtrl',
+                    templateUrl: 'app/main-pages/orders/all-orders-list/all-orders-list.tpl.html',
+                    resolve: {
+                        user: function ($stateParams, AuthService) {
+                            return AuthService.getCurrentUser();
+                        },
+                        hasAccess: function ($stateParams, AuthService) {
+                            return AuthService.checkAccess(ACCESS.MANAGE_ORDERS);
                         }
                     }
                 })
@@ -2235,6 +2264,44 @@ angular
     ])
 ;
 
+angular
+    .module('zakaz-xd.orders.all-orders-list', [
+        'zakaz-xd.dialogs',
+        'zakaz-xd.directives.pagination',
+        'zakaz-xd.resources.orders-resource',
+        'zakaz-xd.auth'
+    ])
+    .controller('AllOrdersListCtrl', ['$scope', '$stateParams', '$state', 'OrdersResource',
+        'ErrorDialog', 'InfoDialog', 'user',
+        function ($scope, $stateParams, $state, OrdersResource, ErrorDialog, InfoDialog, user) {
+            $scope.user = user;
+
+            $scope.orderList = [];
+            $scope.pageConfig = {
+                page: 1,
+                itemsPerPage: 10,
+                pageChanged: function(page, itemsPerPage)  {
+                    refreshOrdersTable({page: page, itemsPerPage: itemsPerPage});
+                }
+            };
+
+            function refreshOrdersTable(page) {
+                OrdersResource.getAllOrders(page).then(
+                    function(response) {
+                        $scope.orderList = response.data.items;
+                        $scope.pageConfig.count = response.data.count;
+                    },
+                    function(err) {
+                        ErrorDialog.open(err.data);
+                    }
+                );
+            }
+
+            refreshOrdersTable({page: $scope.pageConfig.page, itemsPerPage: $scope.pageConfig.itemsPerPage});
+        }
+    ])
+;
+
 /**
  * Изменение\создание заказа
  */
@@ -2303,6 +2370,67 @@ angular
                         OrdersResource.deleteOrder($scope.order._id).then(
                             function (response) {
                                 InfoDialog.open("Заказ удален");
+                                $state.go("user-orders-list");
+                            },
+                            function (err) {
+                                ErrorDialog.open(err.data, true);
+                            }
+                        );
+                    }
+                );
+            };
+
+            $scope.activate = function() {
+                YesNoDialog.open("Вы действительно хотите активировать заказ?").then(
+                    function() {
+                        OrdersResource.activateOrder($scope.order._id).then(
+                            function (response) {
+                                InfoDialog.open("Заказ активирован");
+                                $state.go("user-orders-list");
+                            },
+                            function (err) {
+                                ErrorDialog.open(err.data, true);
+                            }
+                        );
+                    }
+                );
+            };
+            $scope.approve = function() {
+                YesNoDialog.open("Вы действительно хотите подтвердить заказ?").then(
+                    function() {
+                        OrdersResource.approveOrder($scope.order._id).then(
+                            function (response) {
+                                InfoDialog.open("Заказ подтвержден");
+                                $state.go("user-orders-list");
+                            },
+                            function (err) {
+                                ErrorDialog.open(err.data, true);
+                            }
+                        );
+                    }
+                );
+            };
+            $scope.ship = function() {
+                YesNoDialog.open("Вы действительно хотите перевести заказ в отгруженные?").then(
+                    function() {
+                        OrdersResource.shipOrder($scope.order._id).then(
+                            function (response) {
+                                InfoDialog.open("Заказ переведен в отгруженные");
+                                $state.go("user-orders-list");
+                            },
+                            function (err) {
+                                ErrorDialog.open(err.data, true);
+                            }
+                        );
+                    }
+                );
+            };
+            $scope.close = function() {
+                YesNoDialog.open("Вы действительно хотите закрыть заказ?").then(
+                    function() {
+                        OrdersResource.closeOrder($scope.order._id).then(
+                            function (response) {
+                                InfoDialog.open("Заказ закрыт");
                                 $state.go("user-orders-list");
                             },
                             function (err) {

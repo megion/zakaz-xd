@@ -69,6 +69,28 @@ function editOrder(id, item, callback) {
     );
 }
 
+function changeOrderStatus(id, orderStatusCode, callback) {
+    var coll = getCollection();
+
+    orderStatusService.findOneByCode(orderStatusCode, function(err, status) {
+        if (err) {
+            return callback(err);
+        }
+        coll.updateOne(
+            {_id : id},
+            {$set: {status_id: status._id}},
+            {upsert:false, w: 1, multi: false},
+            function(err, upResult) {
+                if (err) {
+                    return callback(err);
+                }
+
+                return callback(null, status);
+            }
+        );
+    });
+}
+
 /**
  * Обогощение данных
  */
@@ -177,10 +199,12 @@ function enrichmentOneOrder(order, callback) {
                 if (order.authorProducts) {
                     for(var j=0; j<order.authorProducts.length; ++j) {
                         var ap = order.authorProducts[j];
-                        var ep = productsMap[ap.product_id.toString()];
-                        if (ep) {
-                            ap.product = ep;
-                            delete ap.product_id;
+                        if (ap.product_id) { // TODO: иногда падало: видимо на старых данных, поэтому проверку оставляю
+                            var ep = productsMap[ap.product_id.toString()];
+                            if (ep) {
+                                ap.product = ep;
+                                delete ap.product_id;
+                            }
                         }
                     }
                 }
@@ -196,7 +220,7 @@ function enrichmentOneOrder(order, callback) {
 function findAllOrdersByFilter(page, filter, callback) {
     var coll = getCollection();
     var conf = {
-        sort: {createdDate: -1}
+        sort: {createdDate: -1, author_id: -1}
     };
     if (page) {
         conf.skip = page.skip;
@@ -399,6 +423,61 @@ function updateOrderProduct(orderId, orderProductId, orderProduct, callback) {
     );
 }
 
+/// -------------------- order comment -------------------------------------------------
+function removeOrderComment(orderId, commentId, callback) {
+    var coll = getCollection();
+
+    coll.update(
+        {_id : orderId},
+        { $pull: { comments: { _id: commentId } } },
+        { multi: false },
+        function(err, res) {
+            if (err) {
+                return callback(err);
+            }
+
+            return callback(null, res);
+        }
+    );
+}
+
+function addOrderComment(orderId, comment, callback) {
+    var coll = getCollection();
+
+    comment._id = new ObjectID(); // generate id
+
+    coll.update(
+        { _id: orderId },
+        { $push: { comments: comment } },
+        function(err, result) {
+            if (err) {
+                return callback(err);
+            }
+
+            return callback(null, comment);
+        }
+    );
+
+}
+
+function updateOrderComment(orderId, commentId, text, callback) {
+    var coll = getCollection();
+
+    coll.update(
+        { _id: orderId, authorProducts: {$elemMatch: {_id: commentId}} },
+        { $set: {
+            "authorProducts.$.text" : text
+        }},
+        function(err, result) {
+            if (err) {
+                return callback(err);
+            }
+
+            return callback(null, result);
+        }
+    );
+}
+
 exports.getCollection = getCollection;
 exports.findAllOrders = findAllOrders;
 exports.findAllOrdersByAuthorId = findAllOrdersByAuthorId;
@@ -407,12 +486,18 @@ exports.findOneById = findOneById;
 exports.createOrder = createOrder;
 exports.deleteOrder = deleteOrder;
 exports.editOrder = editOrder;
+exports.changeOrderStatus = changeOrderStatus;
 
 // order product
-exports.removeOrderProduct = removeOrderProduct;
+exports.removeOrderComment = removeOrderComment;
 exports.removeAllOrderProducts = removeAllOrderProducts;
 exports.addOrderProduct = addOrderProduct;
 exports.updateOrderProduct = updateOrderProduct;
+
+// order comment
+exports.removeOrderProduct = removeOrderProduct;
+exports.addOrderComment = addOrderComment;
+exports.updateOrderComment = updateOrderComment;
 
 
 
