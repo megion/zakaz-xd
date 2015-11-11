@@ -159,57 +159,84 @@ function enrichmentOneOrder(order, callback) {
                     return callback(new Error("Автор не найден author id " + order.author_id));
                 }
 
-                var statusesMap = {};
-                if (allStatuses) {
-                    for (var i=0; i<allStatuses.length; i++) {
-                        var status = allStatuses[i];
-                        statusesMap[status._id.toString()] = status;
-                    }
-                }
+                userService.findAllUsers(null, function(err, allUsers) {
 
-                var productsMap = {};
-                if (allProducts) {
-                    for (var i=0; i<allProducts.length; i++) {
-                        var product = allProducts[i];
-                        productsMap[product._id.toString()] = product;
-                    }
-                }
-
-                order.author = author;
-                delete order.author_id;
-
-                if (order.status_id) {
-                    order.status = statusesMap[order.status_id.toString()];
-                    delete order.status_id;
-                }
-
-                // найти точку доставки
-                if (order.authorDeliveryPoint_id && order.author.deliveryPoints) {
-                    for(var j=0; j<order.author.deliveryPoints.length; ++j) {
-                        var dp = order.author.deliveryPoints[j];
-                        if (order.authorDeliveryPoint_id.toString()===dp._id.toString()) {
-                            order.authorDeliveryPoint = dp;
-                            delete order.authorDeliveryPoint_id;
-                            break;
+                    var statusesMap = {};
+                    if (allStatuses) {
+                        for (var i=0; i<allStatuses.length; i++) {
+                            var status = allStatuses[i];
+                            statusesMap[status._id.toString()] = status;
                         }
                     }
-                }
 
-                // продукты заказа
-                if (order.authorProducts) {
-                    for(var j=0; j<order.authorProducts.length; ++j) {
-                        var ap = order.authorProducts[j];
-                        if (ap.product_id) { // TODO: иногда падало: видимо на старых данных, поэтому проверку оставляю
-                            var ep = productsMap[ap.product_id.toString()];
-                            if (ep) {
-                                ap.product = ep;
-                                delete ap.product_id;
+                    var productsMap = {};
+                    if (allProducts) {
+                        for (var i=0; i<allProducts.length; i++) {
+                            var product = allProducts[i];
+                            productsMap[product._id.toString()] = product;
+                        }
+                    }
+
+                    var allUsersMap = {};
+                    if (allUsers) {
+                        for (var i=0; i<allUsers.length; i++) {
+                            var us = allUsers[i];
+                            allUsersMap[us._id.toString()] = us;
+                        }
+                    }
+
+                    order.author = author;
+                    delete order.author_id;
+
+                    if (order.status_id) {
+                        order.status = statusesMap[order.status_id.toString()];
+                        delete order.status_id;
+                    }
+
+                    // найти точку доставки
+                    if (order.authorDeliveryPoint_id && order.author.deliveryPoints) {
+                        for(var j=0; j<order.author.deliveryPoints.length; ++j) {
+                            var dp = order.author.deliveryPoints[j];
+                            if (order.authorDeliveryPoint_id.toString()===dp._id.toString()) {
+                                order.authorDeliveryPoint = dp;
+                                delete order.authorDeliveryPoint_id;
+                                break;
                             }
                         }
                     }
-                }
 
-                callback(null, order);
+                    // продукты заказа
+                    if (order.authorProducts) {
+                        for(var j=0; j<order.authorProducts.length; ++j) {
+                            var ap = order.authorProducts[j];
+                            if (ap.product_id) { // TODO: иногда падало: видимо на старых данных, поэтому проверку оставляю
+                                var ep = productsMap[ap.product_id.toString()];
+                                if (ep) {
+                                    ap.product = ep;
+                                    delete ap.product_id;
+                                }
+                            }
+                        }
+                    }
+
+                    // комментарии заказа
+                    if (order.comments) {
+                        for(var j=0; j<order.comments.length; ++j) {
+                            var cm = order.comments[j];
+                            if (cm.author_id) { // TODO: на всякий случай :)
+                                var us = allUsersMap[cm.author_id.toString()];
+                                if (us) {
+                                    cm.author = us;
+                                    delete cm.author_id;
+                                }
+                            }
+                        }
+                    }
+
+                    callback(null, order);
+                });
+
+
             });
 
 

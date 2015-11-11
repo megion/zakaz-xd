@@ -136,6 +136,33 @@ angular
                     }
                 );
             };
+            $scope.addComment = function(commentText) {
+                OrdersResource.addOrderComment($scope.order._id, {text: commentText}).then(
+                    function (response) {
+                        InfoDialog.open("Комментарий добавлен");
+                        $state.reload();
+                    },
+                    function (err) {
+                        ErrorDialog.open(err.data, true);
+                    }
+                );
+            };
+
+            $scope.removeComment = function(comment) {
+                YesNoDialog.open("Удалить комментарий?").then(
+                    function() {
+                        OrdersResource.removeOrderComment($scope.order._id, comment._id).then(
+                            function (response) {
+                                InfoDialog.open("Комментарий удален");
+                                $state.reload();
+                            },
+                            function (err) {
+                                ErrorDialog.open(err.data, true);
+                            }
+                        );
+                    }
+                );
+            };
         }
     ])
 ;

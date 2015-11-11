@@ -412,9 +412,9 @@ router.post('/remove-order-comment', loadUser, checkAccess.getAuditor(ACCESSES.M
 });
 
 router.post('/update-order-comment', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
-    var orderComment = req.body.orderComment;
+    var orderComment = req.body.comment;
     if (!orderComment) {
-        return next(new HttpError(400, "Parameter orderComment not found"));
+        return next(new HttpError(400, "Parameter comment not found"));
     }
     var orderId = new ObjectID(req.body.orderId);
 

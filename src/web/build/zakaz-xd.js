@@ -1,5 +1,5 @@
 /*
- * Version: 1.0 - 2015-11-06T14:46:17.610Z
+ * Version: 1.0 - 2015-11-11T14:14:59.952Z
  */
 
 
@@ -579,6 +579,17 @@ angular.module('zakaz-xd.resources.orders-resource', [
             },
             closeOrder: function (orderId) {
                 return $http.post(startUrl + '/close-order', {orderId: orderId});
+            },
+
+            // comment
+            addOrderComment: function (orderId, comment) {
+                return $http.post(startUrl + '/add-order-comment', {orderId: orderId, comment: comment});
+            },
+            updateOrderComment: function (orderId, comment) {
+                return $http.post(startUrl + '/update-order-comment', {orderId: orderId, comment: comment});
+            },
+            removeOrderComment: function (orderId, orderCommentId) {
+                return $http.post(startUrl + '/remove-order-comment', {orderId: orderId, orderCommentId: orderCommentId});
             }
         };
     }]);
@@ -2433,6 +2444,33 @@ angular
                             function (response) {
                                 InfoDialog.open("Заказ закрыт");
                                 $state.go("user-orders-list");
+                            },
+                            function (err) {
+                                ErrorDialog.open(err.data, true);
+                            }
+                        );
+                    }
+                );
+            };
+            $scope.addComment = function(commentText) {
+                OrdersResource.addOrderComment($scope.order._id, {text: commentText}).then(
+                    function (response) {
+                        InfoDialog.open("Комментарий добавлен");
+                        $state.reload();
+                    },
+                    function (err) {
+                        ErrorDialog.open(err.data, true);
+                    }
+                );
+            };
+
+            $scope.removeComment = function(comment) {
+                YesNoDialog.open("Удалить комментарий?").then(
+                    function() {
+                        OrdersResource.removeOrderComment($scope.order._id, comment._id).then(
+                            function (response) {
+                                InfoDialog.open("Комментарий удален");
+                                $state.reload();
                             },
                             function (err) {
                                 ErrorDialog.open(err.data, true);

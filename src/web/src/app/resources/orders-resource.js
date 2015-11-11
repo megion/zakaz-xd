@@ -52,6 +52,17 @@ angular.module('zakaz-xd.resources.orders-resource', [
             },
             closeOrder: function (orderId) {
                 return $http.post(startUrl + '/close-order', {orderId: orderId});
+            },
+
+            // comment
+            addOrderComment: function (orderId, comment) {
+                return $http.post(startUrl + '/add-order-comment', {orderId: orderId, comment: comment});
+            },
+            updateOrderComment: function (orderId, comment) {
+                return $http.post(startUrl + '/update-order-comment', {orderId: orderId, comment: comment});
+            },
+            removeOrderComment: function (orderId, orderCommentId) {
+                return $http.post(startUrl + '/remove-order-comment', {orderId: orderId, orderCommentId: orderCommentId});
             }
         };
     }]);
