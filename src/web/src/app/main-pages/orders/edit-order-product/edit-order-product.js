@@ -20,8 +20,6 @@ angular
             $scope.orderProduct = orderProduct;
             $scope.order = order;
 
-            console.log("order", order);
-
 
             $scope.products = [];
             angular.forEach(userProducts, function(value) {

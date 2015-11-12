@@ -10,6 +10,9 @@ angular.module('zakaz-xd.resources.user-products-resource', [
             getProductUsersByCurrentUser: function () {
                 return $http.get(startUrl + '/product-users-by-current-user', {params: {}});
             },
+            getProductUsersByUserId: function (userId) {
+                return $http.get(startUrl + '/product-users-by-user-id', {params: {userId: userId}});
+            },
             createUserProduct: function (newUserProduct) {
                 return $http.post(startUrl + '/create-user-product', {userProduct: newUserProduct});
             },

@@ -23,7 +23,7 @@ router.get('/all-users', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USERS 
     );
 });
 
-router.get('/user-by-id', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USERS), function(req, res, next) {
+router.get('/user-by-id', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_USERS | ACCESSES.MANAGE_ORDERS), function(req, res, next) {
     var userId = new ObjectID(req.param('userId'));
 
     userService.findWithRolesById(userId, function(err, user) {

@@ -4,9 +4,13 @@
 
     <div class="form-group required" ng-class="{'has-error': changeForm.$submitted && changeForm.number.$error.required}">
         <label class="col-sm-2 control-label">Номер</label>
-        <div class="col-sm-10">
+        <div class="col-sm-6">
             <input type="text" class="form-control" name="number" placeholder="Номер заказа"
                    data-ng-model="order.number" required>
+        </div>
+        <label class="col-sm-2 control-label">Автор</label>
+        <div class="col-sm-2">
+            <p class="form-control-static">{{author.username}}</p>
         </div>
     </div>
 
@@ -28,7 +32,7 @@
         <div class="col-sm-10">
             <ui-select ng-model="order.authorDeliveryPoint" theme="bootstrap" name="authorDeliveryPoint" required>
                 <ui-select-match placeholder="Точка доставки" allow-clear="true">{{$select.selected.title}}</ui-select-match>
-                <ui-select-choices repeat="item in user.deliveryPoints | filter: $select.search">
+                <ui-select-choices repeat="item in author.deliveryPoints | filter: $select.search">
                     <div ng-bind-html="item.title | highlight: $select.search"></div>
                 </ui-select-choices>
             </ui-select>
@@ -58,7 +62,7 @@
                         </thead>
                         <tbody>
                         <tr ng-repeat="ap in order.authorProducts">
-                            <td><a ui-sref="edit-order-product({orderId: order._id, productId: ap.product._id})">{{ap.product.title}}</a></td>
+                            <td><a ui-sref="edit-order-product({orderId: order._id, orderProductId: ap._id})">{{ap.product.title}}</a></td>
 
                             <td>{{ap.quantity}}</td>
                             <td>{{ap.deliveryQuantity}}</td>

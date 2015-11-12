@@ -3,6 +3,7 @@ angular.module('zakaz-xd.orders.states', [
     'zakaz-xd.auth',
     'zakaz-xd.dialogs',
     'zakaz-xd.resources.orders-resource',
+    'zakaz-xd.resources.users-resource',
     'zakaz-xd.resources.user-products-resource',
     'zakaz-xd.orders.orders-list',
     'zakaz-xd.orders.all-orders-list',
@@ -66,7 +67,19 @@ angular.module('zakaz-xd.orders.states', [
                         },
                         user: function ($stateParams, AuthService) {
                             return AuthService.getCurrentUser();
+                        },
+                        author: function (user, order, UsersResource) {
+                            if (user._id !== order.author._id) {
+                                return UsersResource.getUserById(order.author._id).then(
+                                    function(response) {
+                                        return response.data;
+                                    }
+                                );
+                            }
+                            // ткущий пользователь
+                            return user;
                         }
+
                     }
                 })
                 // создание своего заказа
@@ -90,6 +103,10 @@ angular.module('zakaz-xd.orders.states', [
                         },
                         user: function ($stateParams, AuthService) {
                             return AuthService.getCurrentUser();
+                        },
+                        author: function (user) {
+                            // ткущий пользователь
+                            return user;
                         }
 
                     }
@@ -116,18 +133,37 @@ angular.module('zakaz-xd.orders.states', [
                         orderProduct: function() {
                             return {};
                         },
-                        userProducts: function($stateParams, UserProductsResource) {
-                            return UserProductsResource.getProductUsersByCurrentUser().then(
-                                function(response) {
-                                    return response.data;
-                                }
-                            );
+                        author: function (user, order, UsersResource) {
+                            if (user._id !== order.author._id) {
+                                return UsersResource.getUserById(order.author._id).then(
+                                    function(response) {
+                                        return response.data;
+                                    }
+                                );
+                            }
+                            // текущий пользователь
+                            return user;
+                        },
+                        userProducts: function($stateParams, user, author, UserProductsResource) {
+                            if (user._id !== author._id) {
+                                return UserProductsResource.getProductUsersByUserId(author._id).then(
+                                    function(response) {
+                                        return response.data;
+                                    }
+                                );
+                            } else {
+                                return UserProductsResource.getProductUsersByCurrentUser().then(
+                                    function(response) {
+                                        return response.data;
+                                    }
+                                );
+                            }
                         }
                     }
                 })
                 // изменение продукта заказа
                 .state('edit-order-product', {
-                    url: '/order/edit-product/:orderId/:productId',
+                    url: '/order/edit-product/:orderId/:orderProductId',
                     controller: 'EditOrderProductCtrl',
                     templateUrl: 'app/main-pages/orders/edit-order-product/edit-order-product.tpl.html',
                     resolve: {
@@ -151,18 +187,37 @@ angular.module('zakaz-xd.orders.states', [
                             // найдем без запроса на сервер
                             for (var i=0; i<order.authorProducts.length; i++) {
                                 var ap = order.authorProducts[i];
-                                if (ap.product._id === $stateParams.productId) {
+                                if (ap._id === $stateParams.orderProductId) {
                                     return ap;
                                 }
                             }
                             return null;
                         },
-                        userProducts: function($stateParams, UserProductsResource) {
-                            return UserProductsResource.getProductUsersByCurrentUser().then(
-                                function(response) {
-                                    return response.data;
-                                }
-                            );
+                        author: function (user, order, UsersResource) {
+                            if (user._id !== order.author._id) {
+                                return UsersResource.getUserById(order.author._id).then(
+                                    function(response) {
+                                        return response.data;
+                                    }
+                                );
+                            }
+                            // текущий пользователь
+                            return user;
+                        },
+                        userProducts: function($stateParams, user, author, UserProductsResource) {
+                            if (user._id !== author._id) {
+                                return UserProductsResource.getProductUsersByUserId(author._id).then(
+                                    function(response) {
+                                        return response.data;
+                                    }
+                                );
+                            } else {
+                                return UserProductsResource.getProductUsersByCurrentUser().then(
+                                    function(response) {
+                                        return response.data;
+                                    }
+                                );
+                            }
                         }
                     }
                 });

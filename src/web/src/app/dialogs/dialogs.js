@@ -16,6 +16,10 @@ angular.module('zakaz-xd.dialogs', [
                     controller: function ($scope, $modalInstance) {
                         $scope.error = error;
                         $scope.printStack = printStack;
+                        if ($scope.error.status && $scope.error.status === 400) {
+                            // стек не печатем т.к. это ошибка валидации или логики
+                            $scope.printStack = false;
+                        }
                         $scope.close = function () {
                             $modalInstance.close();
                         };

@@ -161,7 +161,7 @@ function checkCurrentUserIsOrderAuthor(orderId, req, res, next, successCallback)
                 return next(new HttpError(400, "Вы не имеете прав изменять не принадлежащий вам заказ"));
             }
 
-            successCallback();
+            successCallback(dbOrder);
         }
     );
 }
@@ -174,7 +174,12 @@ router.post('/edit-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDE
         editOrder(id, order, req, res, next);
     } else {
         // TODO: check author
-        checkCurrentUserIsOrderAuthor(id, req, res, next, function() {
+        checkCurrentUserIsOrderAuthor(id, req, res, next, function(dbOrder) {
+            // автор заказа может удалить заказ только в статусе создан
+            // проверим статус
+            if (dbOrder.status.code !== ORDER_STATUSES.CREATED) {
+                return next(new HttpError(400, "Вы не имеете право редактировать заказ в статусе '" + dbOrder.status.title + "'"));
+            }
             editOrder(id, order, req, res, next);
         });
     }
@@ -192,7 +197,14 @@ router.post('/delete-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_OR
         });
     } else {
         // TODO: check author
-        checkCurrentUserIsOrderAuthor(id, req, res, next, function() {
+        checkCurrentUserIsOrderAuthor(id, req, res, next, function(dbOrder) {
+
+            // автор заказа может удалить заказ только в статусе создан
+            // проверим статус
+            if (dbOrder.status.code !== ORDER_STATUSES.CREATED) {
+                return next(new HttpError(400, "Вы не имеете право удалять заказ в статусе '" + dbOrder.status.title + "'"));
+            }
+
             orderService.deleteOrder(id, function(err, result) {
                 if (err)
                     return next(err);
@@ -281,7 +293,11 @@ router.post('/add-order-product', loadUser, checkAccess.getAuditor(ACCESSES.MANA
         addOrderProduct(orderId, orderProduct, req, res, next);
     } else {
         // TODO: check author
-        checkCurrentUserIsOrderAuthor(orderId, req, res, next, function() {
+        checkCurrentUserIsOrderAuthor(orderId, req, res, next, function(dbOrder) {
+            // проверим статус
+            if (dbOrder.status.code !== ORDER_STATUSES.CREATED) {
+                return next(new HttpError(400, "Вы не имеете право менять состав продуктов заказа в статусе '" + dbOrder.status.title + "'"));
+            }
             addOrderProduct(orderId, orderProduct, req, res, next);
         });
     }
@@ -304,7 +320,11 @@ router.post('/remove-order-product', loadUser, checkAccess.getAuditor(ACCESSES.M
         });
     } else {
         // TODO: check author
-        checkCurrentUserIsOrderAuthor(orderId, req, res, next, function() {
+        checkCurrentUserIsOrderAuthor(orderId, req, res, next, function(dbOrder) {
+            // проверим статус
+            if (dbOrder.status.code !== ORDER_STATUSES.CREATED) {
+                return next(new HttpError(400, "Вы не имеете право менять состав продуктов заказа в статусе '" + dbOrder.status.title + "'"));
+            }
             orderService.removeOrderProduct(orderId, orderProductId, function(err, results) {
                 if (err)
                     return next(err);
@@ -326,7 +346,11 @@ router.post('/update-order-product', loadUser, checkAccess.getAuditor(ACCESSES.M
         updateOrderProduct(orderId, orderProduct, req, res, next);
     } else {
         // TODO: check author
-        checkCurrentUserIsOrderAuthor(orderId, req, res, next, function() {
+        checkCurrentUserIsOrderAuthor(orderId, req, res, next, function(dbOrder) {
+            // проверим статус
+            if (dbOrder.status.code !== ORDER_STATUSES.CREATED) {
+                return next(new HttpError(400, "Вы не имеете право менять состав продуктов заказа в статусе '" + dbOrder.status.title + "'"));
+            }
             updateOrderProduct(orderId, orderProduct, req, res, next);
         });
     }
@@ -344,7 +368,11 @@ router.post('/remove-all-order-products', loadUser, checkAccess.getAuditor(ACCES
         });
     } else {
         // TODO: check author
-        checkCurrentUserIsOrderAuthor(orderId, req, res, next, function() {
+        checkCurrentUserIsOrderAuthor(orderId, req, res, next, function(dbOrder) {
+            // проверим статус
+            if (dbOrder.status.code !== ORDER_STATUSES.CREATED) {
+                return next(new HttpError(400, "Вы не имеете право менять состав продуктов заказа в статусе '" + dbOrder.status.title + "'"));
+            }
             orderService.removeAllOrderProducts(orderId, function(err, results) {
                 if (err)
                     return next(err);

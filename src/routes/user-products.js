@@ -34,6 +34,17 @@ router.get('/product-users-by-current-user', loadUser, checkAccess.getAuditor(AC
     );
 });
 
+router.get('/product-users-by-user-id', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_PRODUCTS | ACCESSES.MANAGE_ORDERS), function(req, res, next) {
+    var userId = new ObjectID(req.param('userId'));
+    userProductService.findUserProductsByUserId(null, userId, function(err, result) {
+            if (err) {
+                return next(err);
+            }
+            res.json(result);
+        }
+    );
+});
+
 router.post('/create-user-product', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_PRODUCTS), function(req, res, next) {
     var userProduct = req.body.userProduct;
 
