@@ -45,7 +45,7 @@ angular.module('zakaz-xd.directives.decimal', [
                     var oldValue = scope.prevAppliedValue;
 
                     // новое значение не пустое и старое значение не пустое
-                    if (value && value.length && oldValue && oldValue.length) {
+                    if (value!==null && value!==undefined && oldValue!==null && oldValue!==undefined) {
                         var numValue = parseFloat(value);
                         // проверить новое значение: если оно не пустое и является числом при этом = 0 то установить
                         // старое значение.
@@ -63,7 +63,12 @@ angular.module('zakaz-xd.directives.decimal', [
                     scope.prevAppliedValue = value;
                     return value;
                 }
+                function formatter(value) {
+                    scope.prevAppliedValue = value;
+                    return value;
+                }
 
+                ngModel.$formatters.push(formatter);
                 ngModel.$parsers.push(banZero);
             }
         };

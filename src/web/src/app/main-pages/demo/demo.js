@@ -17,6 +17,7 @@ angular
             };
 
 
+            $scope.models.banEnterZeroVal = 0;
         }
     ])
 ;

@@ -1,5 +1,5 @@
 /*
- * Version: 1.0 - 2015-12-30T11:23:33.826Z
+ * Version: 1.0 - 2015-12-30T11:56:00.706Z
  */
 
 
@@ -819,7 +819,7 @@ angular.module('zakaz-xd.directives.decimal', [
                     var oldValue = scope.prevAppliedValue;
 
                     // новое значение не пустое и старое значение не пустое
-                    if (value && value.length && oldValue && oldValue.length) {
+                    if (value!==null && value!==undefined && oldValue!==null && oldValue!==undefined) {
                         var numValue = parseFloat(value);
                         // проверить новое значение: если оно не пустое и является числом при этом = 0 то установить
                         // старое значение.
@@ -837,7 +837,12 @@ angular.module('zakaz-xd.directives.decimal', [
                     scope.prevAppliedValue = value;
                     return value;
                 }
+                function formatter(value) {
+                    scope.prevAppliedValue = value;
+                    return value;
+                }
 
+                ngModel.$formatters.push(formatter);
                 ngModel.$parsers.push(banZero);
             }
         };
@@ -1445,6 +1450,7 @@ angular
             };
 
 
+            $scope.models.banEnterZeroVal = 0;
         }
     ])
 ;
