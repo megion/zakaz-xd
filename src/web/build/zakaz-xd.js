@@ -1,5 +1,5 @@
 /*
- * Version: 1.0 - 2015-11-12T09:55:15.915Z
+ * Version: 1.0 - 2015-12-30T11:23:33.826Z
  */
 
 
@@ -776,11 +776,11 @@ angular.module('zakaz-xd.directives.decimal', [
     'ui.bootstrap',
     'ngSanitize'
 ])
-    .directive('lowercase', function() {
+    .directive('lowercase', function () {
         return {
             restrict: 'A',
             require: 'ngModel',
-            link: function(scope, element, attr, ngModel) {
+            link: function (scope, element, attr, ngModel) {
                 function fromUser(text) {
                     console.log('fromUser', text);
                     return (text || '').toUpperCase();
@@ -790,8 +790,55 @@ angular.module('zakaz-xd.directives.decimal', [
                     console.log('toUser', text);
                     return (text || '').toLowerCase();
                 }
-                ngModel.$parsers.push(fromUser);
-                ngModel.$formatters.push(toUser);
+
+                //ngModel.$parsers.push(fromUser);
+                //ngModel.$formatters.push(toUser);
+
+                function formatter(value) {
+                    console.log('formatter', value);
+                    if (value) {
+                        return value.toUpperCase();
+                    }
+                }
+
+                ngModel.$formatters.push(formatter);
+            }
+        };
+    })
+    .directive('banEnterZero', function () {
+        return {
+            restrict: 'A',
+            require: 'ngModel',
+            link: function (scope, element, attr, ngModel) {
+                function banZero(value) {
+                    if (!scope.prevAppliedValue) {
+                        scope.prevAppliedValue = value;
+                        return value;
+                    }
+
+                    var oldValue = scope.prevAppliedValue;
+
+                    // новое значение не пустое и старое значение не пустое
+                    if (value && value.length && oldValue && oldValue.length) {
+                        var numValue = parseFloat(value);
+                        // проверить новое значение: если оно не пустое и является числом при этом = 0 то установить
+                        // старое значение.
+                        if (numValue!=null && numValue===0) {
+                            // дополнительная проверка: если старое значение было 0, тогда можно ввести любое значение
+                            var numOldValue = parseFloat(oldValue);
+                            if (!(numOldValue != null && numOldValue===0)) {
+                                ngModel.$setViewValue(oldValue);
+                                ngModel.$render();
+                                return oldValue;
+                            }
+                        }
+                    }
+
+                    scope.prevAppliedValue = value;
+                    return value;
+                }
+
+                ngModel.$parsers.push(banZero);
             }
         };
     })
