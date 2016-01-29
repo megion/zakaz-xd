@@ -1,0 +1,64 @@
+<!--<p class="input-group">-->
+    <!--<input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="ngModel" name="name"-->
+           <!--datepicker-options="options" ng-required="required" is-open="opened" datepicker-append-to-body="true"-->
+           <!--clear-text="Очистить" close-text="Закрыть" current-text="Сегодня" />-->
+    <!--<span class="input-group-btn">-->
+        <!--<button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>-->
+    <!--</span>-->
+<!--</p>-->
+
+<div class="btn-group" dropdown auto-close="disabled" is-open="isOpen" dropdown-append-to-body>
+    <!--<button id="btn-append-to-single-button" type="button" class="btn btn-primary" dropdown-toggle>-->
+        <!--Inline Dropdown <span class="caret"></span>-->
+    <!--</button>-->
+
+    <input ng-model="startAsString"
+           hcs-ui-mask="99.99.9999"
+           placeholder="ДД.ММ.ГГГГ"
+           ng-disabled="isDisabled"
+           ng-blur="onInputBlur($event)"
+           name="efVpdStartDate"
+           type="text"/>
+    <span class="efvpd-inputbox-sepor">-</span>
+    <input ng-model="endAsString"
+           hcs-ui-mask="99.99.9999"
+           placeholder="ДД.ММ.ГГГГ"
+           ng-disabled="isDisabled"
+           ng-blur="onInputBlur($event)"
+           name="efVpdEndDate"
+           type="text"/>
+    <a class="efvpd-inputbox-btn" href="javascript:void 0;" dropdown-toggle>
+        <span class="glyphicon glyphicon-calendar app-icon app-icon_cl_prime"></span>
+    </a>
+
+    <!--<ul class="dropdown-menu" dropdown-menu role="menu" aria-labelledby="btn-append-to-single-button">-->
+        <!--<li role="menuitem"><a href="#">Action</a></li>-->
+        <!--<li role="menuitem"><a href="#">Another action</a></li>-->
+        <!--<li role="menuitem"><a href="#">Something else here</a></li>-->
+        <!--<li class="divider"></li>-->
+        <!--<li role="menuitem"><a href="#">Separated link</a></li>-->
+    <!--</ul>-->
+
+    <div class="dropdown-menu efvpd-dropdown-menu" dropdown-menu role="menu">
+        <div class="efvpd-datepicker-row">
+            <div class="efvpd-datepicker-ct">
+                <datepicker ng-model="startDateCopy"
+                            max-mode="day"
+                            starting-day="1"
+                            show-weeks="false"
+                            format-day-title="MMMM yyyy"></datepicker>
+            </div>
+            <div class="efvpd-datepicker-ct">
+                <datepicker ng-model="endDateCopy"
+                            max-mode="day"
+                            starting-day="1"
+                            show-weeks="false"
+                            min-date="startDateCopy"
+                            format-day-title="MMMM yyyy"></datepicker>
+            </div>
+        </div>
+        <div class="efvpd-button-row text-right">
+            <button class="btn btn-cancel" type="button" ng-click="isOpen=false">Закрыть</button>
+        </div>
+    </div>
+</div>

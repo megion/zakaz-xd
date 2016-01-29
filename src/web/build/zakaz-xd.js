@@ -1,5 +1,5 @@
 /*
- * Version: 1.0 - 2015-12-30T11:56:00.706Z
+ * Version: 1.0 - 2016-01-29T11:47:31.303Z
  */
 
 
@@ -848,6 +848,23 @@ angular.module('zakaz-xd.directives.decimal', [
         };
     })
 ;
+angular.module('zakaz-xd.directives.my-dropdown', [
+    'ui.bootstrap'
+])
+    .directive('myDropdown', function () {
+        return {
+            restrict: 'E',
+            scope: {
+            },
+            templateUrl: 'app/directives/my-dropdown/my-dropdown.tpl.html',
+            controller: function ($scope) {
+
+                $scope.open = function($event) {
+                };
+            }
+        };
+    })
+;
 /*
  Copied from https://github.com/asadighi/ui-utils/blob/master/modules/mask/mask.js
  commit 4615f8e2449d95badf280a9820b8e6429ebb99ab
@@ -1434,12 +1451,14 @@ angular.module('zakaz-xd.demo.states', [
 angular
     .module('zakaz-xd.demo', [
         'zakaz-xd.directives.decimal',
+        'zakaz-xd.directives.my-dropdown',
         'zakaz-xd.directives.my.ui.mask',
         'ui.select',
-        'ngSanitize'
+        'ngSanitize',
+        'ui.bootstrap'
     ])
-    .controller('DemoCtrl', ['$scope', '$stateParams', '$state',
-        function ($scope, $stateParams, $state) {
+    .controller('DemoCtrl', ['$scope', '$stateParams', '$state','$modal',
+        function ($scope, $stateParams, $state, $modal) {
 
             $scope.mask = '99.99.9999';
             $scope.placeholder = 'ДД.ММ.ГГГГ';
@@ -1447,6 +1466,22 @@ angular
             $scope.models = {
                 lowercase: 'my test str',
                 lowercase1: ''
+            };
+
+            $scope.openModal = function () {
+                var modalInstance = $modal.open({
+                    animation: true,
+                    backdrop: 'static',
+                    size: 'lg',
+                    templateUrl: 'app/main-pages/demo/test-dialog.tpl.html',
+                    resolve: {
+                    },
+                    controller: function ($scope, $modalInstance) {
+                        $scope.close = function () {
+                            $modalInstance.close();
+                        };
+                    }
+                });
             };
 
 
