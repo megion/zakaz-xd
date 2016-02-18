@@ -13,7 +13,10 @@
       "bower_components/angular-ui-router/release/angular-ui-router.js",
       "bower_components/bootstrap/dist/js/bootstrap.js",
       "bower_components/jquery/dist/jquery.js",
-      "bower_components/angular-ui-select/dist/select.js"
+      "bower_components/angular-ui-select/dist/select.js",
+      "bower_components/d3/d3.js",
+      "bower_components/nvd3/build/nv.d3.js",
+      "bower_components/angular-nvd3/dist/angular-nvd3.js"
     ],
     "css": [
       "bower_components/angular/angular-csp.css",
@@ -21,7 +24,8 @@
       "bower_components/bootstrap/dist/css/bootstrap.css",
       "bower_components/bootstrap/dist/css/bootstrap-theme.css",
       "bower_components/font-awesome/css/font-awesome.css",
-      "bower_components/angular-ui-select/dist/select.css"
+      "bower_components/angular-ui-select/dist/select.css",
+      "bower_components/nvd3/build/nv.d3.css"
     ],
     "fonts": [
       "bower_components/bootstrap/dist/fonts/glyphicons-halflings-regular.eot",
