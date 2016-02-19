@@ -328,7 +328,7 @@ angular
             $scope.chartDataItems = [
                 {"periodYear": 2015, "periodMonth": 9, "charged": 418.25, "paid": 10.45},
                 {"periodYear": 2015, "periodMonth": 10, "charged": 0, "paid": 0},
-                {"periodYear": 2015, "periodMonth": 11, "charged": 0, "paid": 0},
+                {"periodYear": 2015, "periodMonth": 11, "charged": 250, "paid": 50},
                 {"periodYear": 2015, "periodMonth": 12, "charged": 0, "paid": 0},
                 {"periodYear": 2016, "periodMonth": 1, "charged": 0, "paid": 0},
                 {"periodYear": 2016, "periodMonth": 2, "charged": 0, "paid": 0}
@@ -400,6 +400,18 @@ angular
 
                 chartDomElements.layer = layer;
                 chartDomElements.rect = rect;
+
+                //var oldUpdateFn = scope.api.update;
+                //scope.api.update = function() {
+                //    oldUpdateFn.apply(this, arguments);
+                //    console.log("new update fn: " , this);
+                //};
+                //
+                //var oldUpdateWithDataFn = scope.api.updateWithData;
+                //scope.api.updateWithData = function() {
+                //    oldUpdateWithDataFn.apply(this, arguments);
+                //    console.log("new oldUpdateWithDataFn fn: " , this);
+                //};
             };
 
             $scope.chartOptions = {
@@ -439,7 +451,10 @@ angular
                         beforeUpdate: function(e){
                             console.log('! before UPDATE !');
                         },
-                        renderEnd: onRenderEnd
+                        //renderEnd: onRenderEnd
+                        renderEnd: function(e) {
+                            console.log('renderEnd: ', e);
+                        }
                     }
                     //xAxis: {
                     //    tickFormat: function (d) {return $filter('month')(d.getMonth() + 1) + ' ' + d.getFullYear() + 'г.';}

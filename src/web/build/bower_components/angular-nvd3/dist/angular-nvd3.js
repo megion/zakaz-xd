@@ -80,8 +80,33 @@
                             // Exit if chart is hidden
                             if (!scope._config.visible) return;
 
+                            var BaseChart = nv.models[options.chart.type]();
+                            function HcsChart() {
+                                console.log("call constructor HcsChart");
+                                var newChar = BaseChart.apply(this, arguments);
+                                //HcsChart.prototype = Object.create(newChar);
+                                //HcsChart.prototype.update = function() {
+                                //    newChar.apply(this, arguments);
+                                //    console.log("call HcsChart.prototype.update");
+                                //};
+
+                                //console.log("this.update:", this.update);
+                                return newChar;
+                            }
+                            //HcsChart.prototype = Object.create(BaseChart.prototype);
+                            //
+                            //HcsChart.prototype.update = function() {
+                            //    BaseChart.prototype.update.apply(this, arguments);
+                            //    console.log("call HcsChart.prototype.update");
+                            //};
+
+                            //nv.models[options.chart.type] = HcsChart;
+
+
                             // Initialize chart with specific type
-                            scope.chart = nv.models[options.chart.type]();
+                            //scope.chart = nv.models[options.chart.type]();
+
+                            scope.chart = HcsChart;//nv.models[options.chart.type]();
 
                             // Generate random chart ID
                             scope.chart.id = Math.random().toString(36).substr(2, 15);
@@ -183,6 +208,12 @@
 
                             nv.addGraph(function() {
                                 if (!scope.chart) return;
+
+                                //var oldUpdate = scope.chart.update;
+                                //scope.chart.update = function() {
+                                //    oldUpdate.apply(this, arguments);
+                                //    console.log("my update");
+                                //};
 
                                 // Remove resize handler. Due to async execution should be placed here, not in the clearElement
                                 if (scope.chart.resizeHandler) scope.chart.resizeHandler.clear();
