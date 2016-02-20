@@ -342,12 +342,24 @@ angular
                 if (!paymentItems) {
                     return chartData;
                 }
+
                 for (var i=0; i<paymentItems.length; ++i) {
                     var payment = paymentItems[i];
+
+                    var month = payment.periodMonth,
+                        paid = $scope.getZeroIfNull(payment.paid),
+                        charged = $scope.getZeroIfNull(payment.charged);
+
+                    if (month.toString().length < 2) {
+                        month = '0' + month;
+                    }
+
+                    var date = $dateParser(month + '.' + payment.periodYear, PERIOD_FORMAT);
+
                     // оплачено
-                    chartData[0].values.push({x: i, y: payment.paid, realValue: payment.paid});
+                    chartData[0].values.push({x: date, y: paid, realValue: paid});
                     // начислено
-                    chartData[1].values.push({x: i, y: payment.charged, realValue: payment.charged});
+                    chartData[1].values.push({x: date, y: Math.max(charged - paid, 0), realValue: charged});
 
                 }
                 return chartData;
@@ -356,36 +368,89 @@ angular
             var chartDomElements = {};
 
             function onRenderEnd(e) {
+                if (!chartDomElements.layer) {
+                    return;
+                }
                 // recalculateChargedBar
-                console.log('renderEnd', e);
+                var w = nv.utils.availableWidth(null, $scope.chartScope.svg, {left: 117, right: 0});
+                console.log('$scope.chartScope', w);
                 //console.log('this', this);
-                var y = d3.scale.linear()
-                    .domain([0, 500])
-                    .range([300, 0]);
-                chartDomElements.rect.transition()
+                //var y = d3.scale.linear()
+                //    .domain([0, 500])
+                //    .range([300, 0]);
+                //chartDomElements.rect
                     //.duration(500)
                     //.delay(function(d, i) { return i * 10; })
-                    .attr("y", function(d) {
-                        if (d.y!==null && d.y0 !== undefined) {
-                            return y(d.y);//y(d.y0 + d.y);
-                        } else {
-                            return this.getAttribute("y");
-                        }
 
-                    })
-                    .attr("height", function(d) {
-                        if (d.y!==null && d.y0 !== undefined) {
-                            return y(0) - y(d.y);
-                        } else {
-                            return this.getAttribute("height");
-                        }
+                    //.attr("y", function(d) {
+                    //    if (d.y!==null && d.y0 !== undefined) {
+                    //        return y(d.y);//y(d.y0 + d.y);
+                    //    } else {
+                    //        return this.getAttribute("y");
+                    //    }
+                    //
+                    //})
+                    //.attr("height", function(d) {
+                    //    if (d.y!==null && d.y0 !== undefined) {
+                    //        return y(0) - y(d.y);
+                    //    } else {
+                    //        return this.getAttribute("height");
+                    //    }
+                    //
+                    //}).transition();
 
-                    }).transition();
                     //.attr("x", function(d) { return x(d.x); })
                     //.attr("width", x.rangeBand());
+
+                //chartDomElements.svg.selectAll(".nv-x.nv-axis .tick text").each(function(t){console.log("text", t);})
+                chartDomElements.svg.selectAll(".nv-x.nv-axis .tick text").each(
+                    function(el, i) {
+                        var text = d3.select(this);
+                        var words = text.text().split(/\s+/).reverse();
+                        //console.log("text: ", text);
+                        //console.log("words: ", words);
+
+                        var word,
+                        //line = [],
+                            lineNumber = 0,
+                            lineHeight = 1.1, // ems
+                            y = text.attr("y"),
+                            dy = parseFloat(text.attr("dy")),
+                            tspan = text.text(null);//.append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+                        while (word = words.pop()) {
+                            //line.push(word);
+                            //tspan.text(line.join(" "));
+                            //if (tspan.node().getComputedTextLength() > 40) {
+                            //line.pop();
+                            //tspan.text(line.join(" "));
+                            //line = [word];
+                            tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", lineNumber * lineHeight + dy + "em").text(word);
+                            ++lineNumber;
+                            //}
+                        }
+
+                        //.filter(function(d,i) {
+                        //    return ;
+                        //})
+
+                        if (i % Math.ceil($scope.chartData[0].values.length / (w / 100)) !== 0) {
+                            text.style('opacity', 0);
+                        }
+
+
+                    }
+                );
+
+            //.filter(function(d,i) {
+            //        return i % Math.ceil(data[0].values.length / (availableWidth / 100)) !== 0;
+            //    })
+            //        .selectAll('text, line')
+            //        .style('opacity', 0);
             }
 
             $scope.chartApi = {};
+
+            $scope.chartScope = {};
 
 
 
@@ -395,11 +460,17 @@ angular
                 var chart = scope.chart;
                 var svg = scope.svg;
 
-                var layer = svg.selectAll(".nv-barsWrap");
+                $scope.chartScope = scope;
+
+                var layer = svg.selectAll(".nv-group");
                 var rect = layer.selectAll("rect");
 
                 chartDomElements.layer = layer;
                 chartDomElements.rect = rect;
+                chartDomElements.svg = svg;
+
+
+                onRenderEnd();
 
                 //var oldUpdateFn = scope.api.update;
                 //scope.api.update = function() {
@@ -420,7 +491,8 @@ angular
                     stacked: true,
                     height: 300,
                     margin: {
-                        left: 117
+                        left: 117,
+                        right: 0
                     },
                     //x: function (d) {
                     //    return $filter('month')(d[0].getMonth() + 1) + ' ' + d[0].getFullYear() + 'г.';
@@ -432,7 +504,7 @@ angular
                     color: function (d, i) {
                         return colorArray[i];
                     },
-                    reduceXTicks: true,
+                    reduceXTicks: false,
                     rotateLabels: 0,      //Angle to rotate x-axis labels.
                     showControls: true,   //Allow user to switch between 'Grouped' and 'Stacked' mode.
                     groupSpacing: 0.1,
@@ -446,22 +518,28 @@ angular
                     //valueFormat: function(d){
                     //    return d3.format(',.4f')(d);
                     //},
-                    duration: 500,
+                    duration: 0,
                     dispatch: {
                         beforeUpdate: function(e){
                             console.log('! before UPDATE !');
                         },
-                        //renderEnd: onRenderEnd
-                        renderEnd: function(e) {
-                            console.log('renderEnd: ', e);
+                        renderEnd: onRenderEnd
+                        //renderEnd: function(e) {
+                        //    console.log('renderEnd: ', e);
+                        //}
+                    },
+                    xAxis: {
+                        tickSize: 0,
+                        //tickPadding: 0,
+                        tickFormat: function (d) {
+                            //console.log("xAxis format", d);
+                            return $filter('month')(d.getMonth() + 1) + ' ' + d.getFullYear() + 'г.';
                         }
+
+                    },
+                    yAxis: {
+                        tickFormat: function (d) {return d3.format('.02f')(d);}
                     }
-                    //xAxis: {
-                    //    tickFormat: function (d) {return $filter('month')(d.getMonth() + 1) + ' ' + d.getFullYear() + 'г.';}
-                    //},
-                    //yAxis: {
-                    //    tickFormat: function (d) {return d3.format('.02f')(d);}
-                    //}
                     //tooltips: true,
                     //tooltipcontent: function (key, x, y, e) {
                     //    var label = xAxisLabels[key],
