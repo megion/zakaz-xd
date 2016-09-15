@@ -13,5 +13,4 @@ angular.module('zakaz-xd.directives.my-dropdown', [
                 };
             }
         };
-    })
-;
+    });

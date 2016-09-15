@@ -1,12 +1,73 @@
 <h4>Demo</h4>
 
-<style>
-</style>
+<!--<style>-->
+    <!--.wrapper {-->
+        <!--position: relative;-->
+    <!--}-->
+
+    <!--ul {-->
+        <!--width: 200px;-->
+        <!--max-height: 250px;-->
+        <!--overflow-x: hidden;-->
+        <!--overflow-y: auto;-->
+    <!--}-->
+
+    <!--li {-->
+        <!--position: static;-->
+    <!--}-->
+
+    <!--li .wrapper {-->
+        <!--position: absolute;-->
+        <!--z-index: 10;-->
+        <!--display: none;-->
+    <!--}-->
+
+    <!--li:hover > .wrapper {-->
+        <!--display: block;-->
+    <!--}-->
+
+    <!--ul {-->
+        <!--margin: 1em;-->
+        <!--color: white;-->
+        <!--font-family: sans-serif;-->
+        <!--font-size: 16px;-->
+    <!--}-->
+
+    <!--li {-->
+        <!--padding: 1em;-->
+    <!--}-->
+
+    <!--li ul {-->
+        <!--margin: 0;-->
+    <!--}-->
+
+    <!--li .wrapper {-->
+        <!--cursor: auto;-->
+    <!--}-->
+
+    <!--li .wrapper li {-->
+        <!--padding: 0.5em;-->
+    <!--}-->
+
+    <!--li:nth-child(2n) {-->
+        <!--background: #0E8CE0;-->
+    <!--}-->
+
+    <!--li:nth-child(2n+1) {-->
+        <!--background: #0064B3;-->
+    <!--}-->
+
+    <!--li.parent {-->
+        <!--background: #00B99B;-->
+        <!--cursor: pointer;-->
+    <!--}-->
+<!--</style>-->
 
 <form class="form-horizontal" name="demoForm" novalidate>
 
     <div class="form-group">
         <label class="col-sm-2 control-label">lowercase</label>
+
         <div class="col-sm-10">
             <input type="text" class="form-control" data-ng-model="models.lowercase" lowercase>
             {{models.lowercase}}
@@ -15,6 +76,7 @@
 
     <div class="form-group">
         <label class="col-sm-2 control-label">BanEnterZero</label>
+
         <div class="col-sm-10">
             <input type="text" class="form-control" data-ng-model="models.banEnterZeroVal" ban-enter-zero>
             {{models.banEnterZeroVal}}
@@ -23,6 +85,7 @@
 
     <div class="form-group">
         <label class="col-sm-2 control-label">date</label>
+
         <div class="col-sm-10">
             <input type="text" data-ng-model="models.lowercase1"
                    my-ui-mask="{{mask}}" placeholder="{{placeholder}}">
@@ -56,5 +119,257 @@
     </div>
 
 
-
 </form>
+
+<div style="position: relative">
+    <div style="overflow: auto">
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Username</th>
+
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Username</th>
+
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Username</th>
+
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Username</th>
+
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Username</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th scope="row">
+            <span class="dropdown" dropdown on-toggle="toggled(open)">
+      <a href class="dropdown-toggle" dropdown-toggle>
+          Click me for a dropdown, yo!
+      </a>
+      <ul class="dropdown-menu">
+          <li >
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+              <a href>sdhgfsdf sdfh sd</a>
+          </li>
+      </ul>
+    </span>
+
+                </th>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+            </tr>
+            <tr>
+                <th scope="row">2</th>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <div class="wrapper">
+                        <ul>
+                            <li>Abc</li>
+                            <li>Def</li>
+                            <li>Ghi</li>
+                            <li>Jkl</li>
+                            <li class="parent">Mno >
+                                <div class="wrapper">
+                                    <ul>
+                                        <li>Abc</li>
+                                        <li>Def</li>
+                                        <li>Ghi</li>
+                                        <li>Jkl</li>
+                                        <li class="parent">Mno >
+                                            <div class="wrapper">
+                                                <ul>
+                                                    <li>Abc</li>
+                                                    <li>Def</li>
+                                                    <li>Ghi</li>
+                                                    <li>Jkl</li>
+                                                    <li>Mno</li>
+                                                    <li>Pqr</li>
+                                                    <li>Stu</li>
+                                                    <li>Vw</li>
+                                                    <li>Xyz</li>
+                                                </ul>
+                                            </div>
+                                        </li>
+                                        <li>Pqr</li>
+                                        <li>Stu</li>
+                                        <li>Vw</li>
+                                        <li>Xyz</li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li>Pqr</li>
+                            <li>Stu</li>
+                            <li>Vw</li>
+                            <li>Xyz</li>
+                            <li class="parent">Abc >
+                                <div class="wrapper">
+                                    <ul>
+                                        <li>Abc</li>
+                                        <li>Def</li>
+                                        <li>Ghi</li>
+                                        <li>Jkl</li>
+                                        <li>Mno</li>
+                                        <li>Pqr</li>
+                                        <li>Stu</li>
+                                        <li>Vw</li>
+                                        <li>Xyz</li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li>Def</li>
+                            <li>Ghi</li>
+                            <li>Jkl</li>
+                            <li>Mno</li>
+                            <li>Pqr</li>
+                            <li>Stu</li>
+                            <li>Vw</li>
+                            <li>Xyz</li>
+                        </ul>
+                    </div>
+                </th>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+<!--<script>-->
+    <!--$(function () {-->
+        <!--$('li.parent').on('mouseover', function () {-->
+            <!--var $menuItem = $(this), $submenuWrapper = $('> .wrapper', $menuItem);-->
+            <!--var menuItemPos = $menuItem.position();-->
+            <!--$submenuWrapper.css({-->
+                <!--top: menuItemPos.top,-->
+                <!--left: menuItemPos.left + Math.round($menuItem.outerWidth() * 0.75)-->
+            <!--});-->
+        <!--});-->
+    <!--});-->
+    <!--//# sourceURL=pen.js-->
+<!--</script>-->
+
+
+<!--<script>-->
+    <!--if (document.location.search.match(/type=embed/gi)) {-->
+        <!--window.parent.postMessage("resize", "*");-->
+    <!--}-->
+<!--</script>-->

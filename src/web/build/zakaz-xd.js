@@ -1,5 +1,5 @@
 /*
- * Version: 1.0 - 2016-02-20T11:54:32.904Z
+ * Version: 1.0 - 2016-08-23T14:01:35.515Z
  */
 
 
@@ -863,8 +863,213 @@ angular.module('zakaz-xd.directives.my-dropdown', [
                 };
             }
         };
+    });
+angular.module('common.hcs-dropdown2',
+    ['ui.bootstrap.position'])
+
+    .service('hcsDropdown2Utils', ['$document', '$window', function($document, $window) {
+        var BODY_SCROLLBAR_WIDTH;
+        this.getBodyScrollbarWidth = function() {
+            if (!BODY_SCROLLBAR_WIDTH) {
+                var bodyElem = $document.find('body');
+                bodyElem.addClass('uib-position-body-scrollbar-measure');
+                BODY_SCROLLBAR_WIDTH = $window.innerWidth - bodyElem[0].clientWidth;
+                BODY_SCROLLBAR_WIDTH = isFinite(BODY_SCROLLBAR_WIDTH) ? BODY_SCROLLBAR_WIDTH : 0;
+                bodyElem.removeClass('uib-position-body-scrollbar-measure');
+            }
+            return BODY_SCROLLBAR_WIDTH;
+        };
+    }])
+    .controller('hcsDropdown2Ctrl', [
+        '$scope', '$element', '$attrs', '$parse', 'dropdownService', '$animate',
+        '$position', '$document', 'hcsDropdown2Utils', '$timeout',
+        function ($scope, $element, $attrs, $parse, dropdownService, $animate,
+                  $position, $document, hcsDropdown2Utils, $timeout) {
+            var self = this,
+                scope = $scope.$new(), // create a child scope so we are not polluting original one
+                getIsOpen,
+                setIsOpen = angular.noop,
+                toggleInvoker = $attrs.onToggle ? $parse($attrs.onToggle) : angular.noop,
+                appendTo = $document.find('body');
+
+            this.init = function () {
+                if ($attrs.isOpen) {
+                    getIsOpen = $parse($attrs.isOpen);
+                    setIsOpen = getIsOpen.assign;
+
+                    $scope.$watch(getIsOpen, function (value) {
+                        scope.isOpen = !!value;
+                    });
+                }
+
+                if (self.dropdownMenu) {
+                    appendTo.append(self.dropdownMenu);
+                    $element.on('$destroy', function handleDestroyEvent() {
+                        self.dropdownMenu.remove();
+                    });
+                }
+            };
+
+            this.toggle = function (open) {
+                scope.isOpen = arguments.length ? !!open : !scope.isOpen;
+                if (angular.isFunction(setIsOpen)) {
+                    setIsOpen(scope, scope.isOpen);
+                }
+
+                return scope.isOpen;
+            };
+
+            // Allow other directives to watch status
+            this.isOpen = function () {
+                return scope.isOpen;
+            };
+
+            scope.getToggleElement = function () {
+                return self.toggleElement;
+            };
+
+            scope.getAutoClose = function () {
+                return $attrs.autoClose || 'always'; //or 'outsideClick' or 'disabled'
+            };
+
+            scope.getDropdownElement = function () {
+                return self.dropdownMenu;
+            };
+
+            scope.focusToggleElement = function () {
+                if (self.toggleElement) {
+                    self.toggleElement[0].focus();
+                }
+            };
+
+            function updatePosition(_isOpen, isAsync) {
+                function refresh() {
+                    var pos = $position.positionElements($element, self.dropdownMenu, 'bottom-left', true);
+                    var css = {
+                        top: pos.top + 'px',
+                        display: _isOpen ? 'block' : 'none'
+                    };
+
+                    var rightalign = self.dropdownMenu.hasClass('dropdown-menu-right');
+                    if (!rightalign) {
+                        css.left = pos.left + 'px';
+                        css.right = 'auto';
+                    } else {
+                        css.left = 'auto';
+
+                        var scrollParent = $document[0].documentElement;
+                        var scrollbarWidth = hcsDropdown2Utils.getBodyScrollbarWidth();
+                        var heightOverflow = scrollParent.scrollHeight > scrollParent.clientHeight;
+                        if (!(heightOverflow && scrollbarWidth)) {
+                            scrollbarWidth = 0;
+                        }
+                        css.right = window.innerWidth - scrollbarWidth - (pos.left + $element.prop('offsetWidth')) + 'px';
+                    }
+                    self.dropdownMenu.css(css);
+                }
+
+                if (self.dropdownMenu) {
+                    if (isAsync) {
+                        refresh();
+                        $timeout(refresh);
+                    } else {
+                        refresh();
+                    }
+                }
+            }
+
+            $(window).on('resize.hcsDropdown2', function () {
+                scope.$apply(function() {
+                    // if window have been resized then close
+                    if (scope.isOpen) {
+                        scope.isOpen = false;
+                    }
+                    //updatePosition(scope.isOpen, false);
+                });
+            });
+
+            scope.$on('$destroy',function () {
+                $(window).off('resize.hcsDropdown2');
+            });
+
+            scope.$watch('isOpen', function (isOpen, wasOpen) {
+                updatePosition(isOpen, true);
+                if (isOpen) {
+                    scope.focusToggleElement();
+                    dropdownService.open(scope);
+                } else {
+                    dropdownService.close(scope);
+                }
+
+                if (angular.isFunction(setIsOpen)) {
+                    setIsOpen($scope, isOpen);
+                }
+
+                if (angular.isDefined(isOpen) && isOpen !== wasOpen) {
+                    toggleInvoker($scope, {open: !!isOpen});
+                }
+            });
+        }])
+
+    .directive('hcsDropdown2', function () {
+        return {
+            controller: 'hcsDropdown2Ctrl',
+            link: function (scope, element, attrs, dropdownCtrl) {
+                dropdownCtrl.init();
+            }
+        };
     })
-;
+
+    .directive('hcsDropdown2Menu', function () {
+        return {
+            restrict: 'A',
+            require: '?^hcsDropdown2',
+            link: function (scope, element, attrs, dropdownCtrl) {
+                if (!dropdownCtrl) {
+                    return;
+                }
+
+                if (!dropdownCtrl.dropdownMenu) {
+                    dropdownCtrl.dropdownMenu = element;
+                }
+            }
+        };
+    })
+
+    .directive('hcsDropdown2Toggle', function () {
+        return {
+            require: '?^hcsDropdown2',
+            link: function (scope, element, attrs, dropdownCtrl) {
+                if (!dropdownCtrl) {
+                    return;
+                }
+
+                dropdownCtrl.toggleElement = element;
+
+                function toggleDropdown(event) {
+                    event.preventDefault();
+                    if (!element.hasClass('disabled') && !attrs.disabled) {
+                        scope.$apply(function () {
+                            dropdownCtrl.toggle();
+                        });
+                    }
+                }
+
+                element.on('click.hcsDropdown2', toggleDropdown);
+
+                // WAI-ARIA
+                element.attr({'aria-haspopup': true, 'aria-expanded': false});
+                scope.$watch(dropdownCtrl.isOpen, function (isOpen) {
+                    element.attr('aria-expanded', !!isOpen);
+                });
+
+                scope.$on('$destroy', function () {
+                    element.off('click.hcsDropdown2', toggleDropdown);
+                });
+            }
+        };
+    });
+
 /*
  Copied from https://github.com/asadighi/ui-utils/blob/master/modules/mask/mask.js
  commit 4615f8e2449d95badf280a9820b8e6429ebb99ab
@@ -1432,7 +1637,8 @@ angular.module('zakaz-xd.directives.pagination', [
 angular.module('zakaz-xd.demo.states', [
     'ui.router',
     'zakaz-xd.auth',
-    'zakaz-xd.demo'
+    'zakaz-xd.demo',
+    'zakaz-xd.demo2'
 ])
     .config(['$stateProvider', '$urlRouterProvider', 'ACCESS',
         function ($stateProvider, $urlRouterProvider, ACCESS) {
@@ -1442,6 +1648,13 @@ angular.module('zakaz-xd.demo.states', [
                     url: '/demo',
                     controller: 'DemoCtrl',
                     templateUrl: 'app/main-pages/demo/demo.tpl.html',
+                    resolve: {
+                    }
+                })
+                .state('demo2', {
+                    url: '/demo2',
+                    controller: 'Demo2Ctrl',
+                    templateUrl: 'app/main-pages/demo/demo2.tpl.html',
                     resolve: {
                     }
                 });
@@ -1701,6 +1914,10 @@ angular
                 lowercase1: ''
             };
 
+            $scope.toggled = function(open) {
+                console.log('Dropdown is now: ', open);
+            };
+
             $scope.openModal = function () {
                 var modalInstance = $modal.open({
                     animation: true,
@@ -1883,6 +2100,7 @@ angular
                         //    return ;
                         //})
 
+                        // скрыть tick подписи по x которые не убираются по ширине
                         if (i % Math.ceil($scope.chartData[0].values.length / (w / 100)) !== 0) {
                             text.style('opacity', 0);
                         }
@@ -2034,32 +2252,32 @@ angular
             };
 
             /* Inspired by Lee Byron's test data generator. */
-            function stream_layers(n, m, o) {
-                if (arguments.length < 3) {
-                    o = 0;
-                }
-                function bump(a) {
-                    var x = 1 / (0.1 + Math.random()),
-                        y = 2 * Math.random() - 0.5,
-                        z = 10 / (0.1 + Math.random());
-                    for (var i = 0; i < m; i++) {
-                        var w = (i / m - y) * z;
-                        a[i] += x * Math.exp(-w * w);
-                    }
-                }
-                var series = d3.range(n).map(function() {
-                    var a = [], i;
-                    for (i = 0; i < m; i++) {
-                        a[i] = o + o * Math.random();
-                    }
-                    for (i = 0; i < 5; i++) {
-                        bump(a);
-                    }
-                    return a.map(stream_index);
-                });
-                console.log("series: ", series);
-                return series;
-            }
+            //function stream_layers(n, m, o) {
+            //    if (arguments.length < 3) {
+            //        o = 0;
+            //    }
+            //    function bump(a) {
+            //        var x = 1 / (0.1 + Math.random()),
+            //            y = 2 * Math.random() - 0.5,
+            //            z = 10 / (0.1 + Math.random());
+            //        for (var i = 0; i < m; i++) {
+            //            var w = (i / m - y) * z;
+            //            a[i] += x * Math.exp(-w * w);
+            //        }
+            //    }
+            //    var series = d3.range(n).map(function() {
+            //        var a = [], i;
+            //        for (i = 0; i < m; i++) {
+            //            a[i] = o + o * Math.random();
+            //        }
+            //        for (i = 0; i < 5; i++) {
+            //            bump(a);
+            //        }
+            //        return a.map(stream_index);
+            //    });
+            //    console.log("series: ", series);
+            //    return series;
+            //}
 
             /* Another layer generator using gamma distributions. */
             //function stream_waves(n, m) {
@@ -2078,14 +2296,14 @@ angular
 
 
             //Generate some nice data.
-            function exampleData() {
-                return stream_layers(3, 10+Math.random()*100, 0.1).map(function(data, i) {
-                    return {
-                        key: 'Stream #' + i,
-                        values: data
-                    };
-                });
-            }
+            //function exampleData() {
+            //    return stream_layers(3, 10+Math.random()*100, 0.1).map(function(data, i) {
+            //        return {
+            //            key: 'Stream #' + i,
+            //            values: data
+            //        };
+            //    });
+            //}
 
             //stream_layers(3, 10+Math.random()*100, 0.1);
 
@@ -2133,6 +2351,26 @@ angular
             //console.log("layers", layers);
             //console.log("yGroupMax", yGroupMax);
             //console.log("yStackMax", yStackMax);
+        }
+    ])
+;
+
+angular
+    .module('zakaz-xd.demo2', [
+        'zakaz-xd.directives.decimal',
+        'zakaz-xd.directives.my-dropdown',
+        'common.hcs-dropdown2',
+        'zakaz-xd.directives.my.ui.mask',
+        'ui.select',
+        'ngSanitize',
+        'ui.bootstrap'
+    ])
+    .controller('Demo2Ctrl', ['$scope', '$stateParams', '$state', '$modal', "$filter", "$dateParser",
+        function ($scope, $stateParams, $state, $modal, $filter, $dateParser) {
+
+            $scope.toggled = function(open) {
+                console.log('Dropdown is now: ', open);
+            };
         }
     ])
 ;
