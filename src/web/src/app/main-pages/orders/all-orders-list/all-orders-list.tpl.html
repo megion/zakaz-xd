@@ -17,6 +17,7 @@
                 <th>Автор</th>
                 <th>Наименование</th>
                 <th>Дата создания</th>
+                <th>Дата доставки</th>
                 <th>Статус</th>
             </tr>
             </thead>
@@ -27,6 +28,7 @@
                 <td>{{order.author.username}}</td>
                 <td>{{order.title}}</td>
                 <td>{{order.createdDate | date:'dd.MM.yyyy HH:mm:ss'}}</td>
+                <td>{{order.deliveryDate | date:'dd.MM.yyyy'}}</td>
                 <td>{{order.status.title}}</td>
             </tr>
             </tbody>

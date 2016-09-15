@@ -1,8 +1,10 @@
-<p class="input-group">
-    <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="ngModel" name="name"
+<div class="input-group">
+    <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="ngModel" name="{{name}}"
            datepicker-options="options" ng-required="required" is-open="opened" datepicker-append-to-body="true"
            clear-text="Очистить" close-text="Закрыть" current-text="Сегодня" />
     <span class="input-group-btn">
-        <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+        <button type="button" class="btn btn-default" ng-click="open($event)">
+            <i class="glyphicon glyphicon-calendar" style="line-height: 0; top: 4px;"></i>
+        </button>
     </span>
-</p>
+</div>

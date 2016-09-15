@@ -35,6 +35,21 @@ Run fill database script:
 
 Demo application [http://zakazxd-megion.rhcloud.com](http://zakazxd-megion.rhcloud.com)
 
+## Web development
+
+    install Gulp global
+    # npm install --global gulp-cli
+    
+    install local web packages
+    $ cd src/web
+    $ npm install
+    
+    Build
+    $ gulp
+    or
+    $ gulp watch
+
+
 
     
     

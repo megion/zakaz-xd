@@ -14,6 +14,12 @@ angular.module('zakaz-xd.directives.datepicker', [
             controller: function ($scope) {
                 $scope.format = $scope.options.format || 'dd.MM.yyyy';
 
+                if ($scope.ngModel !== null && $scope.ngModel !== undefined) {
+                    if (typeof $scope.ngModel === 'string') {
+                        $scope.ngModel = new Date($scope.ngModel);
+                    }
+                }
+
                 $scope.open = function($event) {
                     $event.preventDefault();
                     $event.stopPropagation();

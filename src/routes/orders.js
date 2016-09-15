@@ -90,7 +90,7 @@ router.post('/create-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_OR
 
     order.createdDate = new Date();
     order.author_id = req.user._id;
-    if (order.createdDate>order.deliveryDate) {
+    if (order.deliveryDate.getDay()<order.createdDate.getDay()) {
         return next(new HttpError(400, "Дата доставки не может быть меньше даты создания"));
     }
 
@@ -134,7 +134,7 @@ function editOrder(id, order, req, res, next) {
 
     order.deliveryDate = new Date(order.deliveryDate);
 
-    if (createdDate>order.deliveryDate) {
+    if (order.deliveryDate.getDay()<createdDate.getDay()) {
         return next(new HttpError(400, "Дата доставки не может быть меньше даты создания"));
     }
 
