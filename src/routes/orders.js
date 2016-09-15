@@ -79,11 +79,20 @@ router.post('/create-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_OR
     if (!order.authorDeliveryPoint) {
         return next(new HttpError(400, "Поле точка доставки пустое"));
     }
+
+    if (!order.deliveryDate) {
+        return next(new HttpError(400, "Поле Дата доставки пустое"));
+    }
+
+    order.deliveryDate = new Date(order.deliveryDate);
     order.authorDeliveryPoint_id = new ObjectID(order.authorDeliveryPoint._id);
     delete order.authorDeliveryPoint;
 
     order.createdDate = new Date();
     order.author_id = req.user._id;
+    if (order.createdDate>order.deliveryDate) {
+        return next(new HttpError(400, "Дата доставки не может быть меньше даты создания"));
+    }
 
     orderService.createOrder(order, function(err, newOrder) {
         if (err)
@@ -93,7 +102,17 @@ router.post('/create-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_OR
     });
 });
 
+function checkOrderDeliveryDate(item, callback) {
+    if (!item.deliveryDate) {
+        return callback(new Error("Дата доставки не задана"));
+    }
+    if (item.createdDate>item.deliveryDate) {
+        return callback(new Error("Дата доставки не может быть меньше даты создания"));
+    }
+}
+
 function editOrder(id, order, req, res, next) {
+    var createdDate = new Date(order.createdDate);
     delete order._id;
     delete order.createdDate;
     delete order.author;
@@ -108,6 +127,17 @@ function editOrder(id, order, req, res, next) {
     if (!order.authorDeliveryPoint) {
         return next(new HttpError(400, "Поле точка доставки пустое"));
     }
+
+    if (!order.deliveryDate) {
+        return next(new HttpError(400, "Поле Дата доставки пустое"));
+    }
+
+    order.deliveryDate = new Date(order.deliveryDate);
+
+    if (createdDate>order.deliveryDate) {
+        return next(new HttpError(400, "Дата доставки не может быть меньше даты создания"));
+    }
+
     order.authorDeliveryPoint_id = new ObjectID(order.authorDeliveryPoint._id);
     delete order.authorDeliveryPoint;
 
