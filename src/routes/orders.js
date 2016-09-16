@@ -90,8 +90,8 @@ router.post('/create-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_OR
 
     order.createdDate = new Date();
     order.author_id = req.user._id;
-    if (order.deliveryDate.getDay()<order.createdDate.getDay()) {
-        return next(new HttpError(400, "Дата доставки не может быть меньше даты создания"));
+    if (!isMoreOrEqualDayOfNow(order.deliveryDate)) {
+        return next(new HttpError(400, "Дата доставки не может быть меньше текущей даты"));
     }
 
     orderService.createOrder(order, function(err, newOrder) {
@@ -102,17 +102,21 @@ router.post('/create-order', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_OR
     });
 });
 
-function checkOrderDeliveryDate(item, callback) {
-    if (!item.deliveryDate) {
-        return callback(new Error("Дата доставки не задана"));
+function isMoreOrEqualDayOfNow(compareDate) {
+    var nowDate = new Date();
+    if (compareDate.getFullYear() < nowDate.getFullYear()) {
+        return false;
     }
-    if (item.createdDate>item.deliveryDate) {
-        return callback(new Error("Дата доставки не может быть меньше даты создания"));
+    if (compareDate.getMonth() < nowDate.getMonth()) {
+        return false;
     }
+    if (compareDate.getDate() < nowDate.getDate()) {
+        return false;
+    }
+    return true;
 }
 
 function editOrder(id, order, req, res, next) {
-    var createdDate = new Date(order.createdDate);
     delete order._id;
     delete order.createdDate;
     delete order.author;
@@ -134,8 +138,8 @@ function editOrder(id, order, req, res, next) {
 
     order.deliveryDate = new Date(order.deliveryDate);
 
-    if (order.deliveryDate.getDay()<createdDate.getDay()) {
-        return next(new HttpError(400, "Дата доставки не может быть меньше даты создания"));
+    if (!isMoreOrEqualDayOfNow(order.deliveryDate)) {
+        return next(new HttpError(400, "Дата доставки не может быть меньше текущей даты"));
     }
 
     order.authorDeliveryPoint_id = new ObjectID(order.authorDeliveryPoint._id);
