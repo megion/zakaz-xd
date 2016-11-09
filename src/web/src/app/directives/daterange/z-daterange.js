@@ -6,25 +6,25 @@ angular.module('zakaz-xd.directives.daterange', [
             restrict: 'E',
             scope: {
                 options: '=',
-                ngModel: '=',
+                dateStart: '=',
+                dateEnd: '=',
                 required: '=',
                 name: '@'
             },
-            templateUrl: 'app/directives/datepicker/z-datepicker.tpl.html',
+            templateUrl: 'app/directives/daterange/z-daterange.tpl.html',
             controller: function ($scope) {
-                $scope.format = $scope.options.format || 'dd.MM.yyyy';
-
-                if ($scope.ngModel !== null && $scope.ngModel !== undefined) {
-                    if (typeof $scope.ngModel === 'string') {
-                        $scope.ngModel = new Date($scope.ngModel);
+                if ($scope.dateStart !== null && $scope.dateStart !== undefined) {
+                    if (typeof $scope.dateStart === 'string') {
+                        $scope.dateStart = new Date($scope.dateStart);
                     }
                 }
 
-                $scope.open = function($event) {
-                    $event.preventDefault();
-                    $event.stopPropagation();
-                    $scope.opened = true;
-                };
+                if ($scope.dateEnd !== null && $scope.dateEnd !== undefined) {
+                    if (typeof $scope.dateEnd === 'string') {
+                        $scope.dateEnd = new Date($scope.dateEnd);
+                    }
+                }
+
             }
         };
     })

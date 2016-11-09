@@ -1,5 +1,5 @@
 /*
- * Version: 1.0 - 2016-11-01T19:41:33.578Z
+ * Version: 1.0 - 2016-11-09T21:29:10.889Z
  */
 
 
@@ -774,6 +774,37 @@ angular.module('zakaz-xd.directives.datepicker', [
                     $event.stopPropagation();
                     $scope.opened = true;
                 };
+            }
+        };
+    })
+;
+angular.module('zakaz-xd.directives.daterange', [
+    'ui.bootstrap'
+])
+    .directive('zDaterange', function () {
+        return {
+            restrict: 'E',
+            scope: {
+                options: '=',
+                dateStart: '=',
+                dateEnd: '=',
+                required: '=',
+                name: '@'
+            },
+            templateUrl: 'app/directives/daterange/z-daterange.tpl.html',
+            controller: function ($scope) {
+                if ($scope.dateStart !== null && $scope.dateStart !== undefined) {
+                    if (typeof $scope.dateStart === 'string') {
+                        $scope.dateStart = new Date($scope.dateStart);
+                    }
+                }
+
+                if ($scope.dateEnd !== null && $scope.dateEnd !== undefined) {
+                    if (typeof $scope.dateEnd === 'string') {
+                        $scope.dateEnd = new Date($scope.dateEnd);
+                    }
+                }
+
             }
         };
     })
@@ -3321,6 +3352,7 @@ angular
     .module('zakaz-xd.orders.all-orders-list', [
         'zakaz-xd.dialogs',
         'zakaz-xd.directives.pagination',
+        'zakaz-xd.directives.daterange',
         'zakaz-xd.resources.orders-resource',
         'zakaz-xd.auth'
     ])
@@ -3336,6 +3368,15 @@ angular
                 pageChanged: function(page, itemsPerPage)  {
                     refreshOrdersTable({page: page, itemsPerPage: itemsPerPage});
                 }
+            };
+
+            $scope.searchParameters = {
+                dateStart: null,
+                dateEnd: null
+            };
+
+            $scope.applySearch = function () {
+                console.log("search", $scope.searchParameters );
             };
 
             function refreshOrdersTable(page) {

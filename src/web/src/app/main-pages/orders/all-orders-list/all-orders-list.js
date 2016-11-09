@@ -2,6 +2,7 @@ angular
     .module('zakaz-xd.orders.all-orders-list', [
         'zakaz-xd.dialogs',
         'zakaz-xd.directives.pagination',
+        'zakaz-xd.directives.daterange',
         'zakaz-xd.resources.orders-resource',
         'zakaz-xd.auth'
     ])
@@ -17,6 +18,15 @@ angular
                 pageChanged: function(page, itemsPerPage)  {
                     refreshOrdersTable({page: page, itemsPerPage: itemsPerPage});
                 }
+            };
+
+            $scope.searchParameters = {
+                dateStart: null,
+                dateEnd: null
+            };
+
+            $scope.applySearch = function () {
+                console.log("search", $scope.searchParameters );
             };
 
             function refreshOrdersTable(page) {
