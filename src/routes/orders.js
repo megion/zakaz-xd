@@ -13,9 +13,16 @@ var ORDER_STATUSES = require('../utils/orderStatuses').ORDER_STATUSES;
 var pagination = require('../utils/pagination');
 var ObjectID = require('mongodb').ObjectID;
 
-router.get('/all-orders', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS), function(req, res, next) {
-    var page = pagination.createMongodbPage(req);
-    orderService.findAllOrders(page, function(err, result) {
+router.post('/all-orders', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS), function(req, res, next) {
+    var page = pagination.createMongodbPage(req.body.page);
+    var request = req.body.req;
+	if (request.startDate) {
+		request.startDate = new Date(request.startDate);
+	}
+	if (request.endDate) {
+		request.endDate = new Date(request.endDate);
+	}
+    orderService.findAllOrders(page, request, function(err, result) {
             if (err) {
                 return next(err);
             }
@@ -25,8 +32,15 @@ router.get('/all-orders', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDER
 });
 
 router.get('/user-orders', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
-    var page = pagination.createMongodbPage(req);
-    orderService.findAllOrdersByAuthorId(page, req.user._id, function(err, result) {
+	var page = pagination.createMongodbPage(req.body.page);
+    var request = req.body.req;
+	if (request.startDate) {
+		request.startDate = new Date(request.startDate);
+	}
+	if (request.endDate) {
+		request.endDate = new Date(request.endDate);
+	}
+    orderService.findAllOrdersByAuthorId(page, req.user._id, request, function(err, result) {
             if (err) {
                 return next(err);
             }

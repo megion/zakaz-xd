@@ -8,6 +8,8 @@ lib-cov
 *.gz
 *.md.html
 *.iml
+*.swp
+*~
 
 #Sublime
 Flo.sublime-workspace
@@ -37,4 +39,4 @@ src/web/build/src
 src/web/build/_index.html
 config.json
 
-
+Session.vim

@@ -1,5 +1,5 @@
 /*
- * Version: 1.0 - 2016-11-09T21:29:10.889Z
+ * Version: 1.0 - 2016-12-01T20:56:33.710Z
  */
 
 
@@ -544,11 +544,11 @@ angular.module('zakaz-xd.resources.orders-resource', [
             deleteOrder: function (orderId) {
                 return $http.post(startUrl + '/delete-order', {id: orderId});
             },
-            getAllOrders: function (page) {
-                return $http.get(startUrl + '/all-orders', {params: page});
+			getAllOrders: function (page, req) {
+                return $http.post(startUrl + '/all-orders', {page: page, req: req});
             },
-            getAllUserOrders: function (page) {
-                return $http.get(startUrl + '/user-orders', {params: page});
+            getAllUserOrders: function (page, req) {
+                return $http.post(startUrl + '/user-orders', {page: page, req: req});
             },
             getOrderById: function (orderId) {
                 return $http.get(startUrl + '/order-by-id', {params: {orderId: orderId}});
@@ -597,6 +597,7 @@ angular.module('zakaz-xd.resources.orders-resource', [
             }
         };
     }]);
+
 angular.module('zakaz-xd.resources.products-resource', [
 ])
 
