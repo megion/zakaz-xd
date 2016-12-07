@@ -26,11 +26,13 @@ angular
             };
 
             $scope.applySearch = function () {
-                console.log("search", $scope.searchParameters );
+                console.log("search", $scope.searchParameters);
+				$scope.pageConfig.page = 1;
+				refresh();
             };
 
             function refreshOrdersTable(page) {
-                OrdersResource.getAllOrders(page).then(
+                OrdersResource.getAllOrders(page, $scope.searchParameters).then(
                     function(response) {
                         $scope.orderList = response.data.items;
                         $scope.pageConfig.count = response.data.count;
@@ -41,7 +43,11 @@ angular
                 );
             }
 
-            refreshOrdersTable({page: $scope.pageConfig.page, itemsPerPage: $scope.pageConfig.itemsPerPage});
+			function refresh() {
+				refreshOrdersTable({page: $scope.pageConfig.page, itemsPerPage: $scope.pageConfig.itemsPerPage});
+			}
+
+			refresh();
         }
     ])
 ;

@@ -1,5 +1,5 @@
 /*
- * Version: 1.0 - 2016-12-01T20:56:33.710Z
+ * Version: 1.0 - 2016-12-07T14:34:44.842Z
  */
 
 
@@ -3377,11 +3377,13 @@ angular
             };
 
             $scope.applySearch = function () {
-                console.log("search", $scope.searchParameters );
+                console.log("search", $scope.searchParameters);
+				$scope.pageConfig.page = 1;
+				refresh();
             };
 
             function refreshOrdersTable(page) {
-                OrdersResource.getAllOrders(page).then(
+                OrdersResource.getAllOrders(page, $scope.searchParameters).then(
                     function(response) {
                         $scope.orderList = response.data.items;
                         $scope.pageConfig.count = response.data.count;
@@ -3392,7 +3394,11 @@ angular
                 );
             }
 
-            refreshOrdersTable({page: $scope.pageConfig.page, itemsPerPage: $scope.pageConfig.itemsPerPage});
+			function refresh() {
+				refreshOrdersTable({page: $scope.pageConfig.page, itemsPerPage: $scope.pageConfig.itemsPerPage});
+			}
+
+			refresh();
         }
     ])
 ;
@@ -3663,8 +3669,20 @@ angular
                 }
             };
 
+            $scope.searchParameters = {
+                dateStart: null,
+                dateEnd: null
+            };
+
+            $scope.applySearch = function () {
+                console.log("search", $scope.searchParameters);
+				$scope.pageConfig.page = 1;
+				refresh();
+            };
+
+
             function refreshOrdersTable(page) {
-                OrdersResource.getAllUserOrders(page).then(
+                OrdersResource.getAllUserOrders(page, $scope.searchParameters).then(
                     function(response) {
                         $scope.orderList = response.data.items;
                         $scope.pageConfig.count = response.data.count;
@@ -3674,8 +3692,12 @@ angular
                     }
                 );
             }
+			function refresh() {
+				refreshOrdersTable({page: $scope.pageConfig.page, itemsPerPage: $scope.pageConfig.itemsPerPage});
+			}
 
-            refreshOrdersTable({page: $scope.pageConfig.page, itemsPerPage: $scope.pageConfig.itemsPerPage});
+			refresh();
+    
         }
     ])
 ;

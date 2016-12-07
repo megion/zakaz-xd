@@ -19,8 +19,20 @@ angular
                 }
             };
 
+            $scope.searchParameters = {
+                dateStart: null,
+                dateEnd: null
+            };
+
+            $scope.applySearch = function () {
+                console.log("search", $scope.searchParameters);
+				$scope.pageConfig.page = 1;
+				refresh();
+            };
+
+
             function refreshOrdersTable(page) {
-                OrdersResource.getAllUserOrders(page).then(
+                OrdersResource.getAllUserOrders(page, $scope.searchParameters).then(
                     function(response) {
                         $scope.orderList = response.data.items;
                         $scope.pageConfig.count = response.data.count;
@@ -30,8 +42,12 @@ angular
                     }
                 );
             }
+			function refresh() {
+				refreshOrdersTable({page: $scope.pageConfig.page, itemsPerPage: $scope.pageConfig.itemsPerPage});
+			}
 
-            refreshOrdersTable({page: $scope.pageConfig.page, itemsPerPage: $scope.pageConfig.itemsPerPage});
+			refresh();
+    
         }
     ])
 ;

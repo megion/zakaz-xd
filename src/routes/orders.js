@@ -14,7 +14,7 @@ var pagination = require('../utils/pagination');
 var ObjectID = require('mongodb').ObjectID;
 
 router.post('/all-orders', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS), function(req, res, next) {
-    var page = pagination.createMongodbPage(req.body.page);
+    var page = pagination.createMongodbPageFromRequestBody(req.body);
     var request = req.body.req;
 	if (request.startDate) {
 		request.startDate = new Date(request.startDate);
@@ -31,8 +31,8 @@ router.post('/all-orders', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDE
     );
 });
 
-router.get('/user-orders', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
-	var page = pagination.createMongodbPage(req.body.page);
+router.post('/user-orders', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
+	var page = pagination.createMongodbPageFromRequestBody(req.body);
     var request = req.body.req;
 	if (request.startDate) {
 		request.startDate = new Date(request.startDate);

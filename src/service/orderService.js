@@ -273,11 +273,11 @@ function findAllOrdersByFilter(page, filter, callback) {
     });
 }
 
-function findAllOrders(page, callback) {
+function findAllOrders(page, searchParameters, callback) {
     findAllOrdersByFilter(page, {}, callback);
 }
 
-function findAllOrdersByAuthorId(page, authorId, callback) {
+function findAllOrdersByAuthorId(page, authorId, searchParameters, callback) {
     findAllOrdersByFilter(page, {author_id: authorId}, callback);
 }
 
