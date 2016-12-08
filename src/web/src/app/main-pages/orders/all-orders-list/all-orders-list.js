@@ -24,6 +24,10 @@ angular
 				deliveryDate: {
 					start: null,
 					end: null
+				},
+				createdDate: {
+					start: null,
+					end: null
 				}
             };
 

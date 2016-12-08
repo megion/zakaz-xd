@@ -22,6 +22,13 @@ router.post('/all-orders', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDE
 	if (request.deliveryDate.end) {
 		request.deliveryDate.end = new Date(request.deliveryDate.end);
 	}
+
+	if (request.createdDate.start) {
+		request.createdDate.start = new Date(request.createdDate.start);
+	}
+	if (request.createdDate.end) {
+		request.createdDate.end = new Date(request.createdDate.end);
+	}
     orderService.findAllOrders(page, request, function(err, result) {
             if (err) {
                 return next(err);
@@ -34,13 +41,19 @@ router.post('/all-orders', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDE
 router.post('/user-orders', loadUser, checkAccess.getAuditor(ACCESSES.MANAGE_ORDERS | ACCESSES.EDIT_OWN_ORDER), function(req, res, next) {
 	var page = pagination.createMongodbPageFromRequestBody(req.body);
     var request = req.body.req;
-	console.log("request", request);
 	if (request.deliveryDate.start) {
 		request.deliveryDate.start = new Date(request.deliveryDate.start);
 	}
 	if (request.deliveryDate.end) {
 		request.deliveryDate.end = new Date(request.deliveryDate.end);
 	}
+	if (request.createdDate.start) {
+		request.createdDate.start = new Date(request.createdDate.start);
+	}
+	if (request.createdDate.end) {
+		request.createdDate.end = new Date(request.createdDate.end);
+	}
+
     orderService.findAllOrdersByAuthorId(page, req.user._id, request, function(err, result) {
             if (err) {
                 return next(err);

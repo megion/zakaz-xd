@@ -288,23 +288,34 @@ function createDateRangeFilter(startDate, endDate) {
 }
 
 function findAllOrders(page, searchParameters, callback) {
+	var filter = {};
 	var deliveryDateFilter = createDateRangeFilter(searchParameters.deliveryDate.start,
 		   	searchParameters.deliveryDate.end);
-	var filter = {};
 	if (deliveryDateFilter) {
 		filter.deliveryDate = deliveryDateFilter;	
 	}	
+	
+	var createdDateFilter = createDateRangeFilter(searchParameters.createdDate.start,
+		   	searchParameters.createdDate.end);
+	if (createdDateFilter) {
+		filter.createdDate = createdDateFilter;	
+	}
     findAllOrdersByFilter(page, filter, callback);
 }
 
 function findAllOrdersByAuthorId(page, authorId, searchParameters, callback) {
+	var filter = {author_id: authorId};
 	var deliveryDateFilter = createDateRangeFilter(searchParameters.deliveryDate.start,
 		   	searchParameters.deliveryDate.end);
-	var filter = {author_id: authorId};
 	if (deliveryDateFilter) {
 		filter.deliveryDate = deliveryDateFilter;	
 	}
-	console.warn("filer:", filter);
+
+	var createdDateFilter = createDateRangeFilter(searchParameters.createdDate.start,
+		   	searchParameters.createdDate.end);
+	if (createdDateFilter) {
+		filter.createdDate = createdDateFilter;	
+	}
     findAllOrdersByFilter(page, filter, callback);
 }
 

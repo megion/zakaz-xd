@@ -1,5 +1,5 @@
 /*
- * Version: 1.0 - 2016-12-08T13:09:16.943Z
+ * Version: 1.0 - 2016-12-08T13:55:35.634Z
  */
 
 
@@ -3375,6 +3375,10 @@ angular
 				deliveryDate: {
 					start: null,
 					end: null
+				},
+				createdDate: {
+					start: null,
+					end: null
 				}
             };
 
@@ -3673,6 +3677,10 @@ angular
 
             $scope.searchParameters = {
 				deliveryDate: {
+					start: null,
+					end: null
+				},
+				createdDate: {
 					start: null,
 					end: null
 				}
