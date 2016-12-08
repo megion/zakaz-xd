@@ -21,8 +21,10 @@ angular
             };
 
             $scope.searchParameters = {
-                dateStart: null,
-                dateEnd: null
+				deliveryDate: {
+					start: null,
+					end: null
+				}
             };
 
             $scope.applySearch = function () {

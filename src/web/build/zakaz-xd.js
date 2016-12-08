@@ -1,5 +1,5 @@
 /*
- * Version: 1.0 - 2016-12-07T14:34:44.842Z
+ * Version: 1.0 - 2016-12-08T13:09:16.943Z
  */
 
 
@@ -3372,8 +3372,10 @@ angular
             };
 
             $scope.searchParameters = {
-                dateStart: null,
-                dateEnd: null
+				deliveryDate: {
+					start: null,
+					end: null
+				}
             };
 
             $scope.applySearch = function () {
@@ -3670,9 +3672,11 @@ angular
             };
 
             $scope.searchParameters = {
-                dateStart: null,
-                dateEnd: null
-            };
+				deliveryDate: {
+					start: null,
+					end: null
+				}
+			};
 
             $scope.applySearch = function () {
                 console.log("search", $scope.searchParameters);

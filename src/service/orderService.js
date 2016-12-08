@@ -263,7 +263,7 @@ function findAllOrdersByFilter(page, filter, callback) {
                 return callback(err);
             }
 
-            coll.count(function(err, count) {
+            coll.count(filter, function(err, count) {
                 if (err) {
                     return callback(err);
                 }
@@ -273,12 +273,39 @@ function findAllOrdersByFilter(page, filter, callback) {
     });
 }
 
+function createDateRangeFilter(startDate, endDate) {
+	if (!startDate && !endDate) {
+		return null;
+	}
+	var filter = {};
+	if (startDate) {
+		filter.$gte = startDate;
+	}
+	if (endDate) {
+		filter.$lte = endDate;
+	}
+	return filter;
+}
+
 function findAllOrders(page, searchParameters, callback) {
-    findAllOrdersByFilter(page, {}, callback);
+	var deliveryDateFilter = createDateRangeFilter(searchParameters.deliveryDate.start,
+		   	searchParameters.deliveryDate.end);
+	var filter = {};
+	if (deliveryDateFilter) {
+		filter.deliveryDate = deliveryDateFilter;	
+	}	
+    findAllOrdersByFilter(page, filter, callback);
 }
 
 function findAllOrdersByAuthorId(page, authorId, searchParameters, callback) {
-    findAllOrdersByFilter(page, {author_id: authorId}, callback);
+	var deliveryDateFilter = createDateRangeFilter(searchParameters.deliveryDate.start,
+		   	searchParameters.deliveryDate.end);
+	var filter = {author_id: authorId};
+	if (deliveryDateFilter) {
+		filter.deliveryDate = deliveryDateFilter;	
+	}
+	console.warn("filer:", filter);
+    findAllOrdersByFilter(page, filter, callback);
 }
 
 function findOneOrderByFilter(filter, callback) {
