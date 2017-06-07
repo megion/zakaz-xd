@@ -340,8 +340,8 @@ angular
 
             function transformItemsToMultiBarChart(paymentItems) {
                 var chartData = [
-                    {key: xAxisKeys.paid, values: []},
-                    {key: xAxisKeys.charged, values: []}
+                    {key: xAxisKeys.paid, values: [], type: 'bar', yAxis: 1},
+                    {key: xAxisKeys.charged, values: [], type: 'bar', yAxis: 2}
                 ];
                 if (!paymentItems) {
                     return chartData;
@@ -359,11 +359,16 @@ angular
                     }
 
                     var date = $dateParser(month + '.' + payment.periodYear, PERIOD_FORMAT);
+                    //var date = month + '.' + payment.periodYear;
+                    console.log("date: ", date);
 
                     // оплачено
-                    chartData[0].values.push({x: date, y: paid, realValue: paid});
+                    //chartData[0].values.push({x: date, y: paid, realValue: paid});
                     // начислено
-                    chartData[1].values.push({x: date, y: Math.max(charged - paid, 0), realValue: charged});
+                    //chartData[1].values.push({x: date, y: Math.max(charged - paid, 0), realValue: charged});
+                    
+                    chartData[0].values.push({x: date.getTime(), y: paid});
+                    chartData[1].values.push({x: date.getTime(), y: Math.max(charged - paid, 0)});
 
                 }
                 return chartData;
@@ -492,27 +497,35 @@ angular
 
             $scope.chartOptions = {
                 chart: {
-                    type: 'multiBarChart',
-                    stacked: true,
-                    height: 300,
-                    margin: {
-                        left: 117,
-                        right: 0
+                    //type: 'multiBarChart',
+                    type: 'multiChart',
+                    height: 450,
+                    margin : {
+                        top: 30,
+                        right: 60,
+                        bottom: 50,
+                        left: 70
                     },
+                    //stacked: true,
+                    //height: 300,
+                    //margin: {
+                        //left: 117,
+                        //right: 0
+                    //},
                     //x: function (d) {
                     //    return $filter('month')(d[0].getMonth() + 1) + ' ' + d[0].getFullYear() + 'г.';
                     //},
                     //y: function (d) {
                     //    return d3.format('.02f')(d[1]);
                     //},
-                    noData: "Данные за выбранный период отсутствуют!",
+                    //noData: "Данные за выбранный период отсутствуют!",
                     color: function (d, i) {
                         return colorArray[i];
                     },
-                    reduceXTicks: false,
-                    rotateLabels: 0,      //Angle to rotate x-axis labels.
-                    showControls: true,   //Allow user to switch between 'Grouped' and 'Stacked' mode.
-                    groupSpacing: 0.1,
+                    //reduceXTicks: false,
+                    //rotateLabels: 0,      //Angle to rotate x-axis labels.
+                    //showControls: true,   //Allow user to switch between 'Grouped' and 'Stacked' mode.
+                    //groupSpacing: 0.1,
                     //legendColor: function (d, i) {
                     //    return colorArray[i];
                     //},
@@ -524,26 +537,52 @@ angular
                     //    return d3.format(',.4f')(d);
                     //},
                     duration: 0,
-                    dispatch: {
-                        beforeUpdate: function(e){
-                            console.log('! before UPDATE !');
-                        },
-                        renderEnd: onRenderEnd
-                        //renderEnd: function(e) {
-                        //    console.log('renderEnd: ', e);
+                    //dispatch: {
+                        //beforeUpdate: function(e){
+                            //console.log('! before UPDATE !');
+                        //},
+                        //renderEnd: onRenderEnd
+                        ////renderEnd: function(e) {
+                        ////    console.log('renderEnd: ', e);
+                        ////}
+                    //},
+                    //xAxis: {
+                        //tickFormat: function(d){
+                            //console.log("xAxis format", d);
+                            //return d3.format(',f')(d);
                         //}
-                    },
+                    //},
                     xAxis: {
-                        tickSize: 0,
+                        //tickSize: 0,
                         //tickPadding: 0,
                         tickFormat: function (d) {
-                            //console.log("xAxis format", d);
-                            return $filter('month')(d.getMonth() + 1) + ' ' + d.getFullYear() + 'г.';
+                            console.log("xAxis format", d);
+                            var date = new Date(d);
+                            return $filter('month')(date.getMonth() + 1) + ' ' + date.getFullYear() + 'г.';
                         }
 
                     },
-                    yAxis: {
-                        tickFormat: function (d) {return d3.format('.02f')(d);}
+                    forceY: [0, 500],
+                    bar1: {
+                        forceY: [0, 500]
+                    },
+                    bar2: {
+                        forceY: [0, 500]
+                    },
+                    yAxis1: {
+                        tickFormat: function (d) {
+                            return d;
+                            //return d3.format('.02f')(d);
+                        },
+                        range: [0, 500],
+                        domain: [0, 500]
+                    },
+                    yAxis2: {
+                        tickFormat: function (d) {
+                            return d;//d3.format('.02f')(d);
+                        },
+                        range: [0, 500],
+                        domain: [0, 500]
                     }
                     //tooltips: true,
                     //tooltipcontent: function (key, x, y, e) {
