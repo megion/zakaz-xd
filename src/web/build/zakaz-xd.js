@@ -1,5 +1,5 @@
 /*
- * Version: 1.0 - 2017-06-07T17:28:05.384Z
+ * Version: 1.0 - 2017-07-05T10:36:00.859Z
  */
 
 
@@ -849,6 +849,7 @@ angular.module('zakaz-xd.directives.decimal', [
             require: 'ngModel',
             link: function (scope, element, attr, ngModel) {
                 function banZero(value) {
+                    console.log("parser val:", value);
                     if (!scope.prevAppliedValue) {
                         scope.prevAppliedValue = value;
                         return value;
@@ -873,9 +874,11 @@ angular.module('zakaz-xd.directives.decimal', [
                     }
 
                     scope.prevAppliedValue = value;
+                    console.log("parser return val:", value);
                     return value;
                 }
                 function formatter(value) {
+                    console.log("formatter val:", value);
                     scope.prevAppliedValue = value;
                     return value;
                 }
@@ -885,7 +888,74 @@ angular.module('zakaz-xd.directives.decimal', [
             }
         };
     })
+    .directive('russianOnly', function () {
+        // allow only russian letter characters
+        var isValid = function (s) {
+            return s && s.length > 0;
+        };
+        return {
+            priority: 1,
+            restrict: 'A',
+            require: '?ngModel',
+            link: function (scope, element, attrs, ngModel) {
+                if (!ngModel) {
+                    return;
+                }
+
+                function filterRussianOnly(value) {
+                    if (value) {
+                        var withoutLatin = value.replace(/[^А-Яа-я]/g, '');
+                        
+                        // store cursor position - will be set by $render function
+                        ngModel.hscCursorPosition = element.get(0).selectionStart + 
+                            ((withoutLatin.length || 0) - (value.length || 0));
+
+                        if (element.context.required) {
+                            ngModel.$setValidity('required', isValid(withoutLatin));
+                        }
+
+                        // to eliminate an infinite loop calling parsers (setViewValue call all model parsers)
+                        //if (withoutLatin === value) {
+                            //return value;
+                        //}
+                        ngModel.$viewValue = withoutLatin;
+                        //ngModel.$setViewValue(withoutLatin);
+                        ngModel.$render();
+                        return withoutLatin;
+                    }
+                    return value;
+                }
+
+                ngModel.$parsers.unshift(filterRussianOnly);
+                //ngModel.$formatters.unshift(function (modelValue) {
+                    //if (modelValue) {
+                        //var withoutLatin = modelValue.replace(/[^А-Яа-я]/g, '');
+
+                        //// store cursor position
+                        //ngModel.hscCursorPosition = element.get(0).selectionStart + ((withoutLatin.length || 0) - (modelValue.length || 0));
+
+                        //if (element.context.required) {
+                            //ngModel.$setValidity('required', isValid(withoutLatin));
+                        //}
+                        //ngModel.$viewValue = withoutLatin;
+                        //ngModel.$render();
+
+                        //return withoutLatin;
+                    //}
+                //});
+                ngModel.$render = function () {
+                    var elemAsNode = element.get(0);
+                    element.val(ngModel.$viewValue);
+                    // restore cursor position
+                    if (ngModel.hscCursorPosition >= 0 && elemAsNode) {
+                        elemAsNode.selectionStart = elemAsNode.selectionEnd = ngModel.hscCursorPosition;
+                    }
+                };
+            }
+        };
+    })
 ;
+
 angular.module('zakaz-xd.directives.my-dropdown', [
     'ui.bootstrap'
 ])
@@ -1949,11 +2019,12 @@ angular
 
             $scope.models = {
                 lowercase: 'my test str',
-                lowercase1: ''
+                lowercase1: '',
+                russianOnlyVal: 'test04'
             };
 
             $scope.toggled = function(open) {
-                console.log('Dropdown is now: ', open);
+                //console.log('Dropdown is now: ', open);
             };
 
             $scope.openModal = function () {
@@ -2061,7 +2132,7 @@ angular
 
                     var date = $dateParser(month + '.' + payment.periodYear, PERIOD_FORMAT);
                     //var date = month + '.' + payment.periodYear;
-                    console.log("date: ", date);
+                    //console.log("date: ", date);
 
                     // оплачено
                     //chartData[0].values.push({x: date, y: paid, realValue: paid});
@@ -2083,7 +2154,7 @@ angular
                 }
                 // recalculateChargedBar
                 var w = nv.utils.availableWidth(null, $scope.chartScope.svg, {left: 117, right: 0});
-                console.log('$scope.chartScope', w);
+                //console.log('$scope.chartScope', w);
                 //console.log('this', this);
                 //var y = d3.scale.linear()
                 //    .domain([0, 500])
@@ -2219,7 +2290,7 @@ angular
                     //y: function (d) {
                     //    return d3.format('.02f')(d[1]);
                     //},
-                    //noData: "Данные за выбранный период отсутствуют!",
+                    noData: "Данные за выбранный период отсутствуют!",
                     color: function (d, i) {
                         return colorArray[i];
                     },
@@ -2238,15 +2309,15 @@ angular
                     //    return d3.format(',.4f')(d);
                     //},
                     duration: 0,
-                    //dispatch: {
-                        //beforeUpdate: function(e){
-                            //console.log('! before UPDATE !');
-                        //},
-                        //renderEnd: onRenderEnd
-                        ////renderEnd: function(e) {
-                        ////    console.log('renderEnd: ', e);
-                        ////}
-                    //},
+                    dispatch: {
+                        beforeUpdate: function(e){
+                            console.log('! before UPDATE !');
+                        },
+                        renderEnd: onRenderEnd
+                        //renderEnd: function(e) {
+                        //    console.log('renderEnd: ', e);
+                        //}
+                    },
                     //xAxis: {
                         //tickFormat: function(d){
                             //console.log("xAxis format", d);
@@ -2254,8 +2325,8 @@ angular
                         //}
                     //},
                     xAxis: {
-                        //tickSize: 0,
-                        //tickPadding: 0,
+                        tickSize: 0,
+                        tickPadding: 0,
                         tickFormat: function (d) {
                             console.log("xAxis format", d);
                             var date = new Date(d);
@@ -2284,12 +2355,12 @@ angular
                         },
                         range: [0, 500],
                         domain: [0, 500]
-                    }
+                    },
                     //tooltips: true,
                     //tooltipcontent: function (key, x, y, e) {
-                    //    var label = xAxisLabels[key],
-                    //        amount = $filter('currency')(e.series.values[e.pointIndex][2]);
-                    //    return '<h3>' + label + '</h3>' + '<p>' + amount + ' за ' + x + '</p>';
+                        //var label = xAxisLabels[key],
+                            //amount = $filter('currency')(e.series.values[e.pointIndex][2]);
+                        //return '<h3>' + label + '</h3>' + '<p>' + amount + ' за ' + x + '</p>';
                     //}
 
 
@@ -2300,19 +2371,19 @@ angular
                     //type: 'discreteBarChart',
                     //height: 300,
                     //
-                    //showXAxis: true,
-                    //showYAxis: true,
-                    //showLegend: true,
-                    //tooltips: true,
-                    //tooltipcontent: function (key, x, y, e) {
-                    //    var label = xAxisLabels[key],
-                    //        amount = $filter('currency')(e.series.values[e.pointIndex][2]);
-                    //    return '<h3>' + label + '</h3>' + '<p>' + amount + ' за ' + x + '</p>';
-                    //},
+                    showXAxis: true,
+                    showYAxis: true,
+                    showLegend: true,
+                    tooltips: true,
+                    tooltipcontent: function (key, x, y, e) {
+                        var label = xAxisLabels[key],
+                            amount = $filter('currency')(e.series.values[e.pointIndex][2]);
+                        return '<h3>' + label + '</h3>' + '<p>' + amount + ' за ' + x + '</p>';
+                    },
                     //xAxisTickFormat: function (d) {return $filter('month')(d.getMonth() + 1) + ' ' + d.getFullYear() + 'г.';},
                     //yAxisTickFormat: function (d) {return d3.format('.02f')(d);},
                     //
-                    //delay: "0",
+                    delay: "0",
                     //noData: "Данные за выбранный период отсутствуют!",
                     //color: function (d, i) {return colorArray[i];},
                     //legendColor: function (d, i) {return colorArray[i];},
@@ -2390,7 +2461,7 @@ angular
             //console.log("chartData", items);
 
             $scope.chartData = transformItemsToMultiBarChart($scope.chartDataItems);
-            console.log("chartData", $scope.chartData);
+            //console.log("chartData", $scope.chartData);
 
             //$scope.updateChart($scope.chartDataItems);
 

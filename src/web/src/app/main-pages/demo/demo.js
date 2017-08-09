@@ -248,11 +248,12 @@ angular
 
             $scope.models = {
                 lowercase: 'my test str',
-                lowercase1: ''
+                lowercase1: '',
+                russianOnlyVal: 'test04'
             };
 
             $scope.toggled = function(open) {
-                console.log('Dropdown is now: ', open);
+                //console.log('Dropdown is now: ', open);
             };
 
             $scope.openModal = function () {
@@ -360,7 +361,7 @@ angular
 
                     var date = $dateParser(month + '.' + payment.periodYear, PERIOD_FORMAT);
                     //var date = month + '.' + payment.periodYear;
-                    console.log("date: ", date);
+                    //console.log("date: ", date);
 
                     // оплачено
                     //chartData[0].values.push({x: date, y: paid, realValue: paid});
@@ -382,7 +383,7 @@ angular
                 }
                 // recalculateChargedBar
                 var w = nv.utils.availableWidth(null, $scope.chartScope.svg, {left: 117, right: 0});
-                console.log('$scope.chartScope', w);
+                //console.log('$scope.chartScope', w);
                 //console.log('this', this);
                 //var y = d3.scale.linear()
                 //    .domain([0, 500])
@@ -518,7 +519,7 @@ angular
                     //y: function (d) {
                     //    return d3.format('.02f')(d[1]);
                     //},
-                    //noData: "Данные за выбранный период отсутствуют!",
+                    noData: "Данные за выбранный период отсутствуют!",
                     color: function (d, i) {
                         return colorArray[i];
                     },
@@ -537,15 +538,15 @@ angular
                     //    return d3.format(',.4f')(d);
                     //},
                     duration: 0,
-                    //dispatch: {
-                        //beforeUpdate: function(e){
-                            //console.log('! before UPDATE !');
-                        //},
-                        //renderEnd: onRenderEnd
-                        ////renderEnd: function(e) {
-                        ////    console.log('renderEnd: ', e);
-                        ////}
-                    //},
+                    dispatch: {
+                        beforeUpdate: function(e){
+                            console.log('! before UPDATE !');
+                        },
+                        renderEnd: onRenderEnd
+                        //renderEnd: function(e) {
+                        //    console.log('renderEnd: ', e);
+                        //}
+                    },
                     //xAxis: {
                         //tickFormat: function(d){
                             //console.log("xAxis format", d);
@@ -553,8 +554,8 @@ angular
                         //}
                     //},
                     xAxis: {
-                        //tickSize: 0,
-                        //tickPadding: 0,
+                        tickSize: 0,
+                        tickPadding: 0,
                         tickFormat: function (d) {
                             console.log("xAxis format", d);
                             var date = new Date(d);
@@ -583,12 +584,12 @@ angular
                         },
                         range: [0, 500],
                         domain: [0, 500]
-                    }
+                    },
                     //tooltips: true,
                     //tooltipcontent: function (key, x, y, e) {
-                    //    var label = xAxisLabels[key],
-                    //        amount = $filter('currency')(e.series.values[e.pointIndex][2]);
-                    //    return '<h3>' + label + '</h3>' + '<p>' + amount + ' за ' + x + '</p>';
+                        //var label = xAxisLabels[key],
+                            //amount = $filter('currency')(e.series.values[e.pointIndex][2]);
+                        //return '<h3>' + label + '</h3>' + '<p>' + amount + ' за ' + x + '</p>';
                     //}
 
 
@@ -599,19 +600,19 @@ angular
                     //type: 'discreteBarChart',
                     //height: 300,
                     //
-                    //showXAxis: true,
-                    //showYAxis: true,
-                    //showLegend: true,
-                    //tooltips: true,
-                    //tooltipcontent: function (key, x, y, e) {
-                    //    var label = xAxisLabels[key],
-                    //        amount = $filter('currency')(e.series.values[e.pointIndex][2]);
-                    //    return '<h3>' + label + '</h3>' + '<p>' + amount + ' за ' + x + '</p>';
-                    //},
+                    showXAxis: true,
+                    showYAxis: true,
+                    showLegend: true,
+                    tooltips: true,
+                    tooltipcontent: function (key, x, y, e) {
+                        var label = xAxisLabels[key],
+                            amount = $filter('currency')(e.series.values[e.pointIndex][2]);
+                        return '<h3>' + label + '</h3>' + '<p>' + amount + ' за ' + x + '</p>';
+                    },
                     //xAxisTickFormat: function (d) {return $filter('month')(d.getMonth() + 1) + ' ' + d.getFullYear() + 'г.';},
                     //yAxisTickFormat: function (d) {return d3.format('.02f')(d);},
                     //
-                    //delay: "0",
+                    delay: "0",
                     //noData: "Данные за выбранный период отсутствуют!",
                     //color: function (d, i) {return colorArray[i];},
                     //legendColor: function (d, i) {return colorArray[i];},
@@ -689,7 +690,7 @@ angular
             //console.log("chartData", items);
 
             $scope.chartData = transformItemsToMultiBarChart($scope.chartDataItems);
-            console.log("chartData", $scope.chartData);
+            //console.log("chartData", $scope.chartData);
 
             //$scope.updateChart($scope.chartDataItems);
 
