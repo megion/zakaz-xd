@@ -22,3 +22,11 @@ Upgrade to new version. Install stable node and npm version
 
     node -v
     v8.2.1
+
+Upgrade gulp
+    su
+    # npm uninstall -g gulp-cli
+    # npm install -g gulpjs/gulp-cli
+    # exit
+
+    $ npm install gulpjs/gulp.git#4.0 --save-dev
