@@ -30,3 +30,6 @@ Upgrade gulp
     # exit
 
     $ npm install gulpjs/gulp.git#4.0 --save-dev
+
+Run tasks in production mode
+    $ NODE_ENV=production gulp
