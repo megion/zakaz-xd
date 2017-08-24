@@ -27,6 +27,11 @@ gulp.task('clean', function () {
     return del([ 'build' ]);
 });
 
+gulp.task('assets', function() {
+  return gulp.src('src/assets/**')
+      .pipe(gulp.dest('build'));
+});
+
 gulp.task('styles', function () {
     return gulp.src(paths.styles.src)
         .pipe(gulpIf(isDevelopment, sourcemaps.init()))
@@ -34,8 +39,8 @@ gulp.task('styles', function () {
     //.pipe(cleanCSS())
     // pass in options to the stream
         .pipe(rename({
-            basename: 'main',
-            suffix: '.min'
+            basename: 'main'
+            //suffix: '.min'
         }))
         .pipe(gulpIf(isDevelopment, sourcemaps.write('.')))
         .pipe(gulp.dest(paths.styles.dest));
@@ -52,7 +57,7 @@ gulp.task('scripts', function (done) {
 
 gulp.task('build', gulp.series(
     'clean',
-    gulp.parallel('styles', 'scripts'))
+    gulp.parallel('styles', 'scripts', 'assets'))
 );
 
 /*
