@@ -63,4 +63,4 @@ gulp.task('build', gulp.series(
 /*
  * Define default task that can be called by just running `gulp` from cli
  */
-//gulp.task('default', 'build');
+ gulp.task('default', gulp.series('build'));
