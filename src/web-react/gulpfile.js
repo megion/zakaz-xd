@@ -16,6 +16,10 @@ var paths = {
     scripts: {
         src: 'src/scripts/**/*.js',
         dest: 'build/scripts/'
+    },
+    assets: {
+        src: 'src/assets/**',
+        dest: 'build'
     }
 };
 
@@ -28,8 +32,8 @@ gulp.task('clean', function () {
 });
 
 gulp.task('assets', function() {
-  return gulp.src('src/assets/**')
-      .pipe(gulp.dest('build'));
+  return gulp.src(paths.assets.src, {since: gulp.lastRun('assets')})
+      .pipe(gulp.dest(paths.assets.dest));
 });
 
 gulp.task('styles', function () {
@@ -64,3 +68,10 @@ gulp.task('build', gulp.series(
  * Define default task that can be called by just running `gulp` from cli
  */
  gulp.task('default', gulp.series('build'));
+
+gulp.task('watch', function() {
+    gulp.watch(paths.styles.src, gulp.series('styles'));
+    gulp.watch(paths.assets.src, gulp.series('assets'));
+});
+
+gulp.task('dev', gulp.series('build', 'watch'));
