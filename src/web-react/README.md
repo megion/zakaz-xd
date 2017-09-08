@@ -33,3 +33,7 @@ Upgrade gulp
 
 Run tasks in production mode
     $ NODE_ENV=production gulp
+
+Add dev package
+    $ npm i -D browser-sync
+

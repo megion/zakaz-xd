@@ -7,8 +7,11 @@ var rename = require('gulp-rename');
 //var cleanCSS = require('gulp-clean-css');
 var gulpIf = require('gulp-if');
 var del = require('del');
+var browserSync = require('browser-sync').create();
 
 var paths = {
+    buildDir: 'build',
+    serveWatches: 'build/**/*.*',
     styles: {
         src: 'src/styles/**/*.less',
         dest: 'build/styles/'
@@ -32,8 +35,8 @@ gulp.task('clean', function () {
 });
 
 gulp.task('assets', function() {
-  return gulp.src(paths.assets.src, {since: gulp.lastRun('assets')})
-      .pipe(gulp.dest(paths.assets.dest));
+    return gulp.src(paths.assets.src, {since: gulp.lastRun('assets')})
+        .pipe(gulp.dest(paths.assets.dest));
 });
 
 gulp.task('styles', function () {
@@ -52,7 +55,7 @@ gulp.task('styles', function () {
 
 gulp.task('scripts', function (done) {
     done();
-  //return gulp.src(paths.scripts.src, { sourcemaps: true })
+    //return gulp.src(paths.scripts.src, { sourcemaps: true })
     //.pipe(babel())
     //.pipe(uglify())
     //.pipe(concat('main.min.js'))
@@ -64,14 +67,21 @@ gulp.task('build', gulp.series(
     gulp.parallel('styles', 'scripts', 'assets'))
 );
 
-/*
- * Define default task that can be called by just running `gulp` from cli
- */
- gulp.task('default', gulp.series('build'));
+// Define default task that can be called by just running `gulp` from cli
+gulp.task('default', gulp.series('build'));
 
 gulp.task('watch', function() {
     gulp.watch(paths.styles.src, gulp.series('styles'));
     gulp.watch(paths.assets.src, gulp.series('assets'));
 });
 
-gulp.task('dev', gulp.series('build', 'watch'));
+gulp.task('serve', function() {
+    browserSync.init({
+        server: paths.buildDir
+    });
+
+    browserSync.watch(paths.serveWatches).on('change', browserSync.reload);
+});
+
+gulp.task('dev', gulp.series('build', gulp.parallel('watch', 'serve')));
+

@@ -9,6 +9,7 @@
   "author": "ilya.zadorozhny",
   "license": "ISC",
   "devDependencies": {
+    "browser-sync": "^2.18.13",
     "del": "^3.0.0",
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-if": "^2.0.2",
