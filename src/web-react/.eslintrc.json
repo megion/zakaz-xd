@@ -1,10 +1,9 @@
 {
-    
     "parserOptions": {
         "ecmaVersion": 6,
         "sourceType": "module",
         "ecmaFeatures": {
-            "impliedStrict": true
+            "impliedStrict": true 
         }
     },
     "env": {
