@@ -8,6 +8,7 @@ var rename = require('gulp-rename');
 var gulpIf = require('gulp-if');
 var del = require('del');
 var browserSync = require('browser-sync').create();
+var eslint = require('gulp-eslint');
 
 var paths = {
     buildDir: 'build',
@@ -17,8 +18,8 @@ var paths = {
         dest: 'build/styles/'
     },
     scripts: {
-        src: 'src/scripts/**/*.js',
-        dest: 'build/scripts/'
+        src: 'src/js/**/*.js',
+        dest: 'build/js/'
     },
     assets: {
         src: 'src/assets/**',
@@ -51,6 +52,13 @@ gulp.task('styles', function () {
         }))
         .pipe(gulpIf(isDevelopment, sourcemaps.write('.')))
         .pipe(gulp.dest(paths.styles.dest));
+});
+
+gulp.task('lint-old', function() {
+    return gulp.src(paths.scripts.src)
+        .pipe(eslint())
+        .pipe(eslint.format());
+        //.pipe(eslint.failAfterError());
 });
 
 gulp.task('scripts', function (done) {
