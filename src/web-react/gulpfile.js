@@ -54,7 +54,8 @@ gulp.task('styles', function () {
         .pipe(gulp.dest(paths.styles.dest));
 });
 
-gulp.task('lint-old', function() {
+// check javascript files by eslint
+gulp.task('lint', function() {
     return gulp.src(paths.scripts.src)
         .pipe(eslint())
         .pipe(eslint.format());

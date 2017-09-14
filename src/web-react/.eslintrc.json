@@ -1,16 +1,14 @@
 {
-    "parserOptions": {
-        "ecmaVersion": 6,
-        "sourceType": "module",
-        "ecmaFeatures": {
-            "impliedStrict": true 
-        }
-    },
     "env": {
-        "browser": true,
-        "node": true
+        "browser": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "ecmaVersion": 6
     },
     "rules": {
+        "no-console": "off",
+        "no-unused-vars": "off", 
         "indent": [
             "error",
             4

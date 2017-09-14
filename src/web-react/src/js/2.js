@@ -1,3 +1,4 @@
 
-let badLine = 6;
+var badLine = 6;
+console.log(badLine);
 

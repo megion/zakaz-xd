@@ -1,14 +1,27 @@
-<!doctype html>
+<!DOCTYPE HTML>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <link rel="stylesheet" href="/styles/main.css">
+  <link href="/styles/main.css" rel="stylesheet">
+  <meta charset="utf-8">
 </head>
-<body>
+<body class="page">
 
-<div class="header">Welcome!</div>
+  <div class="page__header" onclick="alert(1)">
+    <i class="icon page__header-cat"></i>Welcome!
+  </div>
 
-<input type="text"/>
+  <div id="sweets-menu" class="menu menu_open">
+    <a href="#" class="menu__title" onclick="this.parentNode.classList.toggle('menu_open'); return false">
+      <i class="icon menu__title-icon"></i>Menu
+    </a>
+    <ul class="menu__list">
+      <li>Торт</li>
+      <li>Пончик</li>
+      <li>Пирожное</li>
+      <li>Шоколадка</li>
+      <li>Мороженое</li>
+    </ul>
+  </div>
 
 
 </body>
