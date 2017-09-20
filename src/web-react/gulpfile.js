@@ -3,15 +3,17 @@ var less = require('gulp-less');
 var sourcemaps = require('gulp-sourcemaps');
 //var concat = require('gulp-concat');
 //var uglify = require('gulp-uglify');
-var rename = require('gulp-rename');
-//var cleanCSS = require('gulp-clean-css');
+//var rename = require('gulp-rename');
 var gulpIf = require('gulp-if');
 var del = require('del');
 var browserSync = require('browser-sync').create();
 var eslint = require('gulp-eslint');
+var cssnano = require('gulp-cssnano');
+var rev = require('gulp-rev');
 
 var paths = {
     buildDir: 'build',
+    manifestDir: 'build/manifest',
     serveWatches: 'build/**/*.*',
     styles: {
         src: 'src/styles/**/*.less',
@@ -44,14 +46,12 @@ gulp.task('styles', function () {
     return gulp.src(paths.styles.src)
         .pipe(gulpIf(isDevelopment, sourcemaps.init()))
         .pipe(less())
-    //.pipe(cleanCSS())
-    // pass in options to the stream
-        .pipe(rename({
-            basename: 'main'
-            //suffix: '.min'
-        }))
         .pipe(gulpIf(isDevelopment, sourcemaps.write('.')))
-        .pipe(gulp.dest(paths.styles.dest));
+        .pipe(gulpIf(!isDevelopment, cssnano()))
+        .pipe(gulpIf(!isDevelopment, rev()))
+        .pipe(gulp.dest(paths.styles.dest))
+        .pipe(gulpIf(!isDevelopment, rev.manifest('css.json')))
+        .pipe(gulpIf(!isDevelopment, gulp.dest(paths.manifestDir)));
 });
 
 // check javascript files by eslint
