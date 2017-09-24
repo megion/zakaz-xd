@@ -16,7 +16,7 @@ var paths = {
     manifestDir: 'build/manifest',
     serveWatches: 'build/**/*.*',
     styles: {
-        src: 'src/styles/**/*.less',
+        src: 'src/styles/styles.less',
         dest: 'build/styles/'
     },
     scripts: {
@@ -46,12 +46,16 @@ gulp.task('styles', function () {
     return gulp.src(paths.styles.src)
         .pipe(gulpIf(isDevelopment, sourcemaps.init()))
         .pipe(less())
+        //.pipe(rename({
+            //basename: 'main'
+            ////suffix: '.min'
+        //}))
         .pipe(gulpIf(isDevelopment, sourcemaps.write('.')))
         .pipe(gulpIf(!isDevelopment, cssnano()))
         .pipe(gulpIf(!isDevelopment, rev()))
-        .pipe(gulp.dest(paths.styles.dest))
-        .pipe(gulpIf(!isDevelopment, rev.manifest('css.json')))
-        .pipe(gulpIf(!isDevelopment, gulp.dest(paths.manifestDir)));
+        .pipe(gulp.dest(paths.styles.dest));
+        //.pipe(gulpIf(!isDevelopment, rev.manifest('css.json')))
+        //.pipe(gulpIf(!isDevelopment, gulp.dest(paths.manifestDir)));
 });
 
 // check javascript files by eslint
