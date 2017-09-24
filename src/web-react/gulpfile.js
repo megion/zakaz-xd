@@ -67,12 +67,14 @@ gulp.task('lint', function() {
 });
 
 gulp.task('scripts', function (done) {
-    done();
-    //return gulp.src(paths.scripts.src, { sourcemaps: true })
+    //done();
+    return gulp.src(paths.scripts.src)
+        .pipe(eslint())
+        .pipe(eslint.format())
     //.pipe(babel())
     //.pipe(uglify())
     //.pipe(concat('main.min.js'))
-    //.pipe(gulp.dest(paths.scripts.dest));
+        .pipe(gulp.dest(paths.scripts.dest));
 });
 
 gulp.task('build', gulp.series(
@@ -85,6 +87,7 @@ gulp.task('default', gulp.series('build'));
 
 gulp.task('watch', function() {
     gulp.watch(paths.styles.src, gulp.series('styles'));
+    gulp.watch(paths.scripts.src, gulp.series('scripts'));
     gulp.watch(paths.assets.src, gulp.series('assets'));
 });
 
