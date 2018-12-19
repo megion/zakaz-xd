@@ -38,81 +38,203 @@ angular
             return false;
         }
 
-        function fixCursorPosition(oldValue, newValue, keydownEventInfo, element) {
-            var el = element[0];
-            var cursorPosition;
-            if(newValue && oldValue && newValue.length && oldValue.length) {
-
-                var cursorOffset = 0;
-
-                var removedCharsCount = oldValue.length - newValue.length;
-                if(removedCharsCount > 1) {
-                    var selectionRange = keydownEventInfo.selectionEnd - keydownEventInfo.selectionStart;
-                    if(selectionRange === 0) {
-                        selectionRange = 1;
-                    }
-
-                    if((removedCharsCount - selectionRange) > 0) {
-                        // user removed one char but real remove more then one value
-                        cursorOffset = -1;
-                    }
+        function getSpaceCount(str) {
+            var count = 0;
+            for(var i=0; i<str.length; i++) {
+                var ch = str.charAt(i);
+                if(ch === ' ') {
+                    count++;
                 }
-                cursorPosition = keydownEventInfo.selectionStart + cursorOffset;
-                if(cursorPosition >= 0) {
-                    el.focus();
-                    el.selectionStart = el.selectionEnd = cursorPosition;
-                }
-            } else {
-                cursorPosition = el.selectionStart;
-                el.focus();
-                el.selectionStart = el.selectionEnd = cursorPosition;
             }
-
+            return count;
         }
 
-        function clearMoney(inputVal) {
+        function getStringDiff(a, b) {
+            var master, slave;
+            if(a.length > b.length) {
+                master = a;
+                slave = b;
+            } else {
+                master = b;
+                slave = a;
+            }
+
+            var result = '';
+            var i = 0;
+            var j = 0;
+
+            while (j < master.length) {
+                if (slave[i] !== master[j] || i === slave.length) {
+                    result += master[j];
+                } else {
+                    i++;
+                }
+                j++;
+            }
+            return result;
+        }
+
+        /**
+         * for example money has value '5 555 555.00'.
+         * after select and remove '555 555':
+         *
+         * oldValue -> '5 555 555.00'
+         * newValue -> '5.00'
+         * currentViewValue -> '5 .00'
+         */
+        function getCursorPositionOffset(oldValue, newValue, currentViewValue) {
+
+            var cursorOffset;
+            if(!(oldValue && oldValue.length)) {
+                // old value is empty
+                cursorOffset = 0; 
+            } else {
+                cursorOffset = getSpaceCount(newValue) - getSpaceCount(oldValue);
+            }
+
+            if(cursorOffset >= 1) {
+                cursorOffset = 1;
+            } else if(cursorOffset <= -1) {
+                cursorOffset = -1;
+            }
+
+            /* 
+             * remove more than one (remove several selected values) and select space on begin or end selection
+             */
+            if((oldValue.length - currentViewValue.length) > 1) {
+                var diff = getStringDiff(oldValue, currentViewValue);
+                if(diff.length && (diff[0] === ' ' || diff[diff.length-1] === ' ')) {
+                    cursorOffset++;
+                }
+            }
+
+            //console.log("cursorOffset: ", cursorOffset);
+            return cursorOffset;
+        }
+
+        function clearMoney(inputVal, ngModel, attrs) {
+            var negative = (attrs['negative'] === 'true');
+
+            /*
+             * set 0 for disable money max length
+             */
+            var moneyMaxlength = parseInt(attrs['moneyMaxlength']);
+            if(isNaN(moneyMaxlength)) {
+                moneyMaxlength = 8; // default 8
+            }
+
+            var moneyShouldBeNegative = (attrs['moneyShouldBeNegative'] === 'true');
+
+            var result = {
+                cleanedInput: '',
+                /*
+                 * skip current input operation
+                 */
+                isSkip: false
+            };
+
             if(!(inputVal && inputVal.length)) {
-                return inputVal; 
+                return result.cleanedInput = inputVal; 
             }
 
-            //clear string, also '-' and '.'
-            inputVal = inputVal.replace(/[^\d]/g, '');
-
-            if(inputVal.length === 1) {
-                inputVal = '0.0' + inputVal;
-            } else if(inputVal.length === 2) {
-                inputVal = '0.' + inputVal;
-            }  else if(inputVal.length >= 3) {
-                inputVal = inputVal.substring(0, inputVal.length-2) + '.' +
-                    inputVal.substring(inputVal.length-2, inputVal.length);
+            var pointCount = 0;
+            var intPartNumberCount = 0;
+            for(var i=0; i<inputVal.length; i++) {
+                var ch = inputVal.charAt(i);
+                if(ch === '-' && i === 0 && negative === true) {
+                    result.cleanedInput += ch;
+                } else if(ch === '.') {
+                    if(pointCount===0) {
+                        result.cleanedInput += ch;
+                    } else if(ngModel.keyCode === 190 || ngModel.keyCode === 191) {
+                        // user input double point so skip it
+                        result.isSkip = true;
+                        return result;
+                    }
+                    pointCount++;
+                } if (ch >= '0' && ch <= '9') {
+                    // it is a number
+                    
+                    if(moneyMaxlength === 0) {
+                        // no restriction
+                        result.cleanedInput += ch;
+                    } else {
+                        if(pointCount===0) {
+                            // restrict integer part 
+                            intPartNumberCount++;
+                            if(intPartNumberCount <= moneyMaxlength) {
+                                result.cleanedInput += ch;
+                            }
+                        } else {
+                            // decimal part is not restricted  
+                            result.cleanedInput += ch;
+                        }
+                    }
+                }
             }
 
-            return inputVal;
+            if(pointCount === 0) {
+                // backspace / delete
+                if(ngModel.keyCode === 8 || ngModel.keyCode === 46) {
+                    /*
+                     * user try remove point by backspace / delete
+                     */
+                    result.isSkip = true;
+                    return result;
+                }
+            }
+
+            if (result.cleanedInput[0] !== '-' && moneyShouldBeNegative) {
+                // add '-' to begin
+                result.cleanedInput = '-' + result.cleanedInput;
+            }
+            return result;
         }
 
         function renderMoney(inputVal, element, ngModel, attrs) {
+            if(!(inputVal && inputVal.length)) {
+                ngModel.newMoneyValue = inputVal;
+                return inputVal; 
+            }
 
+            var keyCode = ngModel.keyCode;
             var oldMoneyValue = ngModel.newMoneyValue;
+            var currentViewValue = ngModel.$viewValue; 
 
-            //var el = element[0];
-            //var cursorPosition = el.selectionStart;
-            //
-            
-            //clear string, also '-'
-            inputVal = clearMoney(inputVal);
+            var clearedResult = clearMoney(inputVal, ngModel, attrs);
+            if(clearedResult.isSkip) {
+                ngModel.$setViewValue(oldMoneyValue);
+                return oldMoneyValue;
+            }
 
-            var filtered = $filter('moneyNoRoundNoExponent')(inputVal);
+            var filtered = $filter('moneyNoRoundNoExponent')(clearedResult.cleanedInput);
             ngModel.newMoneyValue = filtered;
 
-            ngModel.$setViewValue(filtered);
+
+            console.log("oldMoneyValue, currentViewValue, ngModel.newMoneyValue: ",
+                oldMoneyValue,
+                currentViewValue,
+                ngModel.newMoneyValue);
+
+            if(ngModel.newMoneyValue !== currentViewValue) {
+                ngModel.$setViewValue(ngModel.newMoneyValue);
+            }
+
+            // save cursorPosition before render
+            var el = element[0];
+            var cursorPosition = el.selectionStart;
+
             ngModel.$render();
 
-            if(ngModel.keydownEventInfo) {
-                fixCursorPosition(oldMoneyValue, ngModel.newMoneyValue, ngModel.keydownEventInfo, element);
+            // fix coursor position after render because render set selection to the end of string
+            var cursorOffset = getCursorPositionOffset(oldMoneyValue, ngModel.newMoneyValue, currentViewValue);
+            var fixedCursorPosition = cursorPosition + cursorOffset;
+            if(fixedCursorPosition >= 0) {
+                cursorPosition = fixedCursorPosition; 
             }
-            //ngModel.keydownEventInfo = null;
+            el.selectionStart = el.selectionEnd = cursorPosition;
 
-            return filtered;
+            return ngModel.newMoneyValue;
         }
 
         var process = function (inputVal, element, ngModel, attrs) {
@@ -175,6 +297,7 @@ angular
             })();
 
             if (isRemoveSpace(ngModel.newRawInputValue, ngModel.oldRawInputValue) && keyCode == 46) {
+
                 // убрал удаление следующего правого символа при удалении пробела клавишей Delete
                 // т.к. такого требования нет в ТЗ
                 // смещение курсора в право оставляю для перемещения вправо т.к. стандартно клавиша Delete
@@ -367,11 +490,12 @@ angular
                 element.on('keydown.money', function(e) {
                     // all keyboard events include characters, arrows, enter etc..
                     ngModel.keyCode = e.keyCode;
-                    ngModel.keydownEventInfo = {
-                        selectionStart: e.currentTarget.selectionStart,
-                        selectionEnd: e.currentTarget.selectionEnd,
-                        selectionDirection: e.currentTarget.selectionDirection
-                    };
+                    //ngModel.keydownEventInfo = {
+                        //selectionStart: e.currentTarget.selectionStart,
+                        //selectionEnd: e.currentTarget.selectionEnd,
+                        //selectionDirection: e.currentTarget.selectionDirection
+                    //};
+                    //console.log("ngModel.keydownEventInfo: ", ngModel.keydownEventInfo);
                 });
                 //element.on('keypress.money', function(e){
                     //// only events that produces a character: digits, letters, punctuation...
@@ -418,6 +542,7 @@ angular
                 });
                 ngModel.$formatters.unshift(function (modelValue) {
                     if (modelValue === undefined || modelValue === null || modelValue === '') {
+                        ngModel.newMoneyValue = '';
                         return '';
                     }
 
